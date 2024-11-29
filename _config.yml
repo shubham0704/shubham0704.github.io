@@ -6,17 +6,17 @@ title: Yang Song # the website title (if blank, full name will be used instead)
 first_name: Yang
 middle_name: 
 last_name: Song
-email: thusongyang@gmail.com
+email: shubham.bhardwaj@utexas.edu
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  The personal website of Yang Song.
+  The personal website of Shubham Bhardwaj.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
-keywords: Yang Song, machine learning, AI, artificial intelligence  # add your own keywords or leave empty
+keywords: Shubham Bhardwaj, machine learning, AI, artificial intelligence  # add your own keywords or leave empty
 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: caltech.ico  # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
 
-url: https://yang-song.net # the base hostname & protocol for your site
+url: https://shubham-bhardwaj.com # the base hostname & protocol for your site
 baseurl:  # the subpath of your site, e.g. /blog/
 last_updated: false # set to true if you want to display last updated in the footer
 impressum_path:  # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
@@ -65,12 +65,12 @@ og_image: # The site-wide (default for all links) Open Graph preview image
 # Social integration
 # -----------------------------------------------------------------------------
 
-email: thusongyang@gmail.com
-github_username: yang-song # your GitHub user name
+email: shubham.bhardwaj@utexas.edu
+github_username: shubham0704 # your GitHub user name
 gitlab_username: # your GitLab user name
-twitter_username: DrYangSong # your Twitter handle
-linkedin_username: yang-song-machine-learning # your LinkedIn user name
-scholar_userid: o_J2CroAAAAJ # your Google Scholar ID
+twitter_username: @4245Shubham # your Twitter handle
+linkedin_username: shubham-bhardwaj # your LinkedIn user name
+scholar_userid: 50Ue3d4AAAAJ # your Google Scholar ID
 orcid_id: # your ORCID ID
 medium_username: # your Medium username
 quora_username: # your Quora username
@@ -90,8 +90,8 @@ contact_note: >
 # Analytics and search engine verification
 # -----------------------------------------------------------------------------
 
-google_analytics: UA-69768980-1 # your Goole Analytics measurement ID (format: G-XXXXXXXXXX)
-panelbear_analytics: 2L2SaElaomp # panelbear analytics site ID (format: XXXXXXXXX)
+# google_analytics: UA-69768980-1 # your Goole Analytics measurement ID (format: G-XXXXXXXXXX)
+# panelbear_analytics: 2L2SaElaomp # panelbear analytics site ID (format: XXXXXXXXX)
 
 google_site_verification:  # your google-site-verification ID (Google Search Console)
 bing_site_verification:  # out your bing-site-verification ID (Bing Webmaster)
@@ -110,7 +110,7 @@ pagination:
   enabled: true
 
 # Comments
-disqus_shortname: ysong # put your disqus shortname
+disqus_shortname: i.am.shubham.bhardwaj # put your disqus shortname
 # https://help.disqus.com/en/articles/1717111-what-s-a-shortname
 
 # External sources.
@@ -283,7 +283,7 @@ jekyll-diagrams:
 # Optional Features
 # -----------------------------------------------------------------------------
 
-enable_google_analytics:    true  # enables google analytics
+enable_google_analytics:    false  # enables google analytics
 enable_panelbear_analytics: false  # enables panelbear analytics
 enable_google_verification: false  # enables google site verification
 enable_bing_verification:   false  # enables bing site verification
