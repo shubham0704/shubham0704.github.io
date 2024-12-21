@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BlogPostCard from '../components/BlogPostCard.astro';
+
+const posts = [
+  {
+    title: "Latest Insights on 3D Vision",
+    excerpt: "Exploring the frontiers of computer vision and spatial understanding...",
+    date: "2024-01-15",
+    url: "https://shubham0704.substack.com/p/post1"
+  },
+  {
+    title: "Yoga and Mental Clarity",
+    excerpt: "How regular yoga practice enhances cognitive function...",
+    date: "2024-01-10",
+    url: "https://shubham0704.substack.com/p/post2"
+  },
+  {
+    title: "Research Updates: Physics-Informed ML",
+    excerpt: "Recent developments in combining physics with machine learning...",
+    date: "2024-01-05",
+    url: "https://shubham0704.substack.com/p/post3"
+  }
+];
+---
+
+<Layout title="Blog - Shubham Bhardwaj">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold mb-8">Blog Posts</h1>
+    
+    <div class="grid gap-8">
+      {posts.map(post => (
+        <BlogPostCard {...post} />
+      ))}
+    </div>
+
+    <div class="mt-12 text-center">
+      <a 
+        href="https://shubham0704.substack.com/" 
+        target="_blank"
+        class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+      >
+        Subscribe to My Substack
+      </a>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProfileImage from '../components/ProfileImage.astro';
+---
+
+<Layout title="Shubham Bhardwaj">
+  <div class="text-center mb-16">
+    <ProfileImage />
+    <h1 class="text-4xl font-bold mb-4">Welcome to My Website</h1>
+    <p class="text-xl text-gray-600 mb-8">
+      I'm Shubham Bhardwaj, a PhD student at UT Austin and a professional yoga trainer.
+      Explore my research, blog, and connect with me.
+    </p>
+    <a 
+      href="https://shubham0704.substack.com/" 
+      target="_blank" 
+      class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+    >
+      Subscribe to My Newsletter
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Latest Research</h2>
+      <p class="text-gray-600">Exploring 3D Vision, Generative Modeling, and Physics-Informed Computer Vision.</p>
+      <a href="/research" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">Learn more →</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Recent Blog Posts</h2>
+      <p class="text-gray-600">Thoughts on technology, yoga, and personal growth.</p>
+      <a href="/blog" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">Read more →</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Yoga & Wellness</h2>
+      <p class="text-gray-600">Insights on physical and spiritual well-being through yoga practice.</p>
+      <a href="/about#physical-well-being" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">Explore →</a>
+    </div>
+  </div>
+</Layout>
