@@ -2,45 +2,68 @@
 import Layout from '../layouts/Layout.astro';
 import ProfileImage from '../components/ProfileImage.astro';
 import SocialLinks from '../components/SocialLinks.astro';
-import RecentPosts from '../components/RecentPosts.astro';
-import ResearchHighlights from '../components/ResearchHighlights.astro';
+import Publications from '../components/Publications.astro';
 ---
 
 <Layout title="Shubham Bhardwaj">
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Hero Section -->
     <div class="flex flex-col md:flex-row items-start gap-12 mb-16">
-      <!-- Left column with text content -->
       <div class="flex-1">
-        <h1 class="text-4xl font-bold mb-4">Hey, I am Shubham</h1>
-        <p class="text-xl text-indigo-600 mb-6">researcher, yoga trainer, and computer vision enthusiast</p>
+        <h1 class="text-4xl font-bold mb-4">Shubham Bhardwaj</h1>
+        <p class="text-xl text-primary mb-6">PhD Student at UT Austin</p>
         
-        <div class="prose prose-lg mb-8">
+        <div class="prose prose-invert prose-lg mb-8">
           <p>
-            I am a PhD student at UT Austin, focusing on 3D Vision, Generative Modeling, and Physics-Informed Computer Vision. 
-            My research aims to bridge the gap between theoretical computer vision and practical applications.
+            I am a researcher focusing on 3D Vision, Generative Modeling, and Physics-Informed Computer Vision at the 
+            <a href="https://oden.utexas.edu/" class="text-primary hover:text-primary-hover">Oden Institute</a>.
           </p>
           
-          <p>
-            Beyond academia, I am a certified yoga trainer passionate about combining ancient wisdom with modern wellness practices. 
-            I believe in the synergy between mental clarity, physical well-being, and technological innovation.
+          <p class="text-gray-300">
+            My research aims to bridge the gap between theoretical computer vision and practical applications, 
+            with a focus on developing robust and interpretable models.
           </p>
         </div>
 
         <SocialLinks />
       </div>
 
-      <!-- Right column with image -->
       <div class="md:w-1/3">
         <ProfileImage />
       </div>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-12 mt-16">
-      <!-- Recent Blog Posts -->
-      <RecentPosts />
-      
-      <!-- Research Highlights -->
-      <ResearchHighlights />
-    </div>
+    <!-- Research Section -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">Research</h2>
+      <p class="text-gray-300 mb-6">
+        My goal is to develop advanced computer vision systems that combine physical principles with 
+        modern deep learning approaches. Current research interests include:
+      </p>
+      <ul class="list-disc list-inside space-y-2 text-gray-300">
+        <li>3D Vision and Scene Understanding</li>
+        <li>Physics-Informed Neural Networks</li>
+        <li>Generative Models for Visual Computing</li>
+        <li>Optimization Methods in Computer Vision</li>
+      </ul>
+    </section>
+
+    <!-- Publications Section -->
+    <Publications />
+
+    <!-- News Section -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">News</h2>
+      <div class="space-y-4">
+        <div class="flex gap-4">
+          <div class="w-24 flex-shrink-0 text-gray-400">Jan 2024</div>
+          <div class="text-gray-200">Paper accepted at ICLR 2024</div>
+        </div>
+        <div class="flex gap-4">
+          <div class="w-24 flex-shrink-0 text-gray-400">Dec 2023</div>
+          <div class="text-gray-200">Presented our work on 3D vision at NeurIPS 2023</div>
+        </div>
+      </div>
+    </section>
   </div>
 </Layout>

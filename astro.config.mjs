@@ -5,11 +5,12 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 export default defineConfig({
-  site: 'https://[your-username].github.io',
-  base: '/[repository-name]',
+  site: 'https://shubham0704.github.io',
+  base: '/shubham0704.github.io',
   integrations: [tailwind(), mdx()],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
-  }
+  },
+  
 });

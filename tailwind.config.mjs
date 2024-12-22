@@ -2,7 +2,18 @@
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#ff6b00', // Orange
+          hover: '#ff8533'
+        },
+        background: {
+          dark: '#1a1a1a',  // Dark background
+          light: '#ffffff'
+        }
+      }
+    },
   },
   plugins: [
     require('@tailwindcss/typography'),

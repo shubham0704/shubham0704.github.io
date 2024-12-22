@@ -3,28 +3,33 @@ const socialLinks = [
   {
     name: 'Google Scholar',
     url: 'https://scholar.google.com/citations?hl=en&user=50Ue3d4AAAAJ',
-    icon: 'i-academicons-google-scholar'
+    icon: 'scholar'
+  },
+  {
+    name: 'GitHub',
+    url: 'https://github.com/shubham0704',
+    icon: 'github'
+  },
+  {
+    name: 'LinkedIn',
+    url: 'https://linkedin.com/in/shubham-bhardwaj',
+    icon: 'linkedin'
   },
   {
     name: 'Substack',
     url: 'https://shubham0704.substack.com/',
-    icon: 'i-simple-icons-substack'
-  },
-  {
-    name: 'GitHub',
-    url: 'https://github.com/yourusername',
-    icon: 'i-simple-icons-github'
+    icon: 'substack'
   }
 ];
 ---
 
-<div class="flex gap-4">
+<div class="flex flex-wrap gap-4">
   {socialLinks.map(link => (
     <a 
       href={link.url}
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700"
+      class="inline-flex items-center px-4 py-2 border border-gray-700 hover:border-primary rounded-lg text-gray-300 hover:text-primary transition-colors"
     >
       {link.name}
     </a>
