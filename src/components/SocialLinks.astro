@@ -1,0 +1,32 @@
+---
+const socialLinks = [
+  {
+    name: 'Google Scholar',
+    url: 'https://scholar.google.com/citations?hl=en&user=50Ue3d4AAAAJ',
+    icon: 'i-academicons-google-scholar'
+  },
+  {
+    name: 'Substack',
+    url: 'https://shubham0704.substack.com/',
+    icon: 'i-simple-icons-substack'
+  },
+  {
+    name: 'GitHub',
+    url: 'https://github.com/yourusername',
+    icon: 'i-simple-icons-github'
+  }
+];
+---
+
+<div class="flex gap-4">
+  {socialLinks.map(link => (
+    <a 
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700"
+    >
+      {link.name}
+    </a>
+  ))}
+</div>

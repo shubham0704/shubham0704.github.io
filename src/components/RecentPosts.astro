@@ -1,0 +1,27 @@
+---
+const recentPosts = [
+  {
+    title: "Latest Insights on 3D Vision",
+    date: "2024-01-15",
+    url: "https://shubham0704.substack.com/p/post1"
+  },
+  {
+    title: "Yoga and Mental Clarity",
+    date: "2024-01-10",
+    url: "https://shubham0704.substack.com/p/post2"
+  }
+];
+---
+
+<section>
+  <h2 class="text-2xl font-bold mb-6">Recent Blog Posts</h2>
+  <div class="space-y-4">
+    {recentPosts.map(post => (
+      <a href={post.url} class="block p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+        <h3 class="font-semibold">{post.title}</h3>
+        <p class="text-sm text-gray-500">{post.date}</p>
+      </a>
+    ))}
+  </div>
+  <a href="/blog" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800">View all posts →</a>
+</section>

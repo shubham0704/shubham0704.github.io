@@ -1,42 +1,46 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProfileImage from '../components/ProfileImage.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import RecentPosts from '../components/RecentPosts.astro';
+import ResearchHighlights from '../components/ResearchHighlights.astro';
 ---
 
 <Layout title="Shubham Bhardwaj">
-  <div class="text-center mb-16">
-    <ProfileImage />
-    <h1 class="text-4xl font-bold mb-4">Welcome to My Website</h1>
-    <p class="text-xl text-gray-600 mb-8">
-      I'm Shubham Bhardwaj, a PhD student at UT Austin and a professional yoga trainer.
-      Explore my research, blog, and connect with me.
-    </p>
-    <a 
-      href="https://shubham0704.substack.com/" 
-      target="_blank" 
-      class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
-    >
-      Subscribe to My Newsletter
-    </a>
-  </div>
+  <div class="max-w-4xl mx-auto">
+    <div class="flex flex-col md:flex-row items-start gap-12 mb-16">
+      <!-- Left column with text content -->
+      <div class="flex-1">
+        <h1 class="text-4xl font-bold mb-4">Hey, I am Shubham</h1>
+        <p class="text-xl text-indigo-600 mb-6">researcher, yoga trainer, and computer vision enthusiast</p>
+        
+        <div class="prose prose-lg mb-8">
+          <p>
+            I am a PhD student at UT Austin, focusing on 3D Vision, Generative Modeling, and Physics-Informed Computer Vision. 
+            My research aims to bridge the gap between theoretical computer vision and practical applications.
+          </p>
+          
+          <p>
+            Beyond academia, I am a certified yoga trainer passionate about combining ancient wisdom with modern wellness practices. 
+            I believe in the synergy between mental clarity, physical well-being, and technological innovation.
+          </p>
+        </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-semibold mb-4">Latest Research</h2>
-      <p class="text-gray-600">Exploring 3D Vision, Generative Modeling, and Physics-Informed Computer Vision.</p>
-      <a href="/research" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">Learn more →</a>
+        <SocialLinks />
+      </div>
+
+      <!-- Right column with image -->
+      <div class="md:w-1/3">
+        <ProfileImage />
+      </div>
     </div>
 
-    <div class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-semibold mb-4">Recent Blog Posts</h2>
-      <p class="text-gray-600">Thoughts on technology, yoga, and personal growth.</p>
-      <a href="/blog" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">Read more →</a>
-    </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-semibold mb-4">Yoga & Wellness</h2>
-      <p class="text-gray-600">Insights on physical and spiritual well-being through yoga practice.</p>
-      <a href="/about#physical-well-being" class="text-indigo-600 hover:text-indigo-800 mt-4 inline-block">Explore →</a>
+    <div class="grid md:grid-cols-2 gap-12 mt-16">
+      <!-- Recent Blog Posts -->
+      <RecentPosts />
+      
+      <!-- Research Highlights -->
+      <ResearchHighlights />
     </div>
   </div>
 </Layout>
