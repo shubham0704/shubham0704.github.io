@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C-PHAST: Choose Safer Futures with Compositional Physics</title>
+  <meta name="description" content="C-PHAST project page: compositional port-Hamiltonian world models that roll out candidate futures, transfer across embodiments, and expose typed physical readouts.">
+  <meta property="og:title" content="C-PHAST: Choose Safer Futures with Compositional Physics">
+  <meta property="og:description" content="From one observed state, C-PHAST rolls out candidate futures and scores their energy, contact, stability, and residual consequences.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="images/cphast_candidate_futures_px2p25_start82_filmstrip.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="hero compact" id="top">
+    <nav class="nav" aria-label="Project navigation">
+      <a class="nav-brand" href="#top">C-PHAST</a>
+      <a href="#overview">Overview</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#method">Method</a>
+      <a href="#microgrid">Microgrid</a>
+      <a href="#citation">BibTeX</a>
+    </nav>
+
+    <div class="hero-shell">
+      <div class="hero-copy">
+        <h1>Choose safer futures with compositional physics.</h1>
+        <p class="project-kicker">Compositional Port-Hamiltonian World Models for Structured Dynamics Transfer</p>
+        <p class="hero-subtitle">One observed state. Multiple possible futures. Typed physics tells you what each future costs.</p>
+        <p class="lede">
+          C-PHAST composes reusable port-Hamiltonian blocks into a deployed
+          world model. It rolls out candidate futures and exposes energy,
+          support, stability, and residual readouts for downstream planners.
+        </p>
+        <div class="chip-row" aria-label="Native physical readouts">
+          <span>energy</span>
+          <span>contact/support</span>
+          <span>stability</span>
+          <span>residuals</span>
+        </div>
+        <div class="button-row" aria-label="Project resources">
+          <a class="button primary" href="#evidence">Watch demos</a>
+          <a class="button" href="https://drive.google.com/file/d/14GhdBmew9T8cqoeS-f9zhC_RIDFOccQB/view?usp=sharing" target="_blank" rel="noopener">Paper</a>
+          <a class="button" href="#method">How it works</a>
+          <a class="button" href="#citation">Citation</a>
+        </div>
+      </div>
+
+      <figure class="hero-media">
+        <video class="hero-video"
+               src="videos/cphast_candidate_futures_interpreted_h264.mp4"
+               poster="videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png"
+               muted loop playsinline preload="metadata"
+               aria-label="C-PHAST candidate future rollout comparison"></video>
+        <figcaption>
+          Same observed Go2 state. Different supplied futures. C-PHAST scores
+          the predicted physical consequences before simulator-level failure.
+        </figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <main>
+    <section class="section future-panel" id="overview">
+      <div class="section-head center">
+        <p class="eyebrow">One state, three futures</p>
+        <h2>The output is a choice, not just a trajectory.</h2>
+        <p>
+          The same learned typed block library can be queried under different
+          candidate actions or contact patterns. Each rollout returns a physical
+          commitment profile.
+        </p>
+      </div>
+      <figure class="future-visual">
+        <img src="images/cphast_candidate_futures_px2p25_start82_filmstrip.png"
+             alt="Filmstrip of C-PHAST candidate futures from the same Go2 state.">
+        <figcaption>
+          Same observed state, three supplied futures: continue, recover with
+          support, or fail. The cards below summarize what the typed readouts
+          make visible.
+        </figcaption>
+      </figure>
+      <div class="future-grid">
+        <article class="future-card risky">
+          <span class="future-number">1</span>
+          <h3>Fast but risky</h3>
+          <p>Low energy and low support, but near the stability boundary.</p>
+          <div class="mini-bars" aria-hidden="true">
+            <span style="--w: 34%">energy</span>
+            <span style="--w: 28%">support</span>
+            <span style="--w: 18%">margin</span>
+          </div>
+        </article>
+        <article class="future-card robust">
+          <span class="future-number">2</span>
+          <h3>Robust but costly</h3>
+          <p>More contact and effort, but a much larger safety margin.</p>
+          <div class="mini-bars" aria-hidden="true">
+            <span style="--w: 72%">energy</span>
+            <span style="--w: 82%">support</span>
+            <span style="--w: 78%">margin</span>
+          </div>
+        </article>
+        <article class="future-card unsafe">
+          <span class="future-number">3</span>
+          <h3>Unsafe</h3>
+          <p>Residuals and stability channels predict contact failure.</p>
+          <div class="mini-bars" aria-hidden="true">
+            <span style="--w: 46%">energy</span>
+            <span style="--w: 20%">support</span>
+            <span style="--w: 88%">residual</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section demo-band" id="evidence">
+      <div class="section-head center">
+        <p class="eyebrow">Playable evidence</p>
+        <h2>Watch the rollouts.</h2>
+        <p>Four distinct checks: futures, safety, transfer, and baseline failure.</p>
+      </div>
+
+      <div class="media-grid four">
+        <figure class="media-card dark">
+          <video class="preview-video" muted loop playsinline preload="metadata"
+                 poster="videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png"
+                 src="videos/cphast_candidate_futures_interpreted_h264.mp4"></video>
+          <figcaption>
+            <strong>Candidate futures.</strong>
+            Same observed state, different physical commitments.
+          </figcaption>
+        </figure>
+        <figure class="media-card dark">
+          <video class="preview-video" muted loop playsinline preload="metadata" src="videos/go2_lateral_push_envelope_3tile.mp4"></video>
+          <figcaption>
+            <strong>Push boundary.</strong>
+            The same policy recovers, struggles, or fails as perturbation grows.
+          </figcaption>
+        </figure>
+        <figure class="media-card dark">
+          <video class="preview-video" muted loop playsinline preload="metadata" src="videos/anymal_to_go2_source_target_comparison_slow8.mp4"></video>
+          <figcaption>
+            <strong>Embodiment transfer.</strong>
+            Source ANYmal-D and target Go2 side-by-side.
+          </figcaption>
+        </figure>
+        <figure class="media-card dark">
+          <video class="preview-video" muted loop playsinline preload="metadata" src="videos/go2_zero_shot_model_failure_comparison_slow8.mp4"></video>
+          <figcaption>
+            <strong>Baseline failure.</strong>
+            Target rollouts reveal drift and divergence.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section method-figure" id="method">
+      <div class="section-head center">
+        <p class="eyebrow">How it works</p>
+        <h2>Reusable typed physics, deployment-specific composition.</h2>
+        <p>
+          C-PHAST declares the deployment, infers typed phase state from
+          history, reuses a shared PHASTCore library, composes under the target
+          interconnect, and returns native typed readouts for decision layers.
+        </p>
+      </div>
+      <figure class="media-card paper-figure">
+        <img src="images/cphast_rollout_contract.png"
+             alt="C-PHAST rollout contract from DeploymentSpec to typed readouts and planner logic.">
+        <figcaption>
+          Typed local dynamics are reused; only the deployed composition changes.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="section split" id="microgrid">
+      <div class="section-copy">
+        <p class="eyebrow">Same principle beyond robots</p>
+        <h2>Microgrid redeployment is the electrical analogue.</h2>
+        <p>
+          A microgrid also changes through topology, sensors, and active assets.
+          C-PHAST reuses typed pH asset blocks and recomposes them under a new
+          target graph. The readouts become voltage margin, current loading,
+          loss, and model-fit residuals.
+        </p>
+      </div>
+      <figure class="media-card paper-figure">
+        <img src="images/microgrid_redeployment.png"
+             alt="Microgrid redeployment figure showing candidate network futures from the same pH asset library.">
+        <figcaption>
+          Candidate network futures from the same typed pH asset library.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="section citation" id="citation">
+      <p class="eyebrow">Citation</p>
+      <h2>BibTeX</h2>
+      <pre><code>@article{bhardwaj2026cphast,
+  title   = {Compositional Port-Hamiltonian World Models for Structured Dynamics Transfer},
+  author  = {Bhardwaj, Shubham and Bajaj, Chandrajit},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="#top">Back to top</a>
+    <span>C-PHAST project artifacts. Static page, no build step.</span>
+  </footer>
+</body>
+</html>
