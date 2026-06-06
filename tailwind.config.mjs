@@ -5,11 +5,11 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#ff6b00', // Orange
-          hover: '#ff8533'
+          DEFAULT: '#e2622a', // Ember orange
+          hover: '#ef7a45'
         },
         background: {
-          dark: '#1a1a1a',  // Dark background
+          dark: '#17150f',  // Warm near-black
           light: '#ffffff'
         }
       }

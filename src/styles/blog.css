@@ -1,0 +1,211 @@
+/* ════════════════════════════════════════════
+   Blog editorial typography (dark + orange brand)
+   Fraunces (display) · Newsreader (reading serif) · IBM Plex Mono (meta)
+   Layered on top of @tailwindcss/typography `prose prose-invert`.
+   ════════════════════════════════════════════ */
+
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Newsreader", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --accent: #e2622a;
+}
+
+/* ---- Post header ---- */
+.post-back {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #8a8a8a;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.post-back:hover { color: var(--accent); }
+
+.post-header { margin: 2.5rem 0 3.25rem; }
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7a7a7a;
+}
+.post-meta .accent {
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  background: var(--accent);
+}
+
+.post-title {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: clamp(2.2rem, 4.5vw, 3.3rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: #f5f4f1;
+  text-wrap: balance;
+  margin-bottom: 1.25rem;
+}
+
+.post-dek {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #b6b1a7;
+  max-width: 34rem;
+}
+
+.post-byline {
+  margin-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7a7a7a;
+}
+
+/* ---- Reading body (overrides on top of prose) ---- */
+.post-prose {
+  font-family: var(--font-body);
+  font-size: 1.18rem;
+  line-height: 1.78;
+  color: #d6d3cc;
+  hanging-punctuation: first allow-end last;
+}
+.post-prose > p:first-of-type {
+  font-size: 1.28rem;
+  line-height: 1.62;
+  color: #e8e5de;
+}
+.post-prose p { text-wrap: pretty; }
+.post-prose strong { color: #f3f1ec; font-weight: 600; }
+.post-prose em { font-style: italic; }
+
+.post-prose :is(h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #f2f0eb;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-wrap: balance;
+  scroll-margin-top: 5rem;
+}
+.post-prose h2 { font-size: clamp(1.6rem, 3vw, 2rem); }
+.post-prose h3 { font-size: 1.35rem; }
+
+.post-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(226, 98, 42, 0.45);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.25s ease;
+}
+.post-prose a:hover { text-decoration-color: var(--accent); }
+
+.post-prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.3em;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.4em;
+  line-height: 1.45;
+  color: #efece6;
+}
+
+.post-prose ul > li::marker { color: var(--accent); }
+.post-prose ol > li::marker {
+  color: #8a8a8a;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.post-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: #262626;
+  border: 1px solid #333;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+  color: #e8e5de;
+}
+.post-prose pre {
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+}
+.post-prose pre code { background: none; border: none; padding: 0; }
+
+.post-prose hr { border: none; height: 1px; background: #2a2a2a; }
+
+/* GFM tables */
+.post-prose th {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9a9a9a;
+}
+
+/* KaTeX display spacing + scroll on overflow */
+.post-prose .katex-display {
+  margin: 1.8em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+/* Footnotes */
+.post-prose .footnotes {
+  margin-top: 3.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid #2a2a2a;
+  font-size: 0.92rem;
+  color: #9a9a9a;
+}
+
+.post-tags {
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.post-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8a8a8a;
+  border: 1px solid #333;
+  border-radius: 3px;
+  padding: 0.25rem 0.6rem;
+}
+
+/* ---- Blog index ---- */
+.writing-head {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  color: #f5f4f1;
+}
+.writing-intro { font-family: var(--font-body); font-size: 1.15rem; line-height: 1.7; color: #b6b1a7; }
+.writing-item-title { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+.writing-item-dek { font-family: var(--font-body); font-size: 1.05rem; line-height: 1.6; }
+.writing-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7a7a7a;
+}

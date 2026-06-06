@@ -1,0 +1,65 @@
+---
+title: "The Kalman Filter Is Natural Gradient Descent"
+description: "Two communities wrote down the same algorithm forty years apart and didn't notice. Estimation theory called it the Kalman filter in 1960. Machine learning called it natural gradient in the 1990s. The equivalence is exact \u2014 and it changes how you read every modern second-order optimizer."
+date: "2026-06-06"
+authors: ["Shubham Bhardwaj"]
+tags: ["kalman-filter", "natural-gradient", "information-geometry", "optimization"]
+draft: false
+---
+
+In 1960, Rudolf Kálmán's recursive estimator was being readied for the problem of knowing where a spacecraft is when every sensor lies a little. Three decades later, in a different literature with different notation and almost no shared citations, Shun-ichi Amari wrote down *natural gradient descent* — the right way to take a step when your parameters live on a curved statistical manifold.
+
+They are the same algorithm. Not analogous, not "related in spirit." The same update, written twice.
+
+It's one of the results I lead with in the book on predictive machine learning I'm currently writing, because once you see it you cannot unsee it, and it quietly reorganizes a whole shelf of modern optimization papers.
+
+## Two updates that look unrelated
+
+Start with the Kalman filter. Strip away the textbook matrix bookkeeping and its measurement update is a single gradient step:
+
+$$
+\hat{\mathbf{x}}_{t\mid t} = \hat{\mathbf{x}}_{t\mid t-1} \;-\; \mathbf{P}_{t\mid t}\,\nabla \ell_t\!\left(\hat{\mathbf{x}}_{t\mid t-1}\right)
+$$
+
+Here $\ell_t$ is the measurement negative log-likelihood, the gradient is evaluated at the prior mean, and $\mathbf{P}_{t\mid t}$ is the *posterior* covariance — this is exactly one Newton step on the new observation. (The streaming view, online natural gradient, is Ollivier's; we take the cleanest one-step form here.) Read it plainly: a gradient step on the data-fit term, *preconditioned by the covariance*.
+
+Now natural gradient descent. On a family of distributions, the steepest-descent direction is not the raw gradient — it is the gradient corrected by the geometry of the family, measured by the Fisher information $\mathbf{F}$:
+
+$$
+\theta_{t+1} = \theta_t \;-\; \alpha\,\mathbf{F}^{-1}(\theta_t)\,\nabla_{\theta}\mathcal{L}(\theta_t)
+$$
+
+A gradient step, preconditioned by the *inverse* Fisher information. Two preconditioners from two fields: one is a covariance, one is an inverse Fisher metric.
+
+<Figure
+  src="/blog/kalman-is-natural-gradient/kalman_equals_natural_gradient.svg"
+  caption="The same update, written by two communities forty years apart. The bridge is the identity P = F⁻¹: for a Gaussian belief, the covariance is exactly the inverse Fisher metric."
+/>
+
+## The bridge is one identity
+
+The two updates are the same the moment you notice what the preconditioner *is*. For a Gaussian belief over the state, the covariance and the inverse Fisher metric are not merely similar — they are equal:
+
+$$
+\mathbf{P} = \mathbf{F}^{-1}
+$$
+
+The Fisher information of a Gaussian, in its natural (mean) parameters, is the inverse covariance. So the posterior covariance $\mathbf{P}$ *is* the inverse Fisher metric that Amari preconditions by. Substitute it in and the Kalman measurement update is, line for line, a natural-gradient step on the Gaussian belief manifold. The filter has been doing information geometry the whole time; it just never used the words.
+
+<Callout label="Don't take my word for it">
+Parameterize a Gaussian belief by its mean $\mu$ and write down the natural-gradient step on the log-likelihood of one observation. You will recover the Kalman measurement update, $\mathbf{P}$ and all. It is a ten-minute derivation and it is more convincing than any prose.
+</Callout>
+
+## Why a forty-year gap is the interesting part
+
+It would be a tidy footnote if it stopped at history. It doesn't, because the rediscovery is *still happening*.
+
+The current generation of second-order optimizers for deep learning — KFAC, Shampoo, Sophia, and the broader Fisher-approximation literature — are, structurally, approximations to exactly this preconditioner. Every method whose pitch is "precondition the gradient by an estimate of the curvature / the Fisher / the covariance of gradients" is rebuilding a piece of the Kalman family in optimizer vocabulary. The hard, interesting work in those papers is almost always *how to approximate $\mathbf{F}^{-1}$ cheaply at scale* — which is the same engineering problem the estimation community has worked since Apollo, under the name "propagating $\mathbf{P}$."
+
+This is not a claim that the identity is secret. It sits in Amari's information-geometry work and was re-derived in the Bayesian-deep-learning literature around 2018–2020. What stays underused is the *reading habit* it gives you: when the next optimizer paper lands, ask what it is choosing for $\mathbf{F}$, and how it is approximating the inverse. The genuinely new contribution and the rediscovered scaffolding separate cleanly once you do.
+
+Fields converge slowly, and mostly in private. Two communities computed the same thing for forty years because they read different journals and used different symbols for the same metric. I find that more instructive than any single theorem: the structure was invariant; only the vocabulary diverged. It is also why, building systems that estimate the state of a messy physical world, I care about the geometry of belief and not only the engineering of the filter — the geometry is the part that transfers.
+
+---
+
+*Adapted from the book on predictive machine learning I'm currently writing. Bibliographic notes: Amari (1998), natural gradient and information geometry; Ollivier (2017), natural gradient for machine learning.*

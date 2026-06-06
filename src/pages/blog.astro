@@ -1,46 +1,59 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import BlogPostCard from '../components/BlogPostCard.astro';
+import { getCollection } from 'astro:content';
+import '../styles/blog.css';
 
-const posts = [
-  {
-    title: "Latest Insights on 3D Vision",
-    excerpt: "Exploring the frontiers of computer vision and spatial understanding...",
-    date: "2024-01-15",
-    url: "https://shubham0704.substack.com/p/post1"
-  },
-  {
-    title: "Yoga and Mental Clarity",
-    excerpt: "How regular yoga practice enhances cognitive function...",
-    date: "2024-01-10",
-    url: "https://shubham0704.substack.com/p/post2"
-  },
-  {
-    title: "Research Updates: Physics-Informed ML",
-    excerpt: "Recent developments in combining physics with machine learning...",
-    date: "2024-01-05",
-    url: "https://shubham0704.substack.com/p/post3"
-  }
-];
+const posts = (
+  await getCollection('blog', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  )
+).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const fmt = (d: string) => {
+  const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T00:00:00` : d);
+  return Number.isNaN(date.getTime())
+    ? d
+    : date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+};
 ---
 
-<Layout title="Blog - Shubham Bhardwaj">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold mb-8">Blog Posts</h1>
-    
-    <div class="grid gap-8">
-      {posts.map(post => (
-        <BlogPostCard {...post} />
-      ))}
-    </div>
+<Layout title="Writing — Shubham Bhardwaj">
+  <div class="max-w-[42rem] mx-auto">
+    <h1 class="writing-head mb-3">Writing</h1>
+    <p class="writing-intro mb-12 max-w-xl">
+      Notes on predictive ML, estimation, and the foundations behind the work —
+      including pieces from the book I'm writing.
+    </p>
 
-    <div class="mt-12 text-center">
-      <a 
-        href="https://shubham0704.substack.com/" 
+    {posts.length === 0 ? (
+      <p class="text-gray-400">Nothing here yet.</p>
+    ) : (
+      <ul class="list-none p-0 border-t border-gray-800">
+        {posts.map((post) => (
+          <li class="border-b border-gray-800">
+            <a href={`/blog/${post.slug}`} class="group block py-8 no-underline">
+              <div class="writing-meta mb-2">{fmt(post.data.date)}</div>
+              <h2 class="writing-item-title text-2xl text-gray-100 group-hover:text-primary transition-colors">
+                {post.data.title}
+              </h2>
+              {post.data.description && (
+                <p class="writing-item-dek text-gray-400 mt-2">{post.data.description}</p>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <div class="mt-14">
+      <a
+        href="https://shubham0704.substack.com/"
         target="_blank"
-        class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+        class="inline-block bg-primary text-[#17150f] font-medium px-6 py-3 rounded-lg hover:bg-primary-hover transition-colors no-underline"
       >
-        Subscribe to My Substack
+        Subscribe on Substack
       </a>
     </div>
   </div>

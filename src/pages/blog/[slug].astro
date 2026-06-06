@@ -1,0 +1,63 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Figure from "../../components/blog/Figure.astro";
+import Callout from "../../components/blog/Callout.astro";
+import Aside from "../../components/blog/Aside.astro";
+import "../../styles/blog.css";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true
+  );
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const raw = post.data.date;
+const d = new Date(/^\d{4}-\d{2}-\d{2}$/.test(raw) ? `${raw}T00:00:00` : raw);
+const dateStr = Number.isNaN(d.getTime())
+  ? raw
+  : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+const words = post.body.trim().split(/\s+/).filter(Boolean).length;
+const readingMinutes = Math.max(1, Math.round(words / 200));
+---
+
+<Layout title={`${post.data.title} — Shubham Bhardwaj`}>
+  <article class="max-w-[42rem] mx-auto">
+    <a href="/blog" class="post-back">← Writing</a>
+
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="accent"></span>
+        <span>{dateStr} · {readingMinutes} min read</span>
+      </div>
+      <h1 class="post-title">{post.data.title}</h1>
+      {post.data.description && <p class="post-dek">{post.data.description}</p>}
+      {post.data.authors.length > 0 && (
+        <div class="post-byline">By {post.data.authors.join(", ")}</div>
+      )}
+    </header>
+
+    <div class="post-prose prose prose-invert max-w-none">
+      <Content components={{ Figure, Callout, Aside }} />
+    </div>
+
+    {post.data.tags.length > 0 && (
+      <div class="post-tags">
+        {post.data.tags.map((t) => <span class="post-tag">{t}</span>)}
+      </div>
+    )}
+
+    <div class="mt-12">
+      <a href="/blog" class="post-back">← All writing</a>
+    </div>
+  </article>
+</Layout>
