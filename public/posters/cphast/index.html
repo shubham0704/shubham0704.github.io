@@ -70,10 +70,18 @@
             <img src="../../cphast/images/signals_to_action_cards_web.png" alt="Pipeline from observations to typed consequences, planner factors, and action cards">
             <figcaption><strong>One dynamics model, several objectives.</strong> Each candidate is rolled forward before any objective is applied.</figcaption>
           </figure>
-          <div class="decision-chain" aria-label="C-PHAST observables-to-action-card equations">
+          <div class="decision-chain detailed" aria-label="C-PHAST observables-to-action-card equations">
+            <div class="decision-step">
+              <span>Observe state</span>
+              <strong><i data-var="phase-state-cphast">x̂</i><sub>t</sub> = <span data-var="observe-op">Observe</span><sub>θ</sub>(<i data-var="history">h</i>, <i data-var="deployment-spec">S</i>)</strong>
+            </div>
+            <div class="decision-step">
+              <span>Activate candidate</span>
+              <strong><i data-var="spec">S</i><sub>k</sub> = <span data-var="activate-op">Activate</span>(<i data-var="deployment-spec">S</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="phase-state-cphast">x̂</i><sub>t</sub>)</strong>
+            </div>
             <div class="decision-step">
               <span>Roll out</span>
-              <strong>(<i data-var="history">h</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="spec">S</i><sub>k</sub>) → <i data-var="candidate-rollout">x̂</i><sub>t:t+H</sub><sup>(k)</sup></strong>
+              <strong><i data-var="candidate-rollout">x̂</i><sub>t:t+H</sub><sup>(k)</sup> = <span data-var="cphast-model">CPHAST</span><sub>θ</sub>(<i data-var="phase-state-cphast">x̂</i><sub>t</sub>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="spec">S</i><sub>k</sub>)</strong>
             </div>
             <div class="decision-step">
               <span>Read consequences</span>
@@ -88,7 +96,7 @@
               <strong><i data-var="score">s</i><sub>k</sub> = <i data-var="weights">w</i><sup>T</sup><i data-var="factors">φ</i><sup>(k)</sup>, &nbsp; <i data-var="envelope">g</i><sub>j</sub>(<i data-var="factors">φ</i><sup>(k)</sup>) ≤ 0</strong>
             </div>
           </div>
-          <p class="parameter-boundary"><strong>The observer, dynamics, and perceptual readout heads may be learned.</strong> The factor map instead uses declared horizon aggregation and fixed training-split calibration; objectives supply weights and hard envelopes.</p>
+          <p class="parameter-boundary"><strong><span data-var="cphast-model">CPHAST</span><sub>θ</sub> is the dynamics model; <i data-var="ph-readout">O</i><sub>pH</sub> and <i data-var="learned-readout">O</i><sub>learned,θ</sub> are post-rollout readout operators.</strong> The factor map uses declared horizon aggregation and fixed training-split calibration; objectives supply weights and hard envelopes.</p>
         </article>
 
         <article class="poster-card" id="cphast-boundary" data-tone="blue">
