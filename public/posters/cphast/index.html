@@ -227,7 +227,26 @@
             <img src="../../cphast/images/microgrid_redeployment_current.png" alt="C-PHAST microgrid redeployment under topology change">
             <figcaption><strong>Reconfiguration changes the composition, not the local physical meaning.</strong> The block library remains fixed; the deployment specification changes instances, active ports, interconnection, observations, and candidate descriptors.</figcaption>
           </figure>
+          <div class="spot-contract" aria-label="DC microgrid problem and evaluation contract">
+            <div>
+              <strong>Microgrid problem</strong>
+              <span>Train shared DGU and line blocks on a three-DGU source graph; query added/removed DGUs, feeder rewiring, and voltage-only sensing without retraining the local blocks.</span>
+            </div>
+            <div>
+              <strong>Physical block state</strong>
+              <span><i data-var="dgu-charge">q<sub>i</sub></i> = C<sub>i</sub>V<sub>i</sub>, <i data-var="dgu-flux">p<sub>i</sub></i> = L<sub>t,i</sub>I<sub>t,i</sub>; the supplied incidence matrix <i data-var="grid-incidence">B</i><sub>inc</sub> connects DGU nodes to line edges.</span>
+            </div>
+            <div>
+              <strong>Model-training objective</strong>
+              <span><i data-var="grid-loss">ℒ</i><sub>grid</sub> = <span data-var="grid-samples">1/|ℐ|</span> Σ<sub>(i,t)∈ℐ</sub> ‖<span data-var="grid-state">x̂</span><sub>t+1</sub><sup>(i)</sup> − x<sub>t+1</sub><sup>(i)</sup>‖<sup>2</sup>. The voltage-only tier also trains its observer on hidden-state and next-voltage error.</span>
+            </div>
+            <div>
+              <strong>Operational outputs</strong>
+              <span>Bus-voltage and line-current rollouts, voltage-balancing and current-sharing errors, energy change, and typed mismatch residuals.</span>
+            </div>
+          </div>
           <p class="parameter-boundary"><strong>Why port-Hamiltonian composition?</strong> Skew port coupling contributes zero net internal power, so rewiring preserves the blocks' local storage, dissipation, and power accounting.</p>
+          <p class="spot-replay-note"><strong>Controller boundary.</strong> Converter voltages and load currents are supplied inputs. The reported study evaluates a reconfigurable forecasting surrogate for regulation and protection; it does not learn the DGU controller.</p>
         </article>
       </section>
 
@@ -261,7 +280,12 @@
           <div class="loss-strip">
             <span>Spot consequence-model loss</span>
             <strong><i data-var="spot-loss">ℒ</i><sub>Spot</sub> = <span data-var="spot-normalizer">1/(Nd<sub>ρ</sub>)</span> Σ<sub>n,m</sub> α<sub>m</sub>(ρ̂<sub>nm</sub> − ρ<sub>nm</sub>)<sup>2</sup></strong>
-            <small>Weighted MSE is applied to train-scaled typed consequences. Objective scores and action-card weights are downstream, not training targets.</small>
+            <small>Weighted MSE is applied to train-scaled typed consequences; safety- and energy-critical channels receive higher weight. Objective scores are not training targets.</small>
+          </div>
+          <div class="loss-strip">
+            <span>Downstream candidate selection</span>
+            <strong>k<sup>★</sup> = arg max<sub>k: <span data-var="envelope">g<sub>j</sub></span>(<i data-var="factors">φ</i><sup>(k)</sup>) ≤ 0</sub> <i data-var="weights">w</i><sup>T</sup><i data-var="factors">φ</i><sup>(k)</sup></strong>
+            <small><strong>Five fixed modes:</strong> efficient, safe, mapping, balanced, and inspection. Each changes the weights and hard envelopes applied after prediction, not the learned consequence model.</small>
           </div>
           <div class="metric-row">
             <div class="metric-block"><strong>0.973</strong><span>positive-work Pearson</span></div>
