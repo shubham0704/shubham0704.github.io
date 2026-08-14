@@ -33,7 +33,7 @@
       spec: ["\\mathcal S_k", "The deployment specification after candidate a_k is activated. It records the blocks, ports, contacts, interconnection, observations, and candidate controls used for that hypothetical future."],
       "phase-state-cphast": ["\\hat{x}_t", "The refreshed typed phase state inferred from the current observation history before any candidate is rolled out."],
       "observe-op": ["\\mathrm{Observe}_{\\theta}", "The learned state-refresh operator. It maps recent telemetry and the current deployment specification to the present typed phase state."],
-      "activate-op": ["\\mathrm{Activate}", "The deterministic candidate-activation operator. It converts the current deployment and candidate descriptor into the candidate-specific specification S_k."],
+      "activate-op": ["\\mathrm{Activate}", "The deterministic configuration operator. It translates a proposed behavior into the controls, ports, contacts, and interconnection used only for its hypothetical rollout; it does not execute the action."],
       "cphast-model": ["\\mathrm{CPHAST}_{\\theta}", "The compositional port-Hamiltonian dynamics model. It advances the refreshed state under candidate a_k and activated specification S_k."],
       "candidate-rollout": ["\\hat{x}_{t:t+H}^{(k)}", "The predicted state trajectory for candidate k. Robot examples include future base, joint, arm, and contact-related state."],
       consequences: ["\\rho^{(k)}", "The typed consequence vector predicted before scoring. Spot examples: work, battery draw, support/contact, collision proxy, sensing quality, depth novelty, and residuals."],

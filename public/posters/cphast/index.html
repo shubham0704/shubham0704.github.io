@@ -76,8 +76,11 @@
               <strong><i data-var="phase-state-cphast">x̂</i><sub>t</sub> = <span data-var="observe-op">Observe</span><sub>θ</sub>(<i data-var="history">h</i>, <i data-var="deployment-spec">S</i>)</strong>
             </div>
             <div class="decision-step">
-              <span>Activate candidate</span>
-              <strong><i data-var="spec">S</i><sub>k</sub> = <span data-var="activate-op">Activate</span>(<i data-var="deployment-spec">S</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="phase-state-cphast">x̂</i><sub>t</sub>)</strong>
+              <span>Configure candidate rollout</span>
+              <strong>
+                <i data-var="spec">S</i><sub>k</sub> = <span data-var="activate-op">Activate</span>(<i data-var="deployment-spec">S</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="phase-state-cphast">x̂</i><sub>t</sub>)
+                <small>Builds hypothetical controls, ports, contacts, and interconnection; no robot command is sent.</small>
+              </strong>
             </div>
             <div class="decision-step">
               <span>Roll out</span>

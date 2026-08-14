@@ -762,6 +762,16 @@ video {
   line-height: 1.18;
 }
 
+.decision-step strong small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.72em;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
 .decision-step sub,
 .decision-step sup {
   font-size: 0.68em;
