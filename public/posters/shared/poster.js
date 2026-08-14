@@ -68,6 +68,18 @@
       "composed-state": ["x", "The stacked state of all blocks in the composed deployment."],
     },
   };
+  document.querySelectorAll("[data-katex]").forEach((equation) => {
+    if (!window.katex) {
+      equation.textContent = equation.dataset.katex;
+      return;
+    }
+    window.katex.render(equation.dataset.katex, equation, {
+      displayMode: true,
+      throwOnError: false,
+      strict: false,
+      trust: (context) => context.command === "\\htmlData",
+    });
+  });
   const variableTooltip = document.createElement("div");
   variableTooltip.className = "variable-tooltip";
   variableTooltip.id = "math-variable-tooltip";

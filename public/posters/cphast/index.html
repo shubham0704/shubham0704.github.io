@@ -238,7 +238,8 @@
             </div>
             <div>
               <strong>Model-training objective</strong>
-              <span><i data-var="grid-loss">ℒ</i><sub>grid</sub> = <span data-var="grid-samples">1/|ℐ|</span> Σ<sub>(i,t)∈ℐ</sub> ‖<span data-var="grid-state">x̂</span><sub>t+1</sub><sup>(i)</sup> − x<sub>t+1</sub><sup>(i)</sup>‖<sup>2</sup>. The voltage-only tier also trains its observer on hidden-state and next-voltage error.</span>
+              <span class="katex-equation" data-katex="\begin{aligned}\htmlData{var=grid-loss}{\mathcal L_{\mathrm{grid}}}&amp;=\frac{1}{\htmlData{var=grid-samples}{|\mathcal I|}}\sum_{(i,t)\in\mathcal I}\\[-0.15em]&amp;\quad\left\|\htmlData{var=grid-state}{\hat x}_{t+1}^{(i)}-x_{t+1}^{(i)}\right\|_2^2\end{aligned}"></span>
+              <span>The voltage-only tier also trains its observer on hidden-state and next-voltage error.</span>
             </div>
             <div>
               <strong>Operational outputs</strong>
