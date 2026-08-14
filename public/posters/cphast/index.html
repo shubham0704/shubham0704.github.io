@@ -172,6 +172,30 @@
           </figure>
         </article>
 
+        <article class="poster-card" id="cphast-count-transfer" data-tone="green">
+          <h2>Can one model change subsystem count?</h2>
+          <span class="evidence-badge">Full-manuscript morphology benchmarks</span>
+          <p>The local subsystem meaning and learned weights stay fixed. Deployment changes how many copies are instantiated and interconnected.</p>
+          <div class="composition-evidence">
+            <figure class="poster-figure composition-demo">
+              <img
+                src="../../cphast/images/cphast_arm_count_transfer.gif"
+                data-live-src="../../cphast/images/cphast_arm_count_transfer.gif"
+                data-static-src="../../cphast/images/cphast_arm_count_transfer_static.png"
+                alt="C-PHAST rollout transfer from a four-joint training arm to arms with two and eight joints">
+              <figcaption><strong>Planar arm.</strong> Train at <i>N</i> = 4 joints; reuse the same joint-level blocks without retraining at <i>N</i> &isin; {2, 3, 4, 5, 6, 8}. The animation displays <i>N</i> = 2, 4, 8; blue is ground truth and green is C-PHAST.</figcaption>
+            </figure>
+            <figure class="poster-figure composition-demo">
+              <img
+                src="../../cphast/images/cphast_leg_count_transfer.gif"
+                data-live-src="../../cphast/images/cphast_leg_count_transfer.gif"
+                data-static-src="../../cphast/images/cphast_leg_count_transfer_static.png"
+                alt="C-PHAST transfer from a quadruped to biped and hexapod leg counts">
+              <figcaption><strong>Legged robots.</strong> Train on the quadruped (<i>N</i> = 4 legs); reuse the same two-joint leg block zero-shot on the biped (<i>N</i> = 2) and hexapod (<i>N</i> = 6).</figcaption>
+            </figure>
+          </div>
+        </article>
+
       </section>
 
       <section class="poster-column" id="cphast-col-3" aria-label="C-PHAST objective and transfer evidence">
@@ -223,9 +247,10 @@
         <article class="poster-card" id="cphast-composition" data-tone="orange">
           <h2>Why compose instead of learning one monolithic model?</h2>
           <p>A monolithic model learns local component behavior and one system layout as a single object. C-PHAST learns each repeated physical type once, then instantiates the shared blocks under the target component count, topology, contacts, and observation interface.</p>
+          <h3 class="composition-subhead">Changing interconnection topology</h3>
           <figure class="poster-figure compact-figure">
             <img src="../../cphast/images/microgrid_redeployment_current.png" alt="C-PHAST microgrid redeployment under topology change">
-            <figcaption><strong>Reconfiguration changes the composition, not the local physical meaning.</strong> The block library remains fixed; the deployment specification changes instances, active ports, interconnection, observations, and candidate descriptors.</figcaption>
+            <figcaption><strong>DC microgrid.</strong> The DGU and line block library remains fixed; the deployment specification changes instances, active ports, interconnection, observations, and candidate descriptors.</figcaption>
           </figure>
           <div class="spot-contract" aria-label="DC microgrid problem and evaluation contract">
             <div>

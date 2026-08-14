@@ -362,6 +362,26 @@ video {
   max-height: 190px;
 }
 
+.composition-evidence {
+  display: grid;
+  gap: 12px;
+}
+
+.composition-subhead {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: calc(16px * var(--poster-font));
+}
+
+.composition-subhead {
+  margin-top: 4px;
+}
+
+.composition-demo img {
+  max-height: 210px;
+  background: #101820;
+}
+
 .video-stage {
   position: relative;
   min-height: 0;
