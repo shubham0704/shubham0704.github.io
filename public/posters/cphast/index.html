@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Live C-PHAST research poster: compositional port-Hamiltonian world models for choosing robot futures.">
   <title>C-PHAST Live Poster</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <link rel="stylesheet" href="../shared/poster.css">
 </head>
 <body data-poster="cphast">
@@ -201,6 +202,11 @@
             </div>
           </figure>
           <p>Monolithic pH structure carries most of the transfer-stability gain. Shared leg-level blocks further improve accuracy and permit variable-layout reuse.</p>
+          <div class="loss-strip">
+            <span>Matched Isaac training loss</span>
+            <strong><i data-var="isaac-loss">ℒ</i><sub>data</sub> = <span data-var="batch-count">1/|𝐵|</span> Σ<sub>(i,t)∈𝐵</sub> ‖δ<sub>q</sub>(q̃<sup>(i)</sup><sub>t+1</sub>, q̂<sup>obs,(i)</sup><sub>t+1</sub>)‖<sup>2</sup></strong>
+            <small>The submitted 0.063 comparison uses the same next-step MSE-only objective as the baselines.</small>
+          </div>
         </article>
 
         <article class="poster-card" id="cphast-composition" data-tone="orange">
@@ -218,8 +224,32 @@
           <span class="evidence-badge">Real Spot · shadow mode</span>
           <figure class="poster-figure">
             <img src="../../cphast/images/spot_real_query_context.png" alt="Real Spot telemetry-to-action-card query">
-            <figcaption>Six teleoperated episodes provide 1,070 five-second windows. Joint power is computed from measured torque and velocity; C-PHAST predicts future work, battery draw, and objective-conditioned action cards without commanding Spot.</figcaption>
+            <figcaption>Six teleoperated episodes provide 1,070 five-second windows. Joint power is computed from measured torque and velocity; C-PHAST operates in shadow mode and does not command Spot.</figcaption>
           </figure>
+          <div class="spot-contract" aria-label="Spot model input and output contract">
+            <div>
+              <strong>Observed history <i>h</i></strong>
+              <span>Recent speed/contact, arm and gripper state, image/depth quality, and TF/depth-novelty summaries.</span>
+            </div>
+            <div>
+              <strong>Candidate <i>a</i><sub>k</sub></strong>
+              <span>Numeric intended speed, turn rate, gripper opening, and primitive-prototype descriptors; not a primitive label.</span>
+            </div>
+            <div>
+              <strong>Predicted consequences <i>ρ</i><sup>(k)</sup></strong>
+              <span>Future work, battery draw, support/contact, collision proxy, sensing quality, depth novelty, and residual-like channels.</span>
+            </div>
+            <div>
+              <strong>Not model inputs</strong>
+              <span>Consequence targets, behavior/episode labels, trim markers, and visualization metadata.</span>
+            </div>
+          </div>
+          <p class="spot-replay-note"><strong>Logged-replay qualification.</strong> Realized yaw change and realized hand speed/turn are replay-only candidate descriptors. Live use must obtain intended equivalents from the primitive library or forecast them before execution.</p>
+          <div class="loss-strip">
+            <span>Spot consequence-model loss</span>
+            <strong><i data-var="spot-loss">ℒ</i><sub>Spot</sub> = <span data-var="spot-normalizer">1/(Nd<sub>ρ</sub>)</span> Σ<sub>n,m</sub> α<sub>m</sub>(ρ̂<sub>nm</sub> − ρ<sub>nm</sub>)<sup>2</sup></strong>
+            <small>Weighted MSE is applied to train-scaled typed consequences. Objective scores and action-card weights are downstream, not training targets.</small>
+          </div>
           <div class="metric-row">
             <div class="metric-block"><strong>0.973</strong><span>positive-work Pearson</span></div>
             <div class="metric-block"><strong>0.975</strong><span>absolute-work Pearson</span></div>
@@ -257,6 +287,7 @@
     </video>
     <p class="overview-scope"><strong>Evidence boundary:</strong> Spot is evaluated in shadow mode on logged telemetry; executed command selection is evaluated separately in simulation.</p>
   </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script src="../shared/poster.js"></script>
 </body>
 </html>

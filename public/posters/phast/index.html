@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Live PHAST research poster: position-only forecasting, port-Hamiltonian structure, and conditional physical recovery.">
   <title>PHAST Live Poster</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <link rel="stylesheet" href="../shared/poster.css">
 </head>
 <body data-poster="phast">
@@ -60,6 +61,15 @@
               <span class="math-label">Evolve physically</span>
               <span class="math-expression"><i data-var="state-rate">ẋ</i> = (<i data-var="J">J</i> − <i data-var="R">R</i>)∇<i data-var="H">H</i> + <i data-var="G">G</i><i data-var="u">u</i></span>
             </div>
+            <div class="math-step">
+              <span class="math-label">Forecast observations</span>
+              <span class="math-expression"><i data-var="position-rollout">q̂</i><sub>t+1:t+H</sub> = <i data-var="position-readout">Π</i><sub>q</sub>(<i data-var="phase-rollout">x̂</i><sub>t+1:t+H</sub>)</span>
+            </div>
+          </div>
+          <div class="loss-strip">
+            <span>Headline training loss</span>
+            <strong><i data-var="phast-loss">ℒ</i><sub>q</sub> = <span data-var="index-count">1/N<sub>ℐ</sub></span> Σ<sub>(b,t)∈ℐ</sub> ‖q̂<sup>(b)</sup><sub>t+1</sub> − q<sup>(b)</sup><sub>t+1</sub>‖<sub>ℳ</sub><sup>2</sup></strong>
+            <small>All optional phase, port, passivity, energy, and rollout coefficients are zero in the headline tables.</small>
           </div>
           <div class="channel-grid">
             <div class="channel"><strong>Storage H</strong><span>potential and kinetic energy</span></div>
@@ -155,6 +165,7 @@
       </section>
     </div>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script src="../shared/poster.js"></script>
 </body>
 </html>

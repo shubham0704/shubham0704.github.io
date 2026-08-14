@@ -7,44 +7,53 @@
   const overviewVideo = overviewDialog?.querySelector(".overview-video");
   const variableGlossaries = {
     phast: {
-      "q-history": ["q(t-K+1:t)", "The recent position-only observation window supplied to the causal observer."],
-      observer: ["o_phi", "The causal observer that infers hidden phase information from position history."],
-      "phase-state": ["x-hat_t", "The inferred phase state used to initialize the Markov rollout."],
+      "q-history": ["q_{t-K+1:t}", "The recent position-only observation window supplied to the causal observer."],
+      observer: ["o_{\\phi}", "The causal observer that infers hidden phase information from position history."],
+      "phase-state": ["\\hat{x}_t", "The inferred phase state used to initialize the Markov rollout."],
       position: ["q_t", "The observed configuration or position at the current time."],
-      momentum: ["p-hat_t", "The observer's inferred momentum-like latent variable; it is not directly observed."],
-      "state-rate": ["x-dot", "The continuous-time rate of change of the phase state."],
+      momentum: ["\\hat{p}_t", "The observer's inferred momentum-like latent variable; it is not directly observed."],
+      "state-rate": ["\\dot{x}", "The continuous-time rate of change of the phase state."],
+      "phase-rollout": ["\\hat{x}_{t+1:t+H}", "The predicted latent phase trajectory produced by repeatedly applying the PHAST transition."],
+      "position-readout": ["\\Pi_q", "The fixed observation map that selects configuration or position from the predicted phase state."],
+      "position-rollout": ["\\hat{q}_{t+1:t+H}", "The model's open-loop forecast output: future positions over horizon H. This is the quantity compared with position targets."],
+      "phast-loss": ["\\mathcal{L}_q", "The teacher-forced next-position loss used in the headline tables. All optional auxiliary-loss coefficients are zero there."],
+      "index-count": ["N_{\\mathcal I}=|\\mathcal I|", "The number of valid minibatch and time-index pairs contributing to the PHAST training loss."],
       J: ["J", "The skew-symmetric interconnection operator. It redistributes energy without producing net power."],
       R: ["R", "The positive-semidefinite dissipation operator. Its contribution to the energy rate is nonpositive."],
       H: ["H", "The Hamiltonian: stored energy, including potential and kinetic terms for a mechanical block."],
-      "H-rate": ["H-dot", "The instantaneous rate of change of stored energy along the learned continuous-time dynamics."],
+      "H-rate": ["\\dot{H}", "The instantaneous rate of change of stored energy along the learned continuous-time dynamics."],
       G: ["G", "The port matrix selecting how external inputs enter the state dynamics."],
       u: ["u", "The external input or forcing applied through the declared port."],
-      "port-output": ["y^port", "The power-conjugate port output G^T grad H; external power is u^T y^port."],
+      "port-output": ["y^{\\mathrm{port}}", "The power-conjugate port output G^T grad H; external power is u^T y^port."],
     },
     cphast: {
-      history: ["h", "The recent observation history used to initialize or refresh the deployed state."],
-      candidate: ["a_k", "Candidate k: a supplied behavior primitive, control sequence, contact choice, or network action."],
-      spec: ["S_k", "The candidate-activated deployment specification: blocks, graph, ports, observations, and context."],
-      "candidate-rollout": ["x-hat^(k)", "The predicted state trajectory obtained by rolling candidate k forward from the common inferred state."],
-      consequences: ["rho^(k)", "The typed consequence vector for candidate k, evaluated before an objective score is formed."],
-      "ph-readout": ["O_pH", "Closed-form pH readouts such as storage, dissipation, port work, and internal exchange."],
-      "learned-readout": ["O_learned,theta", "Learned perceptual readout heads for sensing quality, map novelty, and related task-facing channels."],
-      factors: ["phi^(k)", "The planner-facing factor vector: declared costs, rewards, residuals, barriers, or constraint margins."],
-      "factor-map": ["Factors", "The deterministic horizon aggregation and calibration map. It has no learned parameters."],
-      score: ["s_k", "The objective-conditioned scalar score assigned to candidate k."],
+      history: ["h", "The recent observation history used to refresh the state. Spot examples: speed/contact, arm and gripper state, image/depth quality, and TF/depth novelty."],
+      candidate: ["a_k", "Numeric descriptor for candidate k. Spot examples: intended base speed, turn rate, gripper opening, and primitive parameters; this is not a primitive label."],
+      spec: ["\\mathcal S_k", "The candidate-activated deployment specification: blocks, graph, ports, observations, and context. For Spot, it identifies the active robot interface and candidate context."],
+      "candidate-rollout": ["\\hat{x}_{t:t+H}^{(k)}", "The predicted state trajectory for candidate k. Robot examples include future base, joint, arm, and contact-related state."],
+      consequences: ["\\rho^{(k)}", "The typed consequence vector predicted before scoring. Spot examples: work, battery draw, support/contact, collision proxy, sensing quality, depth novelty, and residuals."],
+      "ph-readout": ["O_{\\mathrm{pH}}", "Closed-form pH readouts such as stored energy, dissipation, port work, and internal exchange. On Spot, work is grounded using measured torque and velocity."],
+      "learned-readout": ["O_{\\mathrm{learned},\\theta}", "Learned perceptual readouts. Spot examples include sensing quality, depth novelty, and perceptual collision proxies."],
+      factors: ["\\phi^{(k)}", "Planner-facing factors built from typed consequences. Examples: progress reward, work cost, support risk, map reward, residual warning, and collision veto."],
+      "factor-map": ["\\mathrm{Factors}", "The deterministic horizon aggregation and calibration map. It has no learned parameters."],
+      score: ["s_k", "The objective-conditioned score used to rank candidate k after its physical and perceptual consequences have been predicted."],
       weights: ["w", "The objective-specific weights applied downstream to the same planner-factor vector."],
-      envelope: ["g_j", "Hard envelope j. A candidate is feasible when every declared envelope satisfies g_j(phi) <= 0."],
-      "total-storage": ["H_total", "The additive stored energy of the composed deployment: the sum of local block Hamiltonians."],
+      envelope: ["g_j", "Hard feasibility test j. Robot examples include excessive support loss, collision risk, force-limit violation, or residual mismatch."],
+      "isaac-loss": ["\\mathcal L_{\\mathrm{data}}", "The matched Isaac comparison uses coordinate-aware next-step position MSE only: Euclidean error for linear coordinates and wrapped error for angles. It matches the baselines' 50-epoch objective."],
+      "batch-count": ["|\\mathcal B|", "The number of valid robot-trajectory and time-index pairs in the training batch."],
+      "spot-loss": ["\\mathcal L_{\\mathrm{Spot}}", "Weighted mean-squared error over train-scaled typed consequence targets. Objective and action-card weights are applied only after prediction."],
+      "spot-normalizer": ["N d_{\\rho}", "The number of Spot windows times the number of predicted consequence channels."],
+      "total-storage": ["H_{\\mathrm{total}}", "The additive stored energy of the composed deployment: the sum of local block Hamiltonians."],
       "local-storage": ["H_i", "The local Hamiltonian of block i; capacitor, inductor, and mechanical storage live here."],
-      "coupling-output": ["y-hat_i", "The power-conjugate output exposed by block i at its internal coupling port."],
+      "coupling-output": ["\\hat{y}_i", "The power-conjugate output exposed by block i at its internal coupling port."],
       "port-matrix": ["B_i", "The local port matrix mapping a port input into block i's state dynamics."],
-      "coupling-input": ["u-hat_i", "The internal port input received by block i from the deployed interconnection."],
-      interconnect: ["C-hat", "The skew-symmetric deployed interconnection. It redirects internal power but injects zero net power."],
-      "total-storage-rate": ["H-dot_total", "The rate of change of total stored energy in the composed deployment."],
-      "port-flow": ["v_i", "The local power-conjugate flow, defined in the paper as partial H_i / partial p_i."],
+      "coupling-input": ["\\hat{u}_i", "The internal port input received by block i from the deployed interconnection."],
+      interconnect: ["\\hat{C}", "The skew-symmetric deployed interconnection. It redirects internal power but injects zero net power."],
+      "total-storage-rate": ["\\dot{H}_{\\mathrm{total}}", "The rate of change of total stored energy in the composed deployment."],
+      "port-flow": ["v_i=\\partial H_i/\\partial p_i", "The local power-conjugate flow derived from block i's Hamiltonian."],
       "local-dissipation": ["R_i", "The positive-semidefinite local dissipation operator of block i."],
-      "local-input": ["u_i^loc", "A local external or constitutive port, such as mechanical control torque."],
-      "domain-input": ["u_i^dom", "Explicit benchmark-specific forcing, such as converter or load forcing in a microgrid."],
+      "local-input": ["u_i^{\\mathrm{loc}}", "A local external or constitutive port, such as mechanical control torque."],
+      "domain-input": ["u_i^{\\mathrm{dom}}", "Explicit benchmark-specific forcing, such as converter or load forcing in a microgrid."],
       "composed-state": ["x", "The stacked state of all blocks in the composed deployment."],
     },
   };
@@ -155,8 +164,13 @@
     if (pinned) pinnedVariable = variable;
     variable.classList.add("variable-active");
     variable.setAttribute("aria-describedby", variableTooltip.id);
-    variableTooltip.querySelector("strong").textContent = definition[0];
-    variableTooltip.querySelector("span").textContent = definition[1];
+    const title = variableTooltip.querySelector("strong");
+    if (window.katex) {
+      window.katex.render(definition[0], title, { throwOnError: false, strict: false });
+    } else {
+      title.textContent = definition[0];
+    }
+    variableTooltip.querySelector(":scope > span").textContent = definition[1];
     variableTooltip.hidden = false;
     window.requestAnimationFrame(() => positionVariableTooltip(variable));
   }
@@ -175,7 +189,7 @@
     if (!definition) return;
     variable.classList.add("math-var");
     variable.tabIndex = 0;
-    variable.setAttribute("aria-label", `${definition[0]}: ${definition[1]}`);
+    variable.setAttribute("aria-label", `${variable.textContent.trim()}: ${definition[1]}`);
   });
 
   function activateTab(button) {
