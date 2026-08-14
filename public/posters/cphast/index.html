@@ -236,14 +236,10 @@
               <strong>Physical block state</strong>
               <span><i data-var="dgu-charge">q<sub>i</sub></i> = C<sub>i</sub>V<sub>i</sub>, <i data-var="dgu-flux">p<sub>i</sub></i> = L<sub>t,i</sub>I<sub>t,i</sub>; the supplied incidence matrix <i data-var="grid-incidence">B</i><sub>inc</sub> connects DGU nodes to line edges.</span>
             </div>
-            <div>
+            <div class="contract-wide">
               <strong>Model-training objective</strong>
-              <span class="katex-equation" data-katex="\begin{aligned}\htmlData{var=grid-loss}{\mathcal L_{\mathrm{grid}}}&amp;=\frac{1}{\htmlData{var=grid-samples}{|\mathcal I|}}\sum_{(i,t)\in\mathcal I}\\[-0.15em]&amp;\quad\left\|\htmlData{var=grid-state}{\hat x}_{t+1}^{(i)}-x_{t+1}^{(i)}\right\|_2^2\end{aligned}"></span>
-              <span>The voltage-only tier also trains its observer on hidden-state and next-voltage error.</span>
-            </div>
-            <div>
-              <strong>Operational outputs</strong>
-              <span>Bus-voltage and line-current rollouts, voltage-balancing and current-sharing errors, energy change, and typed mismatch residuals.</span>
+              <span class="katex-equation" data-katex="\htmlData{var=grid-loss}{\mathcal L_{\mathrm{grid}}}=\frac{1}{\htmlData{var=grid-samples}{|\mathcal I|}}\sum_{(i,t)\in\mathcal I}\left\|\htmlData{var=grid-state}{\hat x}_{t+1}^{(i)}-x_{t+1}^{(i)}\right\|_2^2"></span>
+              <span>The voltage-only tier also trains its observer on hidden-state and next-voltage error. Evaluation reports bus-voltage and line-current rollouts, voltage balancing, current sharing, energy change, and typed mismatch residuals.</span>
             </div>
           </div>
           <p class="parameter-boundary"><strong>Why port-Hamiltonian composition?</strong> Skew port coupling contributes zero net internal power, so rewiring preserves the blocks' local storage, dissipation, and power accounting.</p>

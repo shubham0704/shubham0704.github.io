@@ -698,18 +698,22 @@ video {
   border-left: 3px solid #24706a;
 }
 
-.spot-contract strong,
-.spot-contract span {
+.spot-contract > .contract-wide {
+  grid-column: 1 / -1;
+}
+
+.spot-contract > div > strong,
+.spot-contract > div > span {
   display: block;
 }
 
-.spot-contract strong {
+.spot-contract > div > strong {
   color: #173d3a;
   font-size: calc(clamp(8px, 0.53vw, 10.5px) * var(--poster-font));
   line-height: 1.18;
 }
 
-.spot-contract span {
+.spot-contract > div > span {
   margin-top: 2px;
   font-size: calc(clamp(7.5px, 0.48vw, 9.8px) * var(--poster-font));
   line-height: 1.24;
