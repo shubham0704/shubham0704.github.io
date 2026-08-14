@@ -212,7 +212,7 @@
               <img class="video-fallback" src="../../cphast/images/isaaclab_source_target_transfer_hero.png" alt="ANYmal-D to Go2 transfer comparison">
             </div>
           </figure>
-          <p>Monolithic pH structure carries most of the transfer-stability gain. Shared leg-level blocks further improve accuracy and permit variable-layout reuse.</p>
+          <p>Monolithic pH structure carries most of the transfer-stability gain. C-PHAST then shares one leg-level model across repeated legs in canonical local coordinates, while robot-specific morphology enters through block instantiation and power-preserving interconnection. This parameter sharing and separation of local physics from robot layout further reduce error and permit variable-layout reuse.</p>
           <div class="loss-strip">
             <span>Matched Isaac training loss</span>
             <strong><i data-var="isaac-loss">ℒ</i><sub>data</sub> = <span data-var="batch-count">1/|𝐵|</span> Σ<sub>(i,t)∈𝐵</sub> ‖δ<sub>q</sub>(q̃<sup>(i)</sup><sub>t+1</sub>, q̂<sup>obs,(i)</sup><sub>t+1</sub>)‖<sup>2</sup></strong>
@@ -221,11 +221,13 @@
         </article>
 
         <article class="poster-card" id="cphast-composition" data-tone="orange">
-          <h2>What changes at deployment?</h2>
+          <h2>Why compose instead of learning one monolithic model?</h2>
+          <p>A monolithic model learns local component behavior and one system layout as a single object. C-PHAST learns each repeated physical type once, then instantiates the shared blocks under the target component count, topology, contacts, and observation interface.</p>
           <figure class="poster-figure compact-figure">
             <img src="../../cphast/images/microgrid_redeployment_current.png" alt="C-PHAST microgrid redeployment under topology change">
-            <figcaption>The learned local block library remains fixed. The deployment specification changes instances, active ports, interconnection, observations, and candidate descriptors.</figcaption>
+            <figcaption><strong>Reconfiguration changes the composition, not the local physical meaning.</strong> The block library remains fixed; the deployment specification changes instances, active ports, interconnection, observations, and candidate descriptors.</figcaption>
           </figure>
+          <p class="parameter-boundary"><strong>Why port-Hamiltonian composition?</strong> Skew port coupling contributes zero net internal power, so rewiring preserves the blocks' local storage, dissipation, and power accounting.</p>
         </article>
       </section>
 
