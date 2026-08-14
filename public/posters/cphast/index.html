@@ -72,19 +72,19 @@
           <div class="decision-chain" aria-label="C-PHAST observables-to-action-card equations">
             <div class="decision-step">
               <span>Roll out</span>
-              <strong>(<i>h</i>, <i>a</i><sub>k</sub>, S<sub>k</sub>) → <i>x̂</i><sub>t:t+H</sub><sup>(k)</sup></strong>
+              <strong>(<i data-var="history">h</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="spec">S</i><sub>k</sub>) → <i data-var="candidate-rollout">x̂</i><sub>t:t+H</sub><sup>(k)</sup></strong>
             </div>
             <div class="decision-step">
               <span>Read consequences</span>
-              <strong><i>ρ</i><sup>(k)</sup> = [O<sub>pH</sub>(<i>x̂</i>), O<sub>learned,θ</sub>(<i>x̂</i>, S<sub>k</sub>)]</strong>
+              <strong><i data-var="consequences">ρ</i><sup>(k)</sup> = [<i data-var="ph-readout">O</i><sub>pH</sub>(<i data-var="candidate-rollout">x̂</i>), <i data-var="learned-readout">O</i><sub>learned,θ</sub>(<i data-var="candidate-rollout">x̂</i>, <i data-var="spec">S</i><sub>k</sub>)]</strong>
             </div>
             <div class="decision-step">
               <span>Build factors</span>
-              <strong><i>φ</i><sup>(k)</sup> = Factors(<i>ρ</i><sup>(k)</sup>, <i>h</i>, <i>a</i><sub>k</sub>, S<sub>k</sub>)</strong>
+              <strong><i data-var="factors">φ</i><sup>(k)</sup> = <span data-var="factor-map">Factors</span>(<i data-var="consequences">ρ</i><sup>(k)</sup>, <i data-var="history">h</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="spec">S</i><sub>k</sub>)</strong>
             </div>
             <div class="decision-step">
               <span>Rank or veto</span>
-              <strong><i>s</i><sub>k</sub> = <i>w</i><sup>T</sup><i>φ</i><sup>(k)</sup>, &nbsp; <i>g</i><sub>j</sub>(<i>φ</i><sup>(k)</sup>) ≤ 0</strong>
+              <strong><i data-var="score">s</i><sub>k</sub> = <i data-var="weights">w</i><sup>T</sup><i data-var="factors">φ</i><sup>(k)</sup>, &nbsp; <i data-var="envelope">g</i><sub>j</sub>(<i data-var="factors">φ</i><sup>(k)</sup>) ≤ 0</strong>
             </div>
           </div>
           <p class="parameter-boundary"><strong>The observer, dynamics, and perceptual readout heads may be learned.</strong> The factor map instead uses declared horizon aggregation and fixed training-split calibration; objectives supply weights and hard envelopes.</p>
@@ -95,20 +95,20 @@
           <div class="math-story compact" aria-label="C-PHAST power-preserving interconnection derivation">
             <div class="math-step">
               <span class="math-label">Add local storage</span>
-              <span class="math-expression"><i>H</i><sub>total</sub> = Σ<sub>i</sub> <i>H</i><sub>i</sub>, &nbsp; <i>ŷ</i><sub>i</sub> = <i>B</i><sub>i</sub><sup>T</sup>∇<i>H</i><sub>i</sub></span>
+              <span class="math-expression"><i data-var="total-storage">H</i><sub>total</sub> = Σ<sub>i</sub> <i data-var="local-storage">H</i><sub>i</sub>, &nbsp; <i data-var="coupling-output">ŷ</i><sub>i</sub> = <i data-var="port-matrix">B</i><sub>i</sub><sup>T</sup>∇<i data-var="local-storage">H</i><sub>i</sub></span>
             </div>
             <div class="math-step emphasized">
               <span class="math-label">Connect exposed ports</span>
-              <span class="math-expression"><i>û</i> = −<i>Ĉŷ</i>, &nbsp; <i>Ĉ</i> = −<i>Ĉ</i><sup>T</sup></span>
+              <span class="math-expression"><i data-var="coupling-input">û</i> = −<i data-var="interconnect">Ĉ</i><i data-var="coupling-output">ŷ</i>, &nbsp; <i data-var="interconnect">Ĉ</i> = −<i data-var="interconnect">Ĉ</i><sup>T</sup></span>
             </div>
           </div>
           <div class="math-consequence compact">
             <span class="math-label">Internal power cancels</span>
-            <span class="math-expression">Σ<sub>i</sub> <i>ŷ</i><sub>i</sub><sup>T</sup><i>û</i><sub>i</sub> = −<i>ŷ</i><sup>T</sup><i>Ĉŷ</i> = 0</span>
+            <span class="math-expression">Σ<sub>i</sub> <i data-var="coupling-output">ŷ</i><sub>i</sub><sup>T</sup><i data-var="coupling-input">û</i><sub>i</sub> = −<i data-var="coupling-output">ŷ</i><sup>T</sup><i data-var="interconnect">Ĉ</i><i data-var="coupling-output">ŷ</i> = 0</span>
             <span class="math-reason">Changing the deployment graph redirects internal power without adding it. Capacitor, inductor, and mechanical storage remain inside <i>H</i><sub>i</sub>.</span>
             <strong class="math-result math-result-lines">
-              <span><i>Ḣ</i><sub>total</sub> = −Σ<sub>i</sub> <i>v</i><sub>i</sub><sup>T</sup><i>R</i><sub>i</sub><i>v</i><sub>i</sub></span>
-              <span>+ Σ<sub>i</sub> <i>v</i><sub>i</sub><sup>T</sup><i>u</i><sub>i</sub><sup>loc</sup> + Σ<sub>i</sub> <i>v</i><sub>i</sub><sup>T</sup><i>u</i><sub>i</sub><sup>dom</sup>(<i>x</i>)</span>
+              <span><i data-var="total-storage-rate">Ḣ</i><sub>total</sub> = −Σ<sub>i</sub> <i data-var="port-flow">v</i><sub>i</sub><sup>T</sup><i data-var="local-dissipation">R</i><sub>i</sub><i data-var="port-flow">v</i><sub>i</sub></span>
+              <span>+ Σ<sub>i</sub> <i data-var="port-flow">v</i><sub>i</sub><sup>T</sup><i data-var="local-input">u</i><sub>i</sub><sup>loc</sup> + Σ<sub>i</sub> <i data-var="port-flow">v</i><sub>i</sub><sup>T</sup><i data-var="domain-input">u</i><sub>i</sub><sup>dom</sup>(<i data-var="composed-state">x</i>)</span>
             </strong>
             <span class="port-key"><i>u</i><sup>loc</sup>: control or constitutive port · <i>u</i><sup>dom</sup>: explicit benchmark forcing</span>
           </div>

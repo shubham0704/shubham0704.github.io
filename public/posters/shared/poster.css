@@ -524,6 +524,59 @@ video {
   line-height: 0;
 }
 
+.math-var {
+  padding: 0 0.04em;
+  color: inherit;
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+  transition: color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.math-var:hover,
+.math-var:focus-visible,
+.math-var.variable-active {
+  color: #123e73;
+  background: #fff0b8;
+  border-bottom-color: #c76524;
+  box-shadow: 0 0 0 2px #fff0b8;
+  outline: none;
+}
+
+.variable-tooltip {
+  position: fixed;
+  z-index: 250;
+  width: min(300px, calc(100vw - 20px));
+  padding: 9px 11px;
+  color: #eef6f3;
+  background: #122a2a;
+  border: 1px solid #e48b3b;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(4, 17, 15, 0.34);
+  pointer-events: none;
+}
+
+.variable-tooltip[hidden] {
+  display: none;
+}
+
+.variable-tooltip strong,
+.variable-tooltip span {
+  display: block;
+}
+
+.variable-tooltip strong {
+  color: #f5b87f;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.variable-tooltip span {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.32;
+}
+
 .math-consequence {
   display: grid;
   gap: 5px;
@@ -1088,8 +1141,15 @@ video {
 
   .poster-toolbar,
   .screen-only-note,
-  .overview-dialog {
+  .overview-dialog,
+  .variable-tooltip {
     display: none !important;
+  }
+
+  .math-var {
+    padding: 0;
+    border-bottom: 0;
+    box-shadow: none;
   }
 
   .overview-trigger {

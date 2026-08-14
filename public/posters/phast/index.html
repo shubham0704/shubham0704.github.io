@@ -54,11 +54,11 @@
           <div class="math-story" aria-label="PHAST state inference and continuous-time power balance">
             <div class="math-step">
               <span class="math-label">Infer hidden phase</span>
-              <span class="math-expression"><i>q</i><sub>t−K+1:t</sub> → <i>o</i><sub>φ</sub> → <i>x̂</i><sub>t</sub> = (<i>q</i><sub>t</sub>, <i>p̂</i><sub>t</sub>)</span>
+              <span class="math-expression"><i data-var="q-history">q</i><sub>t−K+1:t</sub> → <i data-var="observer">o</i><sub>φ</sub> → <i data-var="phase-state">x̂</i><sub>t</sub> = (<i data-var="position">q</i><sub>t</sub>, <i data-var="momentum">p̂</i><sub>t</sub>)</span>
             </div>
             <div class="math-step emphasized">
               <span class="math-label">Evolve physically</span>
-              <span class="math-expression"><i>ẋ</i> = (<i>J</i> − <i>R</i>)∇<i>H</i> + <i>Gu</i></span>
+              <span class="math-expression"><i data-var="state-rate">ẋ</i> = (<i data-var="J">J</i> − <i data-var="R">R</i>)∇<i data-var="H">H</i> + <i data-var="G">G</i><i data-var="u">u</i></span>
             </div>
           </div>
           <div class="channel-grid">
@@ -69,9 +69,9 @@
           </div>
           <div class="math-consequence">
             <span class="math-label">Differentiate stored energy</span>
-            <span class="math-expression"><i>Ḣ</i> = −∇<i>H</i><sup>T</sup><i>R</i>∇<i>H</i> + <i>u</i><sup>T</sup><i>y</i><sup>port</sup></span>
-            <span class="math-reason"><i>J</i> = −<i>J</i><sup>T</sup> cancels internal exchange; <i>R</i> ⪰ 0 can only remove energy.</span>
-            <strong class="math-result">No external input: <i>u</i> = 0 ⇒ <i>Ḣ</i> ≤ 0</strong>
+            <span class="math-expression"><i data-var="H-rate">Ḣ</i> = −∇<i data-var="H">H</i><sup>T</sup><i data-var="R">R</i>∇<i data-var="H">H</i> + <i data-var="u">u</i><sup>T</sup><i data-var="port-output">y</i><sup>port</sup></span>
+            <span class="math-reason"><i data-var="J">J</i> = −<i data-var="J">J</i><sup>T</sup> cancels internal exchange; <i data-var="R">R</i> ⪰ 0 can only remove energy.</span>
+            <strong class="math-result">No external input: <i data-var="u">u</i> = 0 ⇒ <i data-var="H-rate">Ḣ</i> ≤ 0</strong>
           </div>
         </article>
 
