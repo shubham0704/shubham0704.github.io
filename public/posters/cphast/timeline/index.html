@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="C-PHAST research progress from May through August 2026: architecture, experiments, theory, closed-loop evaluation, and communication.">
+  <title>C-PHAST Summer 2026 Progress</title>
+  <link rel="stylesheet" href="timeline.css">
+</head>
+<body>
+  <nav class="timeline-nav" aria-label="Timeline navigation">
+    <a class="nav-brand" href="../">C-PHAST poster</a>
+    <div class="nav-actions">
+      <a href="../../../cphast/main_cphast.pdf">Paper</a>
+      <button type="button" onclick="window.print()">Print / PDF</button>
+    </div>
+  </nav>
+
+  <main>
+    <header class="timeline-header">
+      <div class="header-copy">
+        <p class="eyebrow">Research progress | May-August 2026</p>
+        <h1>C-PHAST Summer Progress</h1>
+        <p class="header-summary">Over four months, C-PHAST progressed from an evidence-ready compositional architecture to a rigorously scoped world model with cross-robot transfer, real Spot forecasting, simulator-executed decision influence, and a reproducible public research package.</p>
+      </div>
+      <div class="header-facts" aria-label="Summer progress summary">
+        <div><strong>6</strong><span>major milestones</span></div>
+        <div><strong>4</strong><span>deployment domains</span></div>
+        <div><strong>1,070</strong><span>real Spot windows</span></div>
+        <div><strong>20</strong><span>held-out executed scenarios</span></div>
+      </div>
+    </header>
+
+    <section class="story-band" aria-labelledby="story-title">
+      <div>
+        <p class="section-label">Summer arc</p>
+        <h2 id="story-title">What changed?</h2>
+      </div>
+      <p>The project began the summer with reusable pH blocks and several promising experiments. The work since then connected those pieces into one inspectable contract: compose the deployed system, forecast candidate futures, expose typed consequences, and let a downstream objective use them without hiding the physics.</p>
+    </section>
+
+    <section class="timeline-section" aria-labelledby="timeline-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Completed work</p>
+          <h2 id="timeline-title">Six milestones</h2>
+        </div>
+        <p>Each milestone records the scientific change, a concrete result, and the claim boundary retained in the paper.</p>
+      </div>
+
+      <div class="timeline-scroll" tabindex="0" aria-label="Horizontally scrollable C-PHAST research timeline">
+        <ol class="timeline">
+          <li class="milestone accent-green">
+            <div class="milestone-date"><time datetime="2026-05-01">May 1-14</time><span>Foundation</span></div>
+            <article>
+              <img src="../../../cphast/images/signals_to_action_cards_web.png" alt="C-PHAST pipeline from observations to typed consequences and action cards">
+              <div class="milestone-body">
+                <h3>Architecture became an evidence system</h3>
+                <p>Unified deployment specifications, coordinate charts, typed ports, reusable blocks, power-preserving interconnections, energy ledgers, residual reports, and candidate-future queries.</p>
+                <ul>
+                  <li>Completed 756 of 756 Go2 branch rollouts.</li>
+                  <li>Logged 53,872 typed candidate-factor rows.</li>
+                  <li>Localized microgrid changes through line-current, energy, and interconnection residuals.</li>
+                </ul>
+                <p class="result"><strong>Outcome:</strong> the bottleneck moved from representation to collecting claim-matched evidence.</p>
+                <a class="evidence-link" href="../#cphast-boundary">See the composition contract</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-blue">
+            <div class="milestone-date"><time datetime="2026-05-19">May 19-23</time><span>Real robot</span></div>
+            <article>
+              <img src="../../../cphast/images/spot_real_query_context.png" alt="Real Spot shadow-mode candidate-future query">
+              <div class="milestone-body">
+                <h3>Spot telemetry became typed future consequences</h3>
+                <p>Audited Spot-with-arm ROS bags and built the real-data query from recent telemetry plus numeric candidate descriptors to work, support, sensing, collision, and novelty forecasts.</p>
+                <ul>
+                  <li>Six usable episodes and 1,070 five-second windows.</li>
+                  <li>897 training and 173 held-out windows.</li>
+                  <li>Mean Pearson/Spearman objective agreement: 0.880/0.860.</li>
+                </ul>
+                <p class="result"><strong>Outcome:</strong> typed predictions preserved scalar ranking quality while explaining why a card scored well or poorly.</p>
+                <a class="evidence-link" href="../#cphast-spot">See the Spot evidence</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-orange">
+            <div class="milestone-date"><time datetime="2026-05-28">May 28-Jun 18</time><span>Submission</span></div>
+            <article>
+              <img src="../../../cphast/images/cphast_rollout_contract.png" alt="C-PHAST candidate rollout contract">
+              <div class="milestone-body">
+                <h3>Separate results became one CoRL contract</h3>
+                <p>Assembled the CoRL submission around one information flow: observed history and deployment, candidate rollout, typed consequence readouts, planner factors, and downstream objectives.</p>
+                <ul>
+                  <li>Separated pH-native and learned consequence channels.</li>
+                  <li>Clarified Spot shadow mode and the controller boundary.</li>
+                  <li>Refactored benchmark registration and experiment organization.</li>
+                </ul>
+                <p class="result"><strong>Outcome:</strong> cross-robot transfer, microgrid reconfiguration, push warnings, and Spot action cards were presented as one model interface.</p>
+                <a class="evidence-link" href="../../../cphast/main_cphast.pdf">Open the full manuscript</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-purple">
+            <div class="milestone-date"><time datetime="2026-07-07">Jul 7-Aug 1</time><span>Rigor</span></div>
+            <article>
+              <img src="../../../cphast/images/isaaclab_source_target_transfer_hero.png" alt="ANYmal-D to Unitree Go2 transfer comparison">
+              <div class="milestone-body">
+                <h3>Theory and transfer results were hardened</h3>
+                <p>Reworked the mathematical claims around finite-step energy accounting, conditional passivity, observer-aware transfer, deployment contraction, and numerical coupling.</p>
+                <ul>
+                  <li>Added the finite-step energy-balance defect analysis.</li>
+                  <li>Added certified contraction and probabilistic transfer results.</li>
+                  <li>Regenerated the canonical ANYmal-D to Go2 comparison.</li>
+                </ul>
+                <p class="result"><strong>Result:</strong> Go2 H=50 MSE is 0.063 for C-PHAST, versus 0.087 for monolithic PHAST and 0.163 for the larger Shared-GRU.</p>
+                <a class="evidence-link" href="../#cphast-transfer">See the transfer result</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-red">
+            <div class="milestone-date"><time datetime="2026-08-08">Aug 8-10</time><span>Executed decision</span></div>
+            <article>
+              <img src="../../../cphast/images/cphast_candidate_futures_px2p25_start82_filmstrip.png" alt="Go2 candidate recovery futures following a push">
+              <div class="milestone-body">
+                <h3>Forecasts were connected to executed commands</h3>
+                <p>Reviewer-driven experiments connected a frozen C-PHAST predictor to a high-level recovery selector while preserving the frozen low-level locomotion policy.</p>
+                <ul>
+                  <li>Diagnosed weak command-direction sensitivity.</li>
+                  <li>Introduced causal actuator-to-torque port translation.</li>
+                  <li>Evaluated nine commands on 20 held-out scenarios.</li>
+                </ul>
+                <p class="result"><strong>Result:</strong> mean survival rose from 116.6 to 121.8 steps; pH readouts increased longest-survival selections from 12/20 to 14/20.</p>
+                <p class="boundary"><strong>Boundary:</strong> binary recovery remained 10/20 for both methods, so this is not recovery-rate dominance.</p>
+                <a class="evidence-link" href="../#cphast-executed">See the executed evidence</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-gold">
+            <div class="milestone-date"><time datetime="2026-08-14">Aug 14-17</time><span>Communication</span></div>
+            <article>
+              <img src="../../../cphast/images/cphast_leg_count_transfer_static.png" alt="C-PHAST reuse across robots with different numbers of legs">
+              <div class="milestone-body">
+                <h3>The research package became inspectable</h3>
+                <p>Built live PHAST and C-PHAST posters that connect the papers, experiments, videos, equations, model contracts, and composition examples in one presentation surface.</p>
+                <ul>
+                  <li>Added subsystem-count and topology-change media.</li>
+                  <li>Added exact model inputs, outputs, losses, and objective definitions.</li>
+                  <li>Added interactive mathematical variable definitions.</li>
+                </ul>
+                <p class="result"><strong>Outcome:</strong> the project can now be presented from motivation through formulation, evidence, limitations, and next steps without relying on hidden appendix context.</p>
+                <a class="evidence-link" href="../">Open the live poster</a>
+              </div>
+            </article>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="state-section" aria-labelledby="state-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">August 2026</p>
+          <h2 id="state-title">Where the project stands</h2>
+        </div>
+        <p>The evidence now spans composition, transfer, physical forecasting, and executed simulation. Hardware autonomy remains a deliberate next step rather than a current claim.</p>
+      </div>
+      <div class="evidence-ladder" aria-label="Current C-PHAST evidence levels">
+        <div class="done"><span>01</span><strong>Compositional architecture</strong><small>Reusable typed pH blocks and deployment graphs</small></div>
+        <div class="done"><span>02</span><strong>Transfer evaluation</strong><small>Embodiment, subsystem count, topology, and sensing</small></div>
+        <div class="done"><span>03</span><strong>Real hardware forecasting</strong><small>Spot telemetry-to-consequence prediction</small></div>
+        <div class="done"><span>04</span><strong>Executed simulation selection</strong><small>Typed forecasts influence recovery commands</small></div>
+        <div class="next"><span>05</span><strong>Autonomous hardware recovery</strong><small>Not yet claimed; gated by stronger simulation evidence</small></div>
+      </div>
+    </section>
+
+    <section class="priorities-section" aria-labelledby="priorities-title">
+      <div>
+        <p class="section-label">Fall priorities</p>
+        <h2 id="priorities-title">What comes next?</h2>
+      </div>
+      <ol class="priorities">
+        <li><strong>Train for counterfactual actions.</strong><span>Collect deliberately varied command continuations so predicted factors respond clearly to action direction.</span></li>
+        <li><strong>Pass the fixed-action gate.</strong><span>Demonstrate held-out recovery-rate superiority over nominal, alarm-plus-fixed-action, and the best fixed command.</span></li>
+        <li><strong>Move Spot beyond replay carefully.</strong><span>Begin confirm-to-execute primitive tests only after the simulator gate is passed.</span></li>
+        <li><strong>Release the complete artifact.</strong><span>Publish code, configurations, data splits, scripts, and result manifests for full reproducibility.</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <strong>C-PHAST</strong>
+    <span>Compositional Port-Hamiltonian World Models for Choosing Robot Futures</span>
+    <span>Shubham Bhardwaj | The University of Texas at Austin | Mihawk.ai</span>
+  </footer>
+</body>
+</html>
