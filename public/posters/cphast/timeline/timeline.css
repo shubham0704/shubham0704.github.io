@@ -528,6 +528,44 @@ h1 {
   line-height: 1.38;
 }
 
+.parallel-note {
+  display: flex;
+  gap: 10px 24px;
+  align-items: center;
+  margin: -8px 0 24px;
+  padding: 12px 16px;
+  color: var(--muted);
+  background: #fff;
+  border-left: 4px solid var(--purple);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.parallel-note strong {
+  color: var(--purple);
+  text-transform: uppercase;
+}
+
+.parallel-note span {
+  position: relative;
+  padding-left: 15px;
+}
+
+.parallel-note span::before {
+  position: absolute;
+  top: 0.56em;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: var(--blue);
+  border-radius: 50%;
+  content: "";
+}
+
+.parallel-note span:last-child::before {
+  background: var(--purple);
+}
+
 .workstreams {
   display: grid;
   gap: 12px;
@@ -546,6 +584,8 @@ h1 {
 
 .workstream-orange { --workstream-accent: var(--orange); }
 .workstream-blue { --workstream-accent: var(--blue); }
+.workstream-red { --workstream-accent: var(--red); }
+.workstream-purple { --workstream-accent: var(--purple); }
 
 .workstream > summary {
   display: grid;
@@ -862,6 +902,11 @@ footer strong {
     right: 22px;
     bottom: 12px;
     transform: rotate(135deg);
+  }
+
+  .parallel-note {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .workstream > summary {
