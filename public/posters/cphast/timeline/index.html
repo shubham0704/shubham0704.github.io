@@ -179,17 +179,97 @@
       </div>
     </section>
 
-    <section class="priorities-section" aria-labelledby="priorities-title">
-      <div>
-        <p class="section-label">Fall priorities</p>
-        <h2 id="priorities-title">What comes next?</h2>
+    <section class="roadmap-section" aria-labelledby="roadmap-title">
+      <div class="section-heading roadmap-heading">
+        <div>
+          <p class="section-label">Next research phase</p>
+          <h2 id="roadmap-title">From reconfigurable forecasts to executed decisions</h2>
+        </div>
+        <p>The next phase asks when C-PHAST remains reliable after a system changes, whether its counterfactual forecasts improve repeated decisions, and where the port-Hamiltonian structure can support controller design. Each stage has an evidence gate before hardware execution.</p>
       </div>
-      <ol class="priorities">
-        <li><strong>Train for counterfactual actions.</strong><span>Collect deliberately varied command continuations so predicted factors respond clearly to action direction.</span></li>
-        <li><strong>Pass the fixed-action gate.</strong><span>Demonstrate held-out recovery-rate superiority over nominal, alarm-plus-fixed-action, and the best fixed command.</span></li>
-        <li><strong>Move Spot beyond replay carefully.</strong><span>Begin confirm-to-execute primitive tests only after the simulator gate is passed.</span></li>
-        <li><strong>Release the complete artifact.</strong><span>Publish code, configurations, data splits, scripts, and result manifests for full reproducibility.</span></li>
+
+      <ol class="research-sequence" aria-label="Dependency path for the next phase">
+        <li><span>01</span><strong>Reconfiguration forecasting</strong><small>Predict changed systems and failure channels</small></li>
+        <li><span>02</span><strong>Action-conditioned prediction</strong><small>Separate the consequences of candidate commands</small></li>
+        <li><span>03</span><strong>Simulator closed loop</strong><small>Re-observe, replan, and execute repeatedly</small></li>
+        <li><span>04</span><strong>Bounded hardware execution</strong><small>Proceed only after held-out simulation gates</small></li>
       </ol>
+
+      <div class="workstreams">
+        <article class="workstream workstream-green">
+          <header>
+            <span class="workstream-number">Workstream 01</span>
+            <h3>Reconfiguration and failure-mode modeling</h3>
+          </header>
+          <p class="workstream-question"><strong>Scientific question</strong> Can reusable C-PHAST blocks remain valid after component, topology, contact, or sensing changes and identify the physical channel through which failure develops?</p>
+          <dl>
+            <div>
+              <dt>Planned work</dt>
+              <dd>Construct matched robotics and microgrid cases with changed subsystem counts, payloads, contacts, terrain, sensors, DGU membership, feeder topology, and loads.</dd>
+            </div>
+            <div>
+              <dt>Evaluation</dt>
+              <dd>Measure zero-shot rollout accuracy, energy and power consistency, typed residual localization, and counterfactual ranking against monolithic PHAST, black-box sequence models, and appropriate graph or structured baselines.</dd>
+            </div>
+            <div class="workstream-gate">
+              <dt>Completion gate</dt>
+              <dd>Demonstrate transfer to held-out reconfigurations without retraining while correctly attributing the dominant failure channel.</dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="workstream workstream-orange">
+          <header>
+            <span class="workstream-number">Workstream 02</span>
+            <h3>Action-conditioned planning and control</h3>
+          </header>
+          <p class="workstream-question"><strong>Scientific question</strong> Can C-PHAST's typed counterfactual forecasts select better recovery commands than an alarm followed by a fixed response?</p>
+          <dl>
+            <div>
+              <dt>Planned work</dt>
+              <dd>Collect multiple command continuations from matched disturbed states. Extend the current one-shot selector first to receding-horizon discrete MPC, then to MPPI after command-ranking accuracy is established.</dd>
+            </div>
+            <div>
+              <dt>Evaluation</dt>
+              <dd>Compare nominal continuation, alarm-plus-fixed recovery, the best fixed command, state-only selection, black-box world-model planning, PHAST, C-PHAST without pH readouts, full C-PHAST, and an outcome oracle. Report recovery, survival, progress, work, tilt, rescues, harms, and planning latency.</dd>
+            </div>
+            <div class="workstream-gate">
+              <dt>Completion gate</dt>
+              <dd>Outperform the best fixed response and black-box planner on held-out disturbances without sacrificing task progress or energy use.</dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="workstream workstream-blue">
+          <header>
+            <span class="workstream-number">Workstream 03</span>
+            <h3>Structure-aware and uncertainty-aware control</h3>
+          </header>
+          <p class="workstream-question"><strong>Scientific question</strong> When does the port-Hamiltonian representation provide more than forecast accuracy: a useful controller interface, interpretable risk, or a verifiable stability argument?</p>
+          <dl>
+            <div>
+              <dt>Planned work</dt>
+              <dd>Derive and test passivity-based microgrid control, using Energy-Casimir design only where its matching conditions can be established. Extend stochastic C-PHAST to calibrated consequence distributions for risk-sensitive planning.</dd>
+            </div>
+            <div>
+              <dt>Evaluation</dt>
+              <dd>Report regulation, transient energy, power-balance residuals, and stability conditions for the microgrid study; report calibration, coverage, tail-risk ranking, and closed-loop outcomes for stochastic planning.</dd>
+            </div>
+            <div class="workstream-gate">
+              <dt>Completion gate</dt>
+              <dd>State every control guarantee with its assumptions and show that uncertainty-aware decisions improve held-out risk without hiding nominal performance.</dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+
+      <aside class="release-track" aria-label="Cross-cutting reproducibility and deployment deliverable">
+        <div>
+          <span class="release-label">Cross-cutting deliverable</span>
+          <h3>Reproducibility and hardware progression</h3>
+        </div>
+        <p>Release the C-PHAST code, checkpoints, configurations, splits, scripts, and result manifests, including a clear record of exploratory and final controller experiments. Bounded Spot execution begins only after the frozen planner passes the held-out simulator gate.</p>
+      </aside>
     </section>
   </main>
 

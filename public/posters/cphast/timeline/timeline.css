@@ -181,7 +181,7 @@ h1 {
 .story-band,
 .timeline-section,
 .state-section,
-.priorities-section {
+.roadmap-section {
   padding: 38px 56px;
 }
 
@@ -196,7 +196,7 @@ h1 {
 
 .story-band h2,
 .section-heading h2,
-.priorities-section h2 {
+.roadmap-section h2 {
   margin: 0;
   font-size: 1.7rem;
   line-height: 1.1;
@@ -455,57 +455,205 @@ h1 {
   color: var(--gold);
 }
 
-.priorities-section {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 34px;
+.roadmap-section {
   background: #eef2f1;
 }
 
-.priorities {
+.roadmap-heading {
+  margin-bottom: 24px;
+}
+
+.research-sequence {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 24px;
   padding: 0;
-  counter-reset: priorities;
   list-style: none;
 }
 
-.priorities li {
+.research-sequence li {
   position: relative;
-  min-height: 118px;
-  padding: 17px 17px 17px 52px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  counter-increment: priorities;
+  min-height: 112px;
+  padding: 18px 42px 18px 18px;
+  color: #fff;
+  background: var(--deep-green);
+  border-right: 1px solid rgba(255, 255, 255, 0.24);
 }
 
-.priorities li::before {
+.research-sequence li:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.research-sequence li:last-child {
+  padding-right: 18px;
+  border-right: 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.research-sequence li:not(:last-child)::after {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  color: var(--orange);
-  content: counter(priorities, decimal-leading-zero);
-  font-size: 0.8rem;
-  font-weight: 850;
+  z-index: 1;
+  top: 50%;
+  right: 14px;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid #e8aa70;
+  border-right: 2px solid #e8aa70;
+  content: "";
+  transform: translateY(-50%) rotate(45deg);
 }
 
-.priorities strong,
-.priorities span {
+.research-sequence span,
+.research-sequence strong,
+.research-sequence small {
   display: block;
 }
 
-.priorities strong {
-  font-size: 0.94rem;
+.research-sequence span {
+  color: #e8aa70;
+  font-size: 0.72rem;
+  font-weight: 850;
 }
 
-.priorities span {
-  margin-top: 7px;
+.research-sequence strong {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.research-sequence small {
+  margin-top: 6px;
+  color: #c8dad5;
+  font-size: 0.73rem;
+  line-height: 1.38;
+}
+
+.workstreams {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.workstream {
+  --workstream-accent: var(--green);
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--workstream-accent);
+  border-radius: 6px;
+  box-shadow: 0 5px 16px rgba(23, 45, 49, 0.07);
+}
+
+.workstream-orange { --workstream-accent: var(--orange); }
+.workstream-blue { --workstream-accent: var(--blue); }
+
+.workstream header {
+  min-height: 104px;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.workstream-number {
+  color: var(--workstream-accent);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.workstream h3 {
+  margin: 8px 0 0;
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.workstream-question {
+  min-height: 142px;
+  margin: 0;
+  padding: 17px 20px;
+  color: #31444d;
+  background: #f7f9f8;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.86rem;
+  line-height: 1.52;
+}
+
+.workstream-question strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--workstream-accent);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.workstream dl {
+  margin: 0;
+}
+
+.workstream dl > div {
+  min-height: 154px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.workstream dl > div:last-child {
+  border-bottom: 0;
+}
+
+.workstream dt {
+  color: var(--workstream-accent);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.workstream dd {
+  margin: 7px 0 0;
   color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.45;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.workstream .workstream-gate {
+  min-height: 128px;
+  background: #f7f2e8;
+  box-shadow: inset 4px 0 0 var(--gold);
+}
+
+.workstream-gate dt {
+  color: var(--gold);
+}
+
+.release-track {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.28fr);
+  gap: 28px;
+  align-items: center;
+  margin-top: 16px;
+  padding: 22px;
+  color: #fff;
+  background: #243b44;
+  border-left: 5px solid var(--purple);
+  border-radius: 6px;
+}
+
+.release-label {
+  color: #c7b4df;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.release-track h3 {
+  margin: 7px 0 0;
+  font-size: 1.05rem;
+}
+
+.release-track p {
+  margin: 0;
+  color: #dbe6e3;
+  font-size: 0.84rem;
+  line-height: 1.55;
 }
 
 footer {
@@ -530,7 +678,7 @@ footer strong {
   .timeline-header,
   .story-band,
   .section-heading,
-  .priorities-section {
+  .release-track {
     grid-template-columns: 1fr;
   }
 
@@ -546,7 +694,7 @@ footer strong {
   .story-band,
   .timeline-section,
   .state-section,
-  .priorities-section {
+  .roadmap-section {
     padding: 30px 22px;
   }
 
@@ -562,8 +710,43 @@ footer strong {
     margin-top: 12px;
   }
 
-  .priorities {
+  .research-sequence,
+  .workstreams {
     grid-template-columns: 1fr;
+  }
+
+  .research-sequence li,
+  .research-sequence li:first-child,
+  .research-sequence li:last-child {
+    min-height: 92px;
+    padding: 15px 44px 15px 16px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 0;
+  }
+
+  .research-sequence li:first-child {
+    border-radius: 6px 6px 0 0;
+  }
+
+  .research-sequence li:last-child {
+    padding-right: 16px;
+    border-bottom: 0;
+    border-radius: 0 0 6px 6px;
+  }
+
+  .research-sequence li:not(:last-child)::after {
+    top: auto;
+    right: 22px;
+    bottom: 12px;
+    transform: rotate(135deg);
+  }
+
+  .workstream header,
+  .workstream-question,
+  .workstream dl > div,
+  .workstream .workstream-gate {
+    min-height: 0;
   }
 
   footer {
@@ -651,7 +834,7 @@ footer strong {
   .story-band,
   .timeline-section,
   .state-section,
-  .priorities-section {
+  .roadmap-section {
     padding: 20px 30px;
   }
 
@@ -695,7 +878,7 @@ footer strong {
   }
 
   .state-section,
-  .priorities-section,
+  .roadmap-section,
   footer {
     break-inside: avoid;
   }
