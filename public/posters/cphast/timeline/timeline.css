@@ -11,6 +11,7 @@
   --purple: #73569a;
   --red: #b44949;
   --gold: #aa791d;
+  --teal: #207f84;
   --sans: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
@@ -244,9 +245,9 @@ h1 {
 .timeline {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(6, minmax(270px, 1fr));
+  grid-template-columns: repeat(7, minmax(270px, 1fr));
   gap: 16px;
-  min-width: 1760px;
+  min-width: 2050px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -275,6 +276,12 @@ h1 {
 .accent-purple { --accent: var(--purple); }
 .accent-red { --accent: var(--red); }
 .accent-gold { --accent: var(--gold); }
+.accent-teal { --accent: var(--teal); }
+
+.milestone.planned article {
+  border-style: dashed;
+  border-top-style: solid;
+}
 
 .milestone-date {
   position: relative;
@@ -341,6 +348,18 @@ h1 {
   margin: 0 0 10px;
   font-size: 1.14rem;
   line-height: 1.2;
+}
+
+.status-chip {
+  display: inline-block;
+  margin: 0 0 9px;
+  padding: 4px 7px;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 850;
+  text-transform: uppercase;
 }
 
 .milestone p,
