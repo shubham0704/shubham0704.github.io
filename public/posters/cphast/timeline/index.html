@@ -6,6 +6,7 @@
   <meta name="description" content="C-PHAST research progress from May through August 2026: architecture, experiments, theory, closed-loop evaluation, and communication.">
   <title>C-PHAST Summer 2026 Progress</title>
   <link rel="stylesheet" href="timeline.css">
+  <script src="timeline.js" defer></script>
 </head>
 <body>
   <nav class="timeline-nav" aria-label="Timeline navigation">
@@ -195,72 +196,102 @@
         <li><span>04</span><strong>Bounded hardware execution</strong><small>Proceed only after held-out simulation gates</small></li>
       </ol>
 
-      <div class="workstreams">
-        <article class="workstream workstream-green">
-          <header>
+      <div class="workstreams" aria-label="Future research workstreams">
+        <details class="workstream workstream-green" id="reconfiguration-study">
+          <summary>
             <span class="workstream-number">Workstream 01</span>
-            <h3>Reconfiguration and failure-mode modeling</h3>
-          </header>
-          <p class="workstream-question"><strong>Scientific question</strong> Can reusable C-PHAST blocks remain valid after component, topology, contact, or sensing changes and identify the physical channel through which failure develops?</p>
-          <dl>
-            <div>
-              <dt>Planned work</dt>
-              <dd>Construct matched robotics and microgrid cases with changed subsystem counts, payloads, contacts, terrain, sensors, DGU membership, feeder topology, and loads.</dd>
+            <span class="workstream-title">Reconfiguration and failure-mode modeling</span>
+            <span class="workstream-question">Can reusable C-PHAST blocks predict and explain failures after the system changes?</span>
+            <span class="workstream-action" aria-hidden="true">Open study</span>
+          </summary>
+          <div class="workstream-body">
+            <div class="study-summary">
+              <section>
+                <h4>Why this matters</h4>
+                <p>C-PHAST already transfers across robot layouts and localizes microgrid changes. We have not yet tested prospective failure attribution across a broad held-out reconfiguration suite.</p>
+              </section>
+              <section>
+                <h4>What we will do</h4>
+                <p>Change subsystem count, payload, contact, terrain, sensing, DGU membership, feeder topology, and load, then forecast each altered system without retraining.</p>
+              </section>
+              <section class="study-gate">
+                <h4>What success means</h4>
+                <p>Accurate held-out rollouts and correct identification of the dominant physical failure channel after reconfiguration.</p>
+              </section>
             </div>
-            <div>
-              <dt>Evaluation</dt>
-              <dd>Measure zero-shot rollout accuracy, energy and power consistency, typed residual localization, and counterfactual ranking against monolithic PHAST, black-box sequence models, and appropriate graph or structured baselines.</dd>
-            </div>
-            <div class="workstream-gate">
-              <dt>Completion gate</dt>
-              <dd>Demonstrate transfer to held-out reconfigurations without retraining while correctly attributing the dominant failure channel.</dd>
-            </div>
-          </dl>
-        </article>
+            <details class="protocol-details">
+              <summary>Full experiment design</summary>
+              <div class="protocol-grid">
+                <div><strong>Comparisons</strong><span>Monolithic PHAST, black-box sequence models, and appropriate graph or structure-preserving baselines.</span></div>
+                <div><strong>Measurements</strong><span>Zero-shot rollout error, energy and power consistency, typed residual localization, and counterfactual ranking.</span></div>
+              </div>
+            </details>
+          </div>
+        </details>
 
-        <article class="workstream workstream-orange">
-          <header>
+        <details class="workstream workstream-orange" id="controller-study">
+          <summary>
             <span class="workstream-number">Workstream 02</span>
-            <h3>Action-conditioned planning and control</h3>
-          </header>
-          <p class="workstream-question"><strong>Scientific question</strong> Can C-PHAST's typed counterfactual forecasts select better recovery commands than an alarm followed by a fixed response?</p>
-          <dl>
-            <div>
-              <dt>Planned work</dt>
-              <dd>Collect multiple command continuations from matched disturbed states. Extend the current one-shot selector first to receding-horizon discrete MPC, then to MPPI after command-ranking accuracy is established.</dd>
+            <span class="workstream-title">Action-conditioned planning and control</span>
+            <span class="workstream-question">Can typed counterfactual forecasts choose better recovery commands than a fixed response?</span>
+            <span class="workstream-action" aria-hidden="true">Open study</span>
+          </summary>
+          <div class="workstream-body">
+            <div class="study-summary">
+              <section>
+                <h4>Why this matters</h4>
+                <p>One-shot selection improves mean survival from 116.6 to 121.8 steps, but binary recovery remains tied at 10/20 with the best fixed command.</p>
+              </section>
+              <section>
+                <h4>What we will do</h4>
+                <p>Train on matched alternative command continuations, validate command ranking, then progress from one-shot selection to discrete MPC and MPPI.</p>
+              </section>
+              <section class="study-gate">
+                <h4>What success means</h4>
+                <p>Beat the best fixed response and black-box planner on held-out disturbances without sacrificing progress or energy use.</p>
+              </section>
             </div>
-            <div>
-              <dt>Evaluation</dt>
-              <dd>Compare nominal continuation, alarm-plus-fixed recovery, the best fixed command, state-only selection, black-box world-model planning, PHAST, C-PHAST without pH readouts, full C-PHAST, and an outcome oracle. Report recovery, survival, progress, work, tilt, rescues, harms, and planning latency.</dd>
-            </div>
-            <div class="workstream-gate">
-              <dt>Completion gate</dt>
-              <dd>Outperform the best fixed response and black-box planner on held-out disturbances without sacrificing task progress or energy use.</dd>
-            </div>
-          </dl>
-        </article>
+            <details class="protocol-details">
+              <summary>Full experiment design</summary>
+              <div class="protocol-grid">
+                <div><strong>Comparisons</strong><span>Nominal, alarm plus fixed recovery, best fixed command, state-only selection, black-box planning, PHAST, C-PHAST without pH readouts, full C-PHAST, and an outcome oracle.</span></div>
+                <div><strong>Measurements</strong><span>Recovery, survival, task progress, mechanical work, tilt, rescues, harms, command-ranking regret, and planning latency.</span></div>
+              </div>
+            </details>
+          </div>
+        </details>
 
-        <article class="workstream workstream-blue">
-          <header>
+        <details class="workstream workstream-blue" id="structured-control-study">
+          <summary>
             <span class="workstream-number">Workstream 03</span>
-            <h3>Structure-aware and uncertainty-aware control</h3>
-          </header>
-          <p class="workstream-question"><strong>Scientific question</strong> When does the port-Hamiltonian representation provide more than forecast accuracy: a useful controller interface, interpretable risk, or a verifiable stability argument?</p>
-          <dl>
-            <div>
-              <dt>Planned work</dt>
-              <dd>Derive and test passivity-based microgrid control, using Energy-Casimir design only where its matching conditions can be established. Extend stochastic C-PHAST to calibrated consequence distributions for risk-sensitive planning.</dd>
+            <span class="workstream-title">Structure-aware and uncertainty-aware control</span>
+            <span class="workstream-question">When does the pH representation support controller design or better risk decisions?</span>
+            <span class="workstream-action" aria-hidden="true">Open study</span>
+          </summary>
+          <div class="workstream-body">
+            <div class="study-summary">
+              <section>
+                <h4>Why this matters</h4>
+                <p>The pH model provides exact internal power accounting, but that identity alone does not guarantee Go2 recovery or quantify uncertainty in predicted consequences.</p>
+              </section>
+              <section>
+                <h4>What we will do</h4>
+                <p>Study passivity-based microgrid control under explicit assumptions and extend stochastic C-PHAST to calibrated consequence distributions for risk-sensitive planning.</p>
+              </section>
+              <section class="study-gate">
+                <h4>What success means</h4>
+                <p>State every control guarantee with its assumptions and improve held-out risk without concealing nominal performance.</p>
+              </section>
             </div>
-            <div>
-              <dt>Evaluation</dt>
-              <dd>Report regulation, transient energy, power-balance residuals, and stability conditions for the microgrid study; report calibration, coverage, tail-risk ranking, and closed-loop outcomes for stochastic planning.</dd>
-            </div>
-            <div class="workstream-gate">
-              <dt>Completion gate</dt>
-              <dd>State every control guarantee with its assumptions and show that uncertainty-aware decisions improve held-out risk without hiding nominal performance.</dd>
-            </div>
-          </dl>
-        </article>
+            <details class="protocol-details">
+              <summary>Full experiment design</summary>
+              <div class="protocol-grid">
+                <div><strong>Structured control</strong><span>Measure regulation, transient energy, power-balance residuals, and stability conditions; use Energy-Casimir design only when matching conditions are established.</span></div>
+                <div><strong>Stochastic planning</strong><span>Measure calibration, coverage, tail-risk ranking, and closed-loop outcomes against point-estimate planning.</span></div>
+              </div>
+            </details>
+          </div>
+        </details>
       </div>
 
       <aside class="release-track" aria-label="Cross-cutting reproducibility and deployment deliverable">
