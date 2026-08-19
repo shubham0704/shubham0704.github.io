@@ -126,9 +126,19 @@ main > section, footer { margin-left: auto; margin-right: auto; max-width: var(-
 .method-node:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
 .method-node:not(:nth-child(3n+1)) { border-left: 1px solid var(--line); }
 .method-node > div { align-items: baseline; display: flex; gap: .65rem; }
-.method-node span { color: var(--rust); font-family: var(--font-serif), serif; font-size: 1rem; }
+.method-node > div > span { color: var(--rust); font-family: var(--font-serif), serif; font-size: 1rem; }
 .method-node strong { font-family: var(--font-serif), serif; font-size: 1.05rem; }
 .math-expression { color: inherit; }
+/* Math guard. KaTeX renders as deeply nested <span> elements, so any broad
+   `.container span { ... }` rule will silently wreck equation layout. Reset the
+   inheritable text properties an ancestor may have imposed; never touch display. */
+.math-expression, .math-expression .katex, .math-expression .katex * {
+  text-transform: none;
+  letter-spacing: normal;
+  font-variant: normal;
+  font-feature-settings: normal;
+}
+.math-expression .katex { display: inline-block; }
 .method-step-equation { color: var(--forest-mid); display: block; margin: 1rem 0 .55rem; max-width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: .1rem; }
 .method-step-equation .katex { font-size: .84rem; }
 .method-node:nth-child(5) .method-step-equation .katex { font-size: .73rem; }
@@ -143,7 +153,7 @@ main > section, footer { margin-left: auto; margin-right: auto; max-width: var(-
 .method-update-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
 .method-update-grid article { min-height: 130px; padding: 1rem 1.15rem; }
 .method-update-grid article + article { border-left: 1px solid var(--line); }
-.method-update-grid span { color: var(--rust); display: block; font-size: .55rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.method-update-grid article > span { color: var(--rust); display: block; font-size: .55rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .method-update-grid strong { display: block; font-family: var(--font-serif), serif; font-size: 1.05rem; margin: .65rem 0 .4rem; }
 .method-update-grid p { color: var(--ink-soft); font-size: .63rem; line-height: 1.45; margin: 0; }
 figcaption { border-top: 1px solid var(--line-strong); color: var(--ink-soft); font-family: var(--font-serif), serif; font-size: .83rem; line-height: 1.55; padding: 1.05rem 1.25rem; }
@@ -186,7 +196,7 @@ figcaption strong { color: var(--ink); }
 .endpoint-strip { background: var(--forest); color: var(--paper); display: grid; grid-template-columns: repeat(3, 1fr); }
 .endpoint-strip div { padding: .9rem 1rem; }
 .endpoint-strip div + div { border-left: 1px solid rgba(255,255,255,.2); }
-.endpoint-strip span { color: #e6b35b; display: block; font-size: .53rem; font-weight: 700; letter-spacing: .09em; margin-bottom: .3rem; text-transform: uppercase; }
+.endpoint-strip > div > span { color: #e6b35b; display: block; font-size: .53rem; font-weight: 700; letter-spacing: .09em; margin-bottom: .3rem; text-transform: uppercase; }
 .endpoint-strip strong { font-family: var(--font-serif), serif; font-size: .83rem; font-weight: 500; }
 .decision-rule { border-left: 4px solid var(--rust); color: var(--ink-soft); font-family: var(--font-serif), serif; font-size: .86rem; line-height: 1.55; margin: 1.2rem 0 0; padding: .65rem 0 .65rem 1rem; }
 .decision-rule b { color: var(--ink); }
