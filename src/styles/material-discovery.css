@@ -311,3 +311,31 @@ footer a { color: var(--rust); font-size: .61rem; font-weight: 700; text-decorat
   body { background: white; }
   .research-section { break-inside: avoid; }
 }
+
+/* Open frontiers: one card per unresolved research question. Mirrors the
+   evidence-table voice — demonstrated, required, and the gate that closes it. */
+.frontier-grid { border: 1px solid var(--line-strong); }
+.frontier-grid > article { background: var(--paper-light); padding: 1.5rem 1.35rem; scroll-margin-top: 60px; }
+.frontier-grid > article + article { border-top: 1px solid var(--line-strong); }
+.frontier-head { align-items: center; display: flex; gap: .7rem; margin-bottom: .55rem; }
+.frontier-head > b { color: var(--rust); font-size: .55rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.frontier-grid h3 { font-family: var(--font-serif), serif; font-size: clamp(1.05rem, 1.9vw, 1.42rem); font-weight: 500; letter-spacing: -.02em; line-height: 1.2; margin: 0 0 .45rem; max-width: 760px; }
+.frontier-lede { color: var(--ink-soft); font-size: .72rem; line-height: 1.5; margin: 0 0 1.15rem; max-width: 720px; }
+.frontier-body { border-top: 1px solid var(--line); display: grid; gap: 1px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 0 1.15rem; }
+.frontier-body > div { border-bottom: 1px solid var(--line); padding: .8rem .95rem .8rem 0; }
+.frontier-body > div:nth-child(even) { padding-left: 1.35rem; }
+.frontier-body dt { color: var(--forest-mid); font-size: .54rem; font-weight: 700; letter-spacing: .075em; margin-bottom: .3rem; text-transform: uppercase; }
+.frontier-body dd { color: var(--ink); font-size: .68rem; line-height: 1.5; margin: 0; }
+.frontier-prior { background: var(--paper-deep); border-left: 3px solid var(--sage); padding: .85rem 1rem; }
+.frontier-prior > span { color: var(--ink-soft); display: block; font-size: .53rem; font-weight: 700; letter-spacing: .075em; margin-bottom: .35rem; text-transform: uppercase; }
+.frontier-prior p { color: var(--ink-soft); font-size: .66rem; line-height: 1.5; margin: 0; }
+.frontier-beyond { margin-top: .55rem !important; color: var(--ink) !important; }
+.frontier-beyond strong { color: var(--forest); }
+.frontier-boundary { border-left: 3px solid var(--rust); color: var(--ink-soft); font-size: .66rem; line-height: 1.5; margin: 1rem 0 0; padding-left: .85rem; }
+.frontier-boundary strong { color: var(--rust); }
+.status-open, .status-unregistered, .status-registry-pending { color: var(--rust); }
+
+@media (max-width: 720px) {
+  .frontier-body { grid-template-columns: minmax(0, 1fr); }
+  .frontier-body > div:nth-child(even) { padding-left: 0; }
+}
