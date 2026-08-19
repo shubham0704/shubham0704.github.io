@@ -1,0 +1,50 @@
+---
+// ABX3 Material Discovery research-progress brief.
+//
+// Ported from the standalone Next.js app at
+// material_discovery/sites/research_manager_brief. The page is fully static —
+// no client hooks — so the React tree is pre-rendered to HTML and inlined here.
+// KaTeX markup is baked into that HTML; only the KaTeX stylesheet is needed.
+//
+// Presentation layer only. Every figure on this page must trace to an
+// authenticated analysis artifact and stay in sync with
+// material_discovery/docs/CURRENT_DISCOVERY_PIPELINE_STATUS.md.
+import "katex/dist/katex.min.css";
+import "../styles/material-discovery.css";
+import body from "../data/material-discovery-body.html?raw";
+
+const title = "ABX3 Material Discovery · Research Progress";
+const description =
+  "Scientific milestones, live evidence, and the publication path for adaptive ABX3 material discovery.";
+const canonical = "https://shubham-bhardwaj.com/material-discovery/";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Can measured physics teach a search policy where to look next?" />
+    <meta property="og:description" content="Scientific milestones, current evidence, and two co-primary ABX3 discovery tests." />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Can measured physics teach a search policy where to look next?" />
+    <meta name="twitter:description" content="Scientific milestones, current evidence, and two co-primary ABX3 discovery tests." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Fragment set:html={body} />
+  </body>
+</html>
