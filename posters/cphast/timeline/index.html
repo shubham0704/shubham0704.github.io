@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="C-PHAST research advances relative to prior work, quantitative evidence from May through August 2026, and the resulting dissertation pathway.">
+  <title>C-PHAST Research Advances and Dissertation Path</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="timeline.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" defer></script>
+  <script src="timeline.js" defer></script>
+</head>
+<body>
+  <nav class="timeline-nav" aria-label="Timeline navigation">
+    <a class="nav-brand" href="../">C-PHAST poster</a>
+    <div class="nav-actions">
+      <a href="#advances">Advances</a>
+      <a href="#claim-upgrades">SOTA + limits</a>
+      <a href="#frontier">Research frontier</a>
+      <a href="../../../cphast/main_cphast.pdf">Paper</a>
+      <button type="button" onclick="window.print()">Print / PDF</button>
+    </div>
+  </nav>
+
+  <main>
+    <header class="timeline-header">
+      <div class="header-copy">
+        <p class="eyebrow">Research trajectory | May-August 2026</p>
+        <h1>C-PHAST Advances and Dissertation Path</h1>
+        <p class="header-summary">The project asks how a physical world model can remain trustworthy as a system changes, explain why candidate futures differ, and help decide both what the system should do and how it should reconfigure. This page separates demonstrated advances from the remaining dissertation tests.</p>
+      </div>
+      <div class="header-facts" aria-label="Research trajectory summary">
+        <div><strong>5</strong><span>comparative scientific milestones</span></div>
+        <div><strong>4</strong><span>deployment shifts evaluated</span></div>
+        <div><strong>1,070</strong><span>real Spot windows</span></div>
+        <div><strong>3</strong><span>frontier questions</span></div>
+      </div>
+    </header>
+
+    <section class="thesis-section" aria-labelledby="thesis-title">
+      <div class="thesis-lead">
+        <p class="section-label">Proposed thesis spine</p>
+        <h2 id="thesis-title">Structure-preserving world models for reconfigurable physical systems</h2>
+        <p>From partial observations and compositional transfer to closed-loop action and active physical reconfiguration.</p>
+      </div>
+      <ol class="thesis-questions" aria-label="Three dissertation questions">
+        <li><span>Q1</span><strong>Representation</strong><small>What physical object should be learned once and reused when subsystem count, topology, embodiment, or sensing changes?</small></li>
+        <li><span>Q2</span><strong>Counterfactual prediction</strong><small>Can the model distinguish candidate interventions through named energy, work, support, sensing, and residual consequences?</small></li>
+        <li><span>Q3</span><strong>Reconfiguration and control</strong><small>Can the system choose both what to do and what physical configuration to become, while accounting for uncertainty and reconfiguration work?</small></li>
+      </ol>
+    </section>
+
+    <section class="timeline-section" id="advances" aria-labelledby="timeline-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Scientific progress</p>
+          <h2 id="timeline-title">Five comparative milestones</h2>
+        </div>
+        <p>Each period records the limitation that existed beforehand, the closest relevant comparator, the advance made, quantitative or theorem-level evidence, and the next obstruction exposed by the result.</p>
+      </div>
+
+      <div class="timeline-scroll" tabindex="0" aria-label="Horizontally scrollable C-PHAST research timeline">
+        <ol class="timeline">
+          <li class="milestone accent-green">
+            <div class="milestone-date"><time datetime="2026-05-01">May 1-14</time><span>Theory + architecture</span></div>
+            <article>
+              <img src="../../../cphast/images/signals_to_action_cards_web.png" alt="C-PHAST pipeline from observations through physical consequences to action cards">
+              <div class="milestone-body">
+                <div class="milestone-tags"><span>Q1</span><span>vs PHAST, graph models, compositional PHNNs</span></div>
+                <h3>The reusable object became a typed physical block</h3>
+                <dl class="claim-grid">
+                  <div><dt>Starting limitation</dt><dd>PHAST preserved pH structure but was fixed-layout. Graph models resized but did not constrain storage, dissipation, or exchanged power.</dd></div>
+                  <div><dt>Advance</dt><dd>Shared typed pH blocks were separated from a deployment specification containing count, wiring, observations, charts, and metadata. Rollouts retained named physical consequences before scoring.</dd></div>
+                  <div class="evidence"><dt>Evidence</dt><dd>For every learned skew interconnection, internal coupling contributes exactly zero net continuous-time power; PSD local damping prevents negative dissipation by construction.</dd></div>
+                  <div class="remaining"><dt>What remained</dt><dd>The decomposition and target layout were still declared. New component types and unknown topology were outside scope.</dd></div>
+                </dl>
+                <a class="evidence-link" href="../#cphast-boundary">Composition contract</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-blue">
+            <div class="milestone-date"><time datetime="2026-05-19">May 19-23</time><span>Real-robot forecasting</span></div>
+            <article>
+              <img src="../../../cphast/images/spot_real_query_context.png" alt="Real Spot shadow-mode candidate-future query">
+              <div class="milestone-body">
+                <div class="milestone-tags"><span>Q2</span><span>vs direct scalar score prediction</span></div>
+                <h3>Spot telemetry became physically typed future consequences</h3>
+                <dl class="claim-grid">
+                  <div><dt>Starting limitation</dt><dd>Decision-facing world models commonly expose a latent, reward, or scalar value, leaving the physical reason for a ranking implicit.</dd></div>
+                  <div><dt>Advance</dt><dd>A real-data query mapped recent Spot-with-arm telemetry and a numeric possible-next-behavior descriptor to work, support, battery, collision, sensing, and novelty consequences.</dd></div>
+                  <div class="evidence"><dt>Evidence</dt><dd>On 173 held-out windows, energetic-target Pearson correlation was 0.943-0.975. Typed-then-scored objectives achieved mean Pearson 0.880 and MAE 0.274, versus 0.871 and 0.330 for direct scalar training.</dd></div>
+                  <div class="remaining"><dt>What remained</dt><dd>Six logged episodes support forecasting, not autonomous hardware action or matched-state alternative futures.</dd></div>
+                </dl>
+                <a class="evidence-link" href="../#cphast-spot">Spot evidence</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-orange">
+            <div class="milestone-date"><time datetime="2026-05-28">May 28-Jun 18</time><span>Comparative validation</span></div>
+            <article>
+              <img src="../../../cphast/images/cphast_rollout_contract.png" alt="C-PHAST rollout contract across deployment changes">
+              <div class="milestone-body">
+                <div class="milestone-tags"><span>Q1</span><span>vs Shared-GRU, MPNN, DeepSets, N-PHDAE</span></div>
+                <h3>Redeployment became a falsifiable benchmark contract</h3>
+                <dl class="claim-grid">
+                  <div><dt>Starting limitation</dt><dd>Variable-size support alone did not distinguish reusable physics from parameter sharing, and specialized electrical models remained stronger in their native regime.</dd></div>
+                  <div><dt>Advance</dt><dd>Matched information contracts separated changes in subsystem count, embodiment, topology, and observation interface across mechanics, excitable systems, and microgrids.</dd></div>
+                  <div class="evidence"><dt>Evidence</dt><dd>After training at four legs, C-PHAST reached H=50 MSE 0.002/0.005/0.003 at two/four/six legs, versus 0.013/0.014/0.020 for Shared-GRU; MPNN and DeepSets were unstable.</dd></div>
+                  <div class="remaining"><dt>What remained</dt><dd>N-PHDAE remained the stronger full-state known-graph electrical forecaster. C-PHAST's differentiator was redeployment and typed diagnostics, not a blanket raw-MSE win.</dd></div>
+                </dl>
+                <a class="evidence-link" href="../../../cphast/main_cphast.pdf">Benchmark contracts</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-purple">
+            <div class="milestone-date"><time datetime="2026-07-07">Jul 7-Aug 1</time><span>Guarantees + transfer</span></div>
+            <article>
+              <img src="../../../cphast/images/isaaclab_source_target_transfer_hero.png" alt="ANYmal-D to Unitree Go2 transfer comparison">
+              <div class="milestone-body">
+                <div class="milestone-tags"><span>Q1</span><span>vs monolithic PHAST and matched sequence models</span></div>
+                <h3>The transfer claim acquired both a bound and a canonical test</h3>
+                <dl class="claim-grid">
+                  <div><dt>Starting limitation</dt><dd>Continuous-time pH structure did not by itself quantify finite-step accounting, observer error, or cross-robot degradation.</dd></div>
+                  <div><dt>Advance</dt><dd>Added a third-order finite-step ledger defect under the stated quadrature assumptions and an observer-aware transfer bound separating local, edge, port, and numerical error.</dd></div>
+                  <div class="evidence"><dt>Evidence</dt><dd>On canonical ANYmal-D to Go2 takeover, C-PHAST obtains 0.073 MSE versus 0.145 for monolithic PHAST and 0.178 for Shared-GRU. Its transfer gap is 1.6x versus 3.7x, 13x, and 21x for relevant alternatives.</dd></div>
+                  <div class="remaining"><dt>What remained</dt><dd>Hybrid contacts, learned modules, q-only observer error, and configuration-dependent inertia remain outside the strongest certificate.</dd></div>
+                </dl>
+                <a class="evidence-link" href="../#cphast-transfer">Canonical transfer evidence</a>
+              </div>
+            </article>
+          </li>
+
+          <li class="milestone accent-red">
+            <div class="milestone-date"><time datetime="2026-08-08">Aug 8-10</time><span>Executed decision</span></div>
+            <article>
+              <img src="../../../cphast/images/cphast_candidate_futures_px2p25_start82_filmstrip.png" alt="Go2 candidate recovery futures following a push">
+              <div class="milestone-body">
+                <div class="milestone-tags"><span>Q2 -> Q3</span><span>vs fixed recovery and pH-readout ablation</span></div>
+                <h3>Predicted consequences changed an executed command</h3>
+                <dl class="claim-grid">
+                  <div><dt>Starting limitation</dt><dd>Spot was shadow mode and the push critic behaved primarily as a warning system; neither established that forecasts altered execution.</dd></div>
+                  <div><dt>Advance</dt><dd>A bounded selector used eight-step C-PHAST consequences to choose one of nine high-level commands, then a frozen locomotion policy executed the choice for 24 steps.</dd></div>
+                  <div class="evidence"><dt>Evidence</dt><dd>Against the best fixed command, mean survival rose from 116.55 to 121.80 steps: +5.25 with seed-clustered 95% CI [2.5, 7.05]. pH readouts improved longest-survival selection from 12/20 to 14/20.</dd></div>
+                  <div class="remaining"><dt>What remained</dt><dd>Binary recovery tied at 10/20, selection occurred only once, and action-direction sensitivity remained weaker than required for a general controller.</dd></div>
+                </dl>
+                <a class="evidence-link" href="../#cphast-executed">Executed-selection evidence</a>
+              </div>
+            </article>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="position-section" aria-labelledby="position-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Position relative to prior art</p>
+          <h2 id="position-title">What is differentiated now?</h2>
+        </div>
+        <p>The contribution is not that pH systems compose, that graph networks resize, or that MPC can consume a world model. It is the conjunction below, together with evidence that separates its components.</p>
+      </div>
+      <div class="comparison-matrix" role="table" aria-label="C-PHAST position relative to prior work">
+        <div class="matrix-head" role="row"><span role="columnheader">Research object</span><span role="columnheader">Closest prior capability</span><span role="columnheader">C-PHAST advancement</span><span role="columnheader">Open boundary</span></div>
+        <div role="row"><strong role="cell">Reusable dynamics</strong><span role="cell">PHAST: structured but fixed-layout. Graph models: variable layout without pH accounting.</span><span role="cell">Typed pH blocks rebuilt through an explicit deployment specification.</span><span role="cell">Declared decomposition and known component types.</span></div>
+        <div role="row"><strong role="cell">Partial observation</strong><span role="cell">OE-pHNN/CIPHER: partial-observation identification for one system.</span><span role="cell">History-to-state inference attached to a block library reused across deployments.</span><span role="cell">Observer error still limits exact guarantees and hybrid contact tracking.</span></div>
+        <div role="row"><strong role="cell">Physical consequences</strong><span role="cell">World models commonly expose latent state, reward, value, or auxiliary diagnostics.</span><span role="cell">Named storage, dissipation, work, support, sensing, and residual channels before scoring.</span><span role="cell">Some operational proxies are learned channels, not pH-native quantities.</span></div>
+        <div role="row"><strong role="cell">Decision influence</strong><span role="cell">Planning and safety methods select candidates once a usable model is available.</span><span role="cell">One frozen model supports objective-conditioned ranking and one executed recovery choice.</span><span role="cell">No repeated replanning, hardware autonomy, or recovery-rate dominance yet.</span></div>
+      </div>
+    </section>
+
+    <section class="claim-upgrade-section" id="claim-upgrades" aria-labelledby="claim-upgrades-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">State of the art and open problems</p>
+          <h2 id="claim-upgrades-title">Strengths and limitations</h2>
+        </div>
+        <p>Two experiments establish SOTA results. Three show capabilities not covered by existing baselines. Positive and negative results are independently inspectable.</p>
+      </div>
+
+      <div class="sota-limit-table" role="table" aria-label="C-PHAST strengths and limitations">
+        <div class="sota-limit-head" role="row">
+          <span role="columnheader">Strengths</span>
+          <span role="columnheader">Limitations</span>
+        </div>
+
+        <div class="comparison-pair">
+          <div class="comparison-summary" role="row">
+            <article class="sota-side" role="cell">
+              <small><b>SOTA</b> Cross-robot transfer</small>
+              <strong>Lowest zero-shot Go2 rollout error</strong>
+              <span><em>C-PHAST 0.073</em> · fixed GRU 0.112</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="cross-robot-strength" data-evidence-target="cross-robot-strength">Open experiment</button>
+            </article>
+            <article class="limit-side" role="cell">
+              <small>Weakness</small>
+              <strong>Contact dynamics</strong>
+              <span>The position-only rollout omits floating-base motion and hybrid contact. Source MSE is 0.045 versus 0.005 for the fixed GRU.</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="contact-limit" data-evidence-target="contact-limit">Open experiment</button>
+            </article>
+          </div>
+          <div class="sota-evidence evidence-panel" id="cross-robot-strength" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Train on 350 ANYmal-D trajectories and test on 100 Go2 trajectories without retraining. After five observed steps, roll open loop for <span class="katex-inline" data-katex="H=50"></span>. Five model seeds; joint-angle MSE.</p></div>
+            <div class="score-table transfer-scores" role="table" aria-label="Go2 zero-shot rollout scores">
+              <div role="row"><b role="columnheader">Method</b><b role="columnheader">Go2 MSE</b></div>
+              <div class="winner" role="row"><span role="cell">C-PHAST</span><strong role="cell">0.073 ± 0.001</strong></div>
+              <div role="row"><span role="cell">Fixed GRU</span><span role="cell">0.112 ± 0.005</span></div>
+              <div role="row"><span role="cell">Monolithic PHAST</span><span role="cell">0.145 ± 0.016</span></div>
+              <div role="row"><span role="cell">Persist</span><span role="cell">0.152</span></div>
+              <div role="row"><span role="cell">Shared-GRU</span><span role="cell">0.178 ± 0.025</span></div>
+              <div role="row"><span role="cell">Neural ODE</span><span role="cell">18.9 ± 13.9</span></div>
+              <div role="row"><span role="cell">DeepSets</span><span role="cell">28.1 ± 45.7</span></div>
+              <div role="row"><span role="cell">MPNN</span><span role="cell">263 ± 361</span></div>
+            </div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST sets the SOTA for zero-shot ANYmal-D-to-Go2 rollout.</strong><p>Its transfer degradation is only <span class="katex-inline" data-katex="1.6\times"></span>; the fixed GRU degrades <span class="katex-inline" data-katex="21\times"></span>.</p></div>
+          </div>
+          <div class="sota-evidence limitation-evidence evidence-panel" id="contact-limit" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Use the source-domain half of the same five-seed transfer experiment. Compare open-loop <span class="katex-inline" data-katex="H=50"></span> error on ANYmal-D before embodiment transfer.</p></div>
+            <div class="score-table transfer-scores" role="table" aria-label="ANYmal-D source rollout scores">
+              <div role="row"><b role="columnheader">Method</b><b role="columnheader">ANYmal-D MSE</b></div>
+              <div class="winner" role="row"><span role="cell">Fixed GRU</span><strong role="cell">0.005 ± 0.000</strong></div>
+              <div role="row"><span role="cell">Shared-GRU</span><span role="cell">0.014 ± 0.003</span></div>
+              <div role="row"><span role="cell">Monolithic PHAST</span><span role="cell">0.039 ± 0.002</span></div>
+              <div class="negative" role="row"><span role="cell">C-PHAST</span><strong role="cell">0.045 ± 0.000</strong></div>
+              <div role="row"><span role="cell">Persist</span><span role="cell">0.045</span></div>
+              <div role="row"><span role="cell">DeepSets</span><span role="cell">0.071 ± 0.050</span></div>
+            </div>
+            <div class="limitation-reading"><small>Negative result</small><strong>C-PHAST is not the best source-domain forecaster.</strong><p>Its smooth actuated-coordinate model misses base motion, impacts, and contact switches. The next model must add floating-base state and hybrid contact modes without losing transfer stability.</p></div>
+          </div>
+        </div>
+
+        <div class="comparison-pair">
+          <div class="comparison-summary" role="row">
+            <article class="sota-side" role="cell">
+              <small><b>SOTA</b> Morphology transfer</small>
+              <strong>Three to seven times lower rollout error</strong>
+              <span>One leg model transfers to 2, 4, and 6 legs</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="morphology-strength" data-evidence-target="morphology-strength">Open experiment</button>
+            </article>
+            <article class="limit-side" role="cell">
+              <small>Weakness</small>
+              <strong>Reconfiguration is supplied</strong>
+              <span>C-PHAST accepts the new morphology. It does not choose the morphology or model the physical cost of changing it.</span>
+              <span class="not-tested">Not yet tested</span>
+            </article>
+          </div>
+          <div class="sota-evidence evidence-panel" id="morphology-strength" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Train on the four-leg MuJoCo robot, then instantiate the same learned 2-DOF leg block on two- and six-leg robots without retraining. Three seeds; open-loop <span class="katex-inline" data-katex="H=50"></span> MSE.</p></div>
+            <div class="score-table morphology-scores" role="table" aria-label="Leg-count transfer scores">
+              <div role="row"><b role="columnheader">Method</b><b role="columnheader">2 legs</b><b role="columnheader">4 legs</b><b role="columnheader">6 legs</b></div>
+              <div class="winner" role="row"><span role="cell">C-PHAST</span><strong role="cell">0.002</strong><strong role="cell">0.005</strong><strong role="cell">0.003</strong></div>
+              <div role="row"><span role="cell">Shared-GRU</span><span role="cell">0.013</span><span role="cell">0.014</span><span role="cell">0.020</span></div>
+              <div role="row"><span role="cell">MPNN</span><span role="cell">unstable</span><span role="cell">unstable</span><span role="cell">unstable</span></div>
+            </div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST sets the SOTA for zero-shot homologous leg-count transfer.</strong><p>The advantage over the nearest stable compositional baseline is <span class="katex-inline" data-katex="2.8\text{--}6.7\times"></span>.</p></div>
+          </div>
+        </div>
+
+        <div class="comparison-pair">
+          <div class="comparison-summary" role="row">
+            <article class="sota-side" role="cell">
+              <small><b>Hardware result</b> Real-robot consequence prediction</small>
+              <strong>Physical action cards from Spot telemetry</strong>
+              <span>0.880 Pearson · 0.860 Spearman</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="spot-strength" data-evidence-target="spot-strength">Open experiment</button>
+            </article>
+            <article class="limit-side" role="cell">
+              <small>Weakness</small>
+              <strong>Hardware evidence is narrow</strong>
+              <span>Six teleoperated episodes in shadow mode. Leave-one-episode-out agreement falls to 0.652/0.545.</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="hardware-limit" data-evidence-target="hardware-limit">Open experiment</button>
+            </article>
+          </div>
+          <div class="sota-evidence evidence-panel" id="spot-strength" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Use six Spot-with-arm ROS-bag episodes: 897 training and 173 held-out five-second windows. Predict work, battery draw, support, sensing, and map consequences, then rank behavior candidates under five objectives.</p></div>
+            <div class="score-table spot-scores" role="table" aria-label="Spot action-card ranking scores">
+              <div role="row"><b role="columnheader">Input / model</b><b role="columnheader">Pearson</b><b role="columnheader">Spearman</b></div>
+              <div class="winner" role="row"><span role="cell">Typed C-PHAST query</span><strong role="cell">0.880</strong><strong role="cell">0.860</strong></div>
+              <div role="row"><span role="cell">Direct scalar head</span><span role="cell">0.871</span><span role="cell">0.875</span></div>
+              <div role="row"><span role="cell">Descriptors only</span><span role="cell">0.780</span><span role="cell">0.778</span></div>
+              <div role="row"><span role="cell">History only</span><span role="cell">0.767</span><span role="cell">0.737</span></div>
+            </div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST predicts physically named consequences from real Spot telemetry.</strong><p>Joint-work targets reach 0.971–0.975 Pearson and battery draw reaches 0.943, while the typed interface retains scalar-head ranking quality.</p></div>
+          </div>
+          <div class="sota-evidence limitation-evidence evidence-panel" id="hardware-limit" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Replace the random held-out-window split with leave-one-episode-out evaluation. Each run removes an entire teleoperated episode from training.</p></div>
+            <div class="score-table spot-scores" role="table" aria-label="Spot split sensitivity">
+              <div role="row"><b role="columnheader">Split</b><b role="columnheader">Pearson</b><b role="columnheader">Spearman</b></div>
+              <div role="row"><span role="cell">Held-out windows</span><span role="cell">0.880</span><span role="cell">0.860</span></div>
+              <div class="negative" role="row"><span role="cell">Leave one episode out</span><strong role="cell">0.652</strong><strong role="cell">0.545</strong></div>
+            </div>
+            <div class="limitation-reading"><small>Negative result</small><strong>Generalization falls across whole missions.</strong><p>The evidence comes from six episodes and remains shadow mode. The next study needs more operators, payloads, environments, battery conditions, and decision-time-only descriptors.</p></div>
+          </div>
+        </div>
+
+        <div class="comparison-pair">
+          <div class="comparison-summary" role="row">
+            <article class="sota-side" role="cell">
+              <small><b>Best tested</b> Consequence-informed recovery</small>
+              <strong>Highest non-oracle mean survival</strong>
+              <span>+5.25 steps over the best fixed command</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="recovery-strength" data-evidence-target="recovery-strength">Open experiment</button>
+            </article>
+            <article class="limit-side" role="cell">
+              <small>Weakness</small>
+              <strong>Control is one shot</strong>
+              <span>Binary recovery still ties the best fixed command at 10/20. The selector does not replan.</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="control-limit" data-evidence-target="control-limit">Open experiment</button>
+            </article>
+          </div>
+          <div class="sota-evidence evidence-panel" id="recovery-strength" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Across 20 held-out Go2 pushes, C-PHAST forecasts nine recovery commands for eight steps. A selector trained on separate seeds chooses one command; the frozen locomotion policy executes it for 24 steps.</p></div>
+            <div class="score-table recovery-scores" role="table" aria-label="Go2 recovery selection scores">
+              <div role="row"><b role="columnheader">Method</b><b role="columnheader">Mean survival</b><b role="columnheader">Recovery</b></div>
+              <div class="winner" role="row"><span role="cell">C-PHAST selection</span><strong role="cell">121.80</strong><strong role="cell">10/20</strong></div>
+              <div role="row"><span role="cell">Best fixed command</span><span role="cell">116.55</span><span role="cell">10/20</span></div>
+              <div role="row"><span role="cell">Nominal continuation</span><span role="cell">—</span><span role="cell">8/20</span></div>
+              <div role="row"><span role="cell">Outcome oracle</span><span role="cell">upper bound</span><span role="cell">12/20</span></div>
+            </div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST achieves the best tested non-oracle survival in this Go2 benchmark.</strong><p>The gain is 5.25 steps with seed-clustered 95% CI [2.50, 7.05]. Typed factors improve longest-survival selection from 12/20 to 14/20.</p></div>
+          </div>
+          <div class="sota-evidence limitation-evidence evidence-panel" id="control-limit" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Read the binary-recovery outcome from the same 20 held-out pushes. Recovery means the robot does not fall before the 140-step episode ends.</p></div>
+            <div class="score-table recovery-scores" role="table" aria-label="Go2 binary recovery scores">
+              <div role="row"><b role="columnheader">Method</b><b role="columnheader">Recovery</b><b role="columnheader">Shortfall</b></div>
+              <div class="negative" role="row"><span role="cell">C-PHAST selection</span><strong role="cell">10/20</strong><strong role="cell">7.7 steps</strong></div>
+              <div class="winner" role="row"><span role="cell">Best fixed command</span><strong role="cell">10/20</strong><span role="cell">—</span></div>
+              <div role="row"><span role="cell">Kinematics-only selector</span><span role="cell">—</span><span role="cell">10.8 steps</span></div>
+              <div role="row"><span role="cell">Outcome oracle</span><span role="cell">12/20</span><span role="cell">0</span></div>
+            </div>
+            <div class="limitation-reading"><small>Negative result</small><strong>Survival improves, but recovery rate does not.</strong><p>The selector acts once and command-direction sensitivity remains weak. The next study must condition more strongly on actions and replan after short execution intervals.</p></div>
+          </div>
+        </div>
+
+        <div class="comparison-pair">
+          <div class="comparison-summary" role="row">
+            <article class="sota-side" role="cell">
+              <small><b>New capability</b> Typed reconfiguration diagnosis</small>
+              <strong>Physical residuals identify what changed</strong>
+              <span>183× energy · 42× current · 43× interconnect</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="diagnosis-strength" data-evidence-target="diagnosis-strength">Open experiment</button>
+            </article>
+            <article class="limit-side" role="cell">
+              <small>Weakness</small>
+              <strong>Topology is supplied</strong>
+              <span>C-PHAST diagnoses mismatch but does not infer the new graph. N-PHDAE remains stronger on raw rollout in several regimes.</span>
+              <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="topology-limit" data-evidence-target="topology-limit">Open experiment</button>
+            </article>
+          </div>
+          <div class="sota-evidence evidence-panel" id="diagnosis-strength" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Train the DGU and line blocks on a three-node DC microgrid, then remove or add a DGU and rewire the feeder. Compare C-PHAST with N-PHDAE under the same declared topology.</p></div>
+            <div class="score-table residual-scores" role="table" aria-label="Microgrid typed residual amplification">
+              <div role="row"><b role="columnheader">Change</b><b role="columnheader">Energy</b><b role="columnheader">Current</b><b role="columnheader">Interconnect</b></div>
+              <div class="winner" role="row"><span role="cell">Removed DGU</span><strong role="cell">183×</strong><strong role="cell">42×</strong><strong role="cell">43×</strong></div>
+              <div role="row"><span role="cell">Added DGU</span><span role="cell">26×</span><span role="cell">5.4×</span><span role="cell">4.0×</span></div>
+              <div role="row"><span role="cell">Ring rewire</span><span role="cell">37×</span><span role="cell">7.0×</span><span role="cell">5.9×</span></div>
+              <div role="row"><span role="cell">Star rewire</span><span role="cell">0.94×</span><span role="cell">0.94×</span><span role="cell">0.86×</span></div>
+            </div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST adds typed physical diagnosis to compositional reconfiguration.</strong><p>Unlike raw rollout error, the separated residuals reveal whether mismatch enters through storage, line current, or interconnection.</p></div>
+          </div>
+          <div class="sota-evidence limitation-evidence evidence-panel" id="topology-limit" data-evidence-panel hidden>
+            <div class="experiment-brief"><small>Experiment</small><p>Compare raw <span class="katex-inline" data-katex="H=50"></span> rollout error after DGU-count and feeder-topology changes. Both methods receive the changed graph.</p></div>
+            <div class="score-table spot-scores" role="table" aria-label="Microgrid raw rollout comparison">
+              <div role="row"><b role="columnheader">Change</b><b role="columnheader">C-PHAST</b><b role="columnheader">N-PHDAE</b></div>
+              <div role="row"><span role="cell">Reference</span><span role="cell">3.71e−5</span><span role="cell">6.49e−5</span></div>
+              <div class="negative" role="row"><span role="cell">Removed DGU</span><strong role="cell">3.00e−2</strong><strong role="cell">7.64e−5</strong></div>
+              <div class="negative" role="row"><span role="cell">Added DGU</span><strong role="cell">2.53e−3</strong><strong role="cell">7.69e−5</strong></div>
+              <div class="negative" role="row"><span role="cell">Ring rewire</span><strong role="cell">3.79e−3</strong><strong role="cell">5.82e−5</strong></div>
+              <div role="row"><span role="cell">Star rewire</span><span role="cell">4.00e−5</span><span role="cell">6.48e−5</span></div>
+            </div>
+            <div class="limitation-reading"><small>Negative result</small><strong>N-PHDAE is the stronger raw forecaster under difficult changes.</strong><p>C-PHAST receives rather than infers the changed topology. The next model must infer supported graph modes from residuals and improve its circuit dynamics without losing typed diagnosis.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="output-section" aria-labelledby="output-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Research outputs</p>
+          <h2 id="output-title">Communication and reproducibility track</h2>
+        </div>
+        <p>These outputs make the science inspectable and citable. They support the advances above, but are intentionally not counted as separate scientific milestones.</p>
+      </div>
+      <div class="output-track">
+        <article><time datetime="2026-06-18">May 28-Jun 18</time><strong>CoRL submission</strong><p>Unified the deployment contract, benchmark roles, scope boundaries, and evidence hierarchy.</p></article>
+        <article><time datetime="2026-08-17">Aug 14-17</time><strong>Live research package</strong><p>Connected equations, contracts, videos, objectives, learned versus analytical factors, and limitations in the PHAST/C-PHAST posters.</p></article>
+        <article class="active"><time datetime="2026-08-21">Aug 18-21</time><strong>arXiv v1 release candidate</strong><p>The 105-page manuscript and 68-file source archive compile independently. Coauthor approval and public submission remain.</p></article>
+      </div>
+    </section>
+
+    <section class="roadmap-section" id="frontier" aria-labelledby="roadmap-title">
+      <div class="section-heading roadmap-heading">
+        <div>
+          <p class="section-label">Frontier definition</p>
+          <h2 id="roadmap-title">What would put C-PHAST at the top of the mountain?</h2>
+        </div>
+        <p>Three problems now dominate. Each is stated as a research claim with a measurable completion gate, not as an open-ended feature list.</p>
+      </div>
+
+      <section class="frontier-program" aria-labelledby="frontier-program-title">
+        <span>Main research goal</span>
+        <h3 id="frontier-program-title">Can a compositional physical world model remain trustworthy as a system changes, and use physical forecasts to decide how it should act or reconfigure next?</h3>
+        <p>The program separates three causal questions: infer a configuration change that happened to the system, choose an action while configuration is fixed, and deliberately change configuration as part of the action. Calibrated uncertainty determines when any of these decisions should instead request another observation or abstain.</p>
+      </section>
+
+      <section class="domain-examples" aria-labelledby="domain-examples-title">
+        <div class="domain-examples-heading">
+          <div>
+            <span>One question · three tested domains</span>
+            <h3 id="domain-examples-title">The physical blocks change, but the research progression stays the same</h3>
+          </div>
+          <p>Choose a domain to see what has already been demonstrated and what assumption the frontier removes next.</p>
+        </div>
+        <div class="domain-tabs" role="tablist" aria-label="C-PHAST research domains">
+          <button id="domain-tab-robotics" type="button" role="tab" aria-selected="true" aria-controls="domain-panel-robotics" tabindex="0" data-domain-tab="robotics">Robotics</button>
+          <button id="domain-tab-fhn" type="button" role="tab" aria-selected="false" aria-controls="domain-panel-fhn" tabindex="-1" data-domain-tab="fhn">Excitable circuits</button>
+          <button id="domain-tab-power" type="button" role="tab" aria-selected="false" aria-controls="domain-panel-power" tabindex="-1" data-domain-tab="power">Power systems</button>
+        </div>
+        <div class="domain-panels">
+          <section id="domain-panel-robotics" role="tabpanel" aria-labelledby="domain-tab-robotics" data-domain-panel="robotics">
+            <div><span>Demonstrated evidence</span><strong>Typed mechanical and sensing interfaces transfer across changing embodiments.</strong><p>Planar-arm and legged-robot experiments reuse local blocks across subsystem count and embodiment, while Spot telemetry supports physical-consequence forecasting at the interface level.</p></div>
+            <div><span>Undeclared-change frontier</span><strong>Determine whether contact, payload, actuation, embodiment, or sensing changed.</strong><p>Sensor loss or installation of a compatible known sensor changes the observation interface; a genuinely unseen modality additionally requires a new calibrated adapter.</p></div>
+            <div><span>Active-reconfiguration frontier</span><strong>Choose motion and morphology together.</strong><p>Test whether typed forecasts improve repeated recovery and navigation when contacts, body shape, active limbs, or sensing configuration are themselves controlled variables.</p></div>
+          </section>
+          <section id="domain-panel-fhn" role="tabpanel" aria-labelledby="domain-tab-fhn" data-domain-panel="fhn" hidden>
+            <div><span>Demonstrated evidence</span><strong>A shared excitable-cell block transfers to unseen network sizes without retraining.</strong><p>Training uses <span class="katex-inline" data-katex="N=3"></span> coupled FHN cells; transfer instantiates the same block at <span class="katex-inline" data-katex="N\in\{2,4,5,6,8\}"></span> and rebuilds the diffusive coupling graph.</p></div>
+            <div><span>Undeclared-change frontier</span><strong>Separate a changed cell law, a changed coupling edge, and missing observation.</strong><p>The controlled test asks whether local voltage/recovery residuals and network-level rhythm identify where the excitable system departed from its deployed model.</p></div>
+            <div><span>Active-reconfiguration frontier</span><strong>Choose intervention and network mode together.</strong><p>A controlled study can compare stimulation, measurement, and supported coupling changes while preserving the distinction between the excitable-cell model and a complete model of brain circuitry.</p></div>
+          </section>
+          <section id="domain-panel-power" role="tabpanel" aria-labelledby="domain-tab-power" data-domain-panel="power" hidden>
+            <div><span>Demonstrated evidence</span><strong>Typed DGU and line blocks recompose under declared graph and sensing contracts.</strong><p>The microgrid experiments test heterogeneous node-edge composition, feeder topology changes, partial sensing, and physically named voltage, current, storage, and exchange readouts.</p></div>
+            <div><span>Undeclared-change frontier</span><strong>Infer an unreported feeder, component, parameter, or sensing change.</strong><p>The twin must detect that its incidence matrix is stale, identify the supported change hypothesis, and resume forecasting while keeping unaffected local blocks fixed.</p></div>
+            <div><span>Active-reconfiguration frontier</span><strong>Choose operation and electrical configuration together.</strong><p>A supervisory controller can jointly evaluate redispatch, healthy switching, islanding, load shedding, or abstention after protection has independently isolated immediate danger.</p></div>
+          </section>
+        </div>
+      </section>
+
+      <div class="summit-map" aria-label="Three research summits">
+        <div><span>01</span><strong>What changed?</strong><small>Infer an uncommanded configuration change</small></div>
+        <div><span>02</span><strong>What should it do?</strong><small>Choose, observe, and replan with configuration fixed</small></div>
+        <div><span>03</span><strong>What should it become?</strong><small>Plan motion and configuration together</small></div>
+      </div>
+
+      <div class="workstreams" aria-label="Dissertation frontier studies">
+        <details class="workstream workstream-green" id="reconfiguration-study">
+          <summary>
+            <span class="workstream-number">Frontier question 01</span>
+            <span class="workstream-title">Can the twin detect, localize, and remain predictive after an undeclared physical change?</span>
+            <span class="workstream-question">Move from supplied deployment structure toward detecting changed topology, local laws, sensing, or component identity.</span>
+            <span class="workstream-action" aria-hidden="true">Open target</span>
+          </summary>
+          <div class="workstream-body">
+            <div class="study-summary">
+              <section><h4>Current evidence</h4><p>C-PHAST reuses declared typed blocks across count, embodiment, topology, and sensing changes and exposes residual channels after reconfiguration.</p></section>
+              <section><h4>Research advance required</h4><p>Infer which deployment property changed, update only the affected blocks or wiring, and quantify when the old block library is no longer valid.</p></section>
+              <section class="study-gate"><h4>Completion gate</h4><p>On held-out robot and microgrid interventions, beat monolithic, graph, and specialized structured baselines on rollout error and correct failure-channel localization without receiving the change label.</p></section>
+            </div>
+            <figure class="frontier-visual">
+              <a href="assets/feeder-fault-synchronized-twin-v2.png" target="_blank" rel="noopener" aria-label="Open the feeder fault and synchronized C-PHAST twin diagram at full resolution">
+                <img src="assets/feeder-fault-synchronized-twin-v2.png" width="1536" height="1024" loading="lazy" alt="From feeder fault to a synchronized C-PHAST twin. Protection independently detects abnormal current and isolates the feeder. The remaining ring path keeps the four-DGU network connected while power reroutes. C-PHAST detects that its closed-ring topology is stale, infers the proposed topology mode, and synchronizes the same twin while keeping learned DGU and line blocks frozen. Supervisory control remains responsible for redispatch, switching, load shedding, or abstention.">
+              </a>
+              <figcaption><strong>Flagship scenario:</strong> protection isolates danger first; C-PHAST then detects that its topology is stale, infers the changed interconnection, and resumes forecasting with the same learned DGU and line blocks. Select the diagram to inspect it at full resolution.</figcaption>
+            </figure>
+            <aside class="literature-grounding" aria-labelledby="literature-grounding-title">
+              <div class="literature-grounding-heading">
+                <span>Established operational problem</span>
+                <h3 id="literature-grounding-title">A physical grid can change before its operational model does</h3>
+              </div>
+              <p>Power-systems literature calls this <strong>topology-error processing</strong>, <strong>switch-status identification</strong>, or <strong>operational topology identification</strong>. A breaker or sectionalizing switch may change the energized feeder while its status is missing, delayed, incorrectly transmitted, or still awaiting a manual model update. The resulting stale model can corrupt state estimation, forecasting, restoration, and control decisions.</p>
+              <ol class="literature-links">
+                <li><a href="https://doi.org/10.1109/TIA.2022.3212030" target="_blank" rel="noopener">Distribution Network Topology Identification Using Asynchronous Transformer Monitoring Data</a><span>Aligns the management-system topology with the physical feeder after switching for fault isolation or reconfiguration.</span></li>
+                <li><a href="https://doi.org/10.1016/j.epsr.2024.110406" target="_blank" rel="noopener">WLAV State Estimation Based Topology Error Detection and Identification</a><span>Addresses missing or incorrectly transferred switch status under limited distribution-grid measurements.</span></li>
+                <li><a href="https://doi.org/10.1109/59.32475" target="_blank" rel="noopener">Detection of Topology Errors by State Estimation</a><span>Establishes the classical residual-based problem caused by erroneous breaker and switch telemetry.</span></li>
+                <li><a href="https://ieeexplore.ieee.org/document/9794823" target="_blank" rel="noopener">Simultaneous Robust State Estimation, Topology Error Processing, and Outage Detection</a><span>Jointly handles state, topology, and outage uncertainty and evaluates the method on an actual distribution feeder.</span></li>
+                <li><a href="https://doi.org/10.1109/TSG.2023.3271902" target="_blank" rel="noopener">Learning Distribution Grid Topologies: A Tutorial</a><span>Surveys topology learning from sparse grid measurements and its role in situational awareness.</span></li>
+              </ol>
+              <p class="literature-gap"><strong>C-PHAST frontier:</strong> prior work establishes the need to identify the energized topology. Our question goes further: can typed dynamic residuals identify which physical relation changed, synchronize the same compositional twin without retraining its local blocks, and immediately restore trustworthy counterfactual forecasts?</p>
+            </aside>
+            <section class="frontier-explanation" aria-labelledby="frontier-sequence-title">
+              <div class="frontier-explanation-heading">
+                <span>Diagram walkthrough · one event in order</span>
+                <h3 id="frontier-sequence-title">From a physical fault to a synchronized C-PHAST twin</h3>
+                <p>Each equation now sits beside the physical or computational event it describes. Protection, synchronization, and operational control remain separate responsibilities.</p>
+              </div>
+
+              <dl class="frontier-glossary">
+                <div><dt>Feeder</dt><dd>The electrical line carrying power between buses; here, the DGU 2–DGU 3 connection.</dd></div>
+                <div><dt>Protection relay</dt><dd>The device that measures electrical signals, recognizes a dangerous condition, and issues a trip command.</dd></div>
+                <div><dt>Breaker</dt><dd>The physical switch that interrupts current. Opening a feeder means disconnecting it, not repairing the cable.</dd></div>
+              </dl>
+
+              <ol class="event-sequence">
+                <li class="event-physical">
+                  <span class="event-number">01</span>
+                  <div class="event-content">
+                    <span class="event-kind">Physical system · current C-PHAST</span>
+                    <strong>Normal ring operation</strong>
+                    <p>Four DGUs exchange power through a closed ring. The deployed twin contains reusable local dynamics, a supplied topology mode, an inferred state, and the available measurement interface.</p>
+                    <div class="event-equation" data-katex="\begin{aligned}\mathcal D_t&=(\theta,\kappa_t,\hat{x}_t,\mathcal O_t),\\ B_t&=B(\kappa_t)=B_{\mathrm{inc}}\end{aligned}"></div>
+                    <p class="event-definition"><span class="katex-inline" data-katex="\theta"></span>: learned DGU/line dynamics · <span class="katex-inline" data-katex="\kappa_t"></span>: topology mode · <span class="katex-inline" data-katex="\hat x_t"></span>: inferred state · <span class="katex-inline" data-katex="\mathcal O_t"></span>: observations.</p>
+                  </div>
+                </li>
+                <li class="event-physical">
+                  <span class="event-number">02</span>
+                  <div class="event-content"><span class="event-kind">Physical system</span><strong>A feeder fault appears</strong><p>The DGU 2–DGU 3 line develops an abnormal electrical condition while it is still connected and potentially dangerous.</p></div>
+                </li>
+                <li class="event-protection">
+                  <span class="event-number">03</span>
+                  <div class="event-content"><span class="event-kind">Independent protection</span><strong>Protection isolates danger</strong><p>The relay detects the abnormal current and trips the breaker. This fast safety action is independent of C-PHAST.</p></div>
+                </li>
+                <li class="event-physical">
+                  <span class="event-number">04</span>
+                  <div class="event-content"><span class="event-kind">Physical system</span><strong>The grid continues in a new configuration</strong><p>The ring becomes the connected chain DGU 2 → DGU 1 → DGU 4 → DGU 3. Power reroutes, so voltage and line loading change; a complete shutdown is not required for this topology.</p></div>
+                </li>
+                <li class="event-demonstrated">
+                  <span class="event-number">05</span>
+                  <div class="event-content">
+                    <span class="event-kind">Current C-PHAST · supplied-mode forecast</span>
+                    <strong>The C-PHAST twin is now stale</strong>
+                    <p>The plant uses an unknown <span class="katex-inline" data-katex="B'_{\mathrm{inc}}"></span>, but the twin still rolls forward with <span class="katex-inline" data-katex="B_{\mathrm{inc}}"></span>. The topology controls how otherwise reusable blocks exchange power.</p>
+                    <div class="event-equation" data-katex="\begin{aligned}\hat{x}_{t+1}&=F_{\theta}^{B(\kappa_t)}(\hat{x}_t,u_t),\\ \hat y_{t+1}&=\mathcal O_t(\hat x_{t+1})\end{aligned}"></div>
+                  </div>
+                </li>
+                <li class="event-demonstrated">
+                  <span class="event-number">06</span>
+                  <div class="event-content">
+                    <span class="event-kind">Demonstrated mismatch signal</span>
+                    <strong>Typed residuals expose the mismatch</strong>
+                    <p>Each candidate topology produces a telemetry prediction and a residual. The existing ring-rewire experiment amplifies energy, line-current, and interconnect-power residuals by <strong>37×</strong>, <strong>7.0×</strong>, and <strong>5.9×</strong>.</p>
+                    <div class="event-equation" data-katex="\begin{aligned}\hat y_t^{(\kappa)}&=\mathcal O_t\!\left(F_\theta^{B(\kappa)}(\hat x_{t-1},u_{t-1})\right),\\ r_t^{(\kappa)}&=y_t-\hat y_t^{(\kappa)}\end{aligned}"></div>
+                    <p class="event-definition">The residual signal is demonstrated; automatic identification of the correct change is not.</p>
+                  </div>
+                </li>
+                <li class="event-proposed">
+                  <span class="event-number">07</span>
+                  <div class="event-content">
+                    <span class="event-kind">Proposed frontier · structural inference</span>
+                    <strong>The extension infers what changed</strong>
+                    <p>Typed rollout residuals score candidate feeder, component, parameter, and sensor-change hypotheses. The previous mode supplies temporal persistence.</p>
+                    <div class="event-equation" data-katex="\begin{aligned}p(\kappa_t\mid y_{0:t},u_{0:t-1})&\propto p(y_t\mid\kappa_t,\hat x_t,\theta)\\ &\quad p(\kappa_t\mid\kappa_{t-1})\end{aligned}"></div>
+                    <p class="event-definition">If the posterior remains diffuse or every candidate fits poorly, C-PHAST abstains instead of silently changing its structure.</p>
+                  </div>
+                </li>
+                <li class="event-proposed">
+                  <span class="event-number">08</span>
+                  <div class="event-content">
+                    <span class="event-kind">Proposed frontier · synchronization</span>
+                    <strong>The same twin synchronizes and resumes forecasting</strong>
+                    <p>C-PHAST selects the inferred topology mode, replaces only its deployed incidence matrix, refreshes its state estimate, and keeps the learned DGU and line dynamics fixed.</p>
+                    <div class="event-equation" data-katex="\begin{aligned}\hat\kappa_t&=\arg\max_{\kappa}p(\kappa\mid y_{0:t},u_{0:t-1}),\\ B_{\mathrm{inc}}&\leftarrow B(\hat\kappa_t),\qquad \theta\ \mathrm{fixed}\end{aligned}"></div>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="math-boundary"><strong>Evidence boundary:</strong> mode-conditioned forecasting and typed residuals are demonstrated; automatic inference of <span class="katex-inline" data-katex="\kappa_t"></span> and online synchronization are the proposed frontier.</div>
+
+              <div class="action-distinction">
+                <div>
+                  <span>Internal inference · Frontier 01</span>
+                  <strong>Synchronize the twin</strong>
+                  <p>Infer the topology mode, update the incidence matrix, refresh the physical state, and forecast. No breaker or converter command is issued.</p>
+                </div>
+                <div>
+                  <span>Physical action · Frontier 02</span>
+                  <strong>Operate the grid</strong>
+                  <p>A supervisory controller may redispatch converters, close a healthy tie switch, shed load, form an island, or defer to an operator using C-PHAST forecasts.</p>
+                </div>
+              </div>
+              <p class="reported-change-note"><strong>Important:</strong> if a planned switch command or reliable breaker-status message already reports the new topology, C-PHAST receives that mode directly. Structural diagnosis is needed only for an unreported, delayed, uncertain, or fault-driven change.</p>
+            </section>
+            <details class="protocol-details">
+              <summary>Experiments and deliverables</summary>
+              <div class="protocol-grid">
+                <div><strong>Interventions</strong><span>Payload, friction, contact, sensor loss, subsystem addition/removal, feeder switching, line drift, and DGU faults; one controlled change per matched case before compound changes.</span></div>
+                <div><strong>Deliverable</strong><span>A reconfiguration benchmark plus a change-aware C-PHAST update rule with calibrated residual localization and explicit rejection of unseen component types.</span></div>
+              </div>
+              <section class="baseline-plan" aria-labelledby="frontier-one-baselines">
+                <div class="baseline-plan-heading">
+                  <span>Matched comparison plan</span>
+                  <h4 id="frontier-one-baselines">Which baselines must C-PHAST beat?</h4>
+                  <p>Each method receives an explicit information contract. Oracle conditions measure forecasting headroom; they are not counted as unknown-change competitors.</p>
+                </div>
+                <div class="baseline-groups">
+                  <section>
+                    <h5>Forecasting and recomposition</h5>
+                    <dl>
+                      <div><dt>Monolithic Neural ODE / GRU</dt><dd>Tests whether modular physical structure is necessary for post-change forecasting.</dd></div>
+                      <div><dt>Graph dynamics model</dt><dd>Tests whether a resizable graph architecture is sufficient without typed pH channels.</dd></div>
+                      <div><dt><a href="https://arxiv.org/abs/2412.11215" target="_blank" rel="noopener">N-PHDAE</a> · stale topology</dt><dd>Keeps the old supplied graph after the event and exposes the cost of an unsynchronized structured model.</dd></div>
+                      <div><dt><a href="https://arxiv.org/abs/2412.11215" target="_blank" rel="noopener">N-PHDAE</a> · oracle topology</dt><dd>Receives the true new interconnection matrix and recomposes frozen component models; this is a structured forecasting upper bound.</dd></div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h5>Unknown-change identification</h5>
+                    <dl>
+                      <div><dt><a href="https://doi.org/10.1016/j.epsr.2024.110406" target="_blank" rel="noopener">WLAV</a> / <a href="https://ieeexplore.ieee.org/document/9794823" target="_blank" rel="noopener">MIQP</a> topology processor</dt><dd>Represents established grid-specific topology-error processing from electrical measurements.</dd></div>
+                      <div><dt>Graph model + candidate search</dt><dd>Scores the same candidate graphs from the same telemetry without pH-typed residuals.</dd></div>
+                      <div><dt><a href="https://arxiv.org/abs/2412.11215" target="_blank" rel="noopener">N-PHDAE</a> + candidate search</dt><dd>Adds the same candidate set and decision rule used by C-PHAST; the published N-PHDAE does not infer the graph by itself.</dd></div>
+                      <div><dt>C-PHAST without typed residuals</dt><dd>Ablates energy, dissipation, and interconnection-power evidence while preserving capacity and candidate access.</dd></div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h5>Bounds and attribution</h5>
+                    <dl>
+                      <div><dt>Stale C-PHAST</dt><dd>Never updates the deployment graph and establishes the cost of missing the change.</dd></div>
+                      <div><dt>Oracle C-PHAST</dt><dd>Receives the true change time and topology and measures attainable post-change rollout accuracy.</dd></div>
+                      <div><dt>Full change-aware C-PHAST</dt><dd>Must detect, localize, synchronize, and forecast without receiving the change label.</dd></div>
+                    </dl>
+                  </section>
+                </div>
+                <p class="baseline-contract"><strong>Fairness rule:</strong> candidate-based methods receive identical candidate graphs, telemetry, history, and decision thresholds. Methods given the true post-change topology are reported separately as oracle references.</p>
+              </section>
+            </details>
+          </div>
+        </details>
+
+        <details class="workstream workstream-red" id="controller-study">
+          <summary>
+            <span class="workstream-number">Frontier question 02</span>
+            <span class="workstream-title">Do typed forecasts improve repeated closed-loop decisions?</span>
+            <span class="workstream-question">Move from one executed choice to action-sensitive receding-horizon planning against alarms, fixed recovery, and black-box models.</span>
+            <span class="workstream-action" aria-hidden="true">Open target</span>
+          </summary>
+          <div class="workstream-body">
+            <div class="study-summary">
+              <section><h4>Current evidence</h4><p>One C-PHAST-informed command is executed after a push. Typed pH readouts improve longest-survival selection and reduce survival regret, while binary recovery ties the best fixed command.</p></section>
+              <section><h4>Research advance required</h4><p>Turn the single decision into a repeated observe–forecast–select–execute loop while holding the candidate set, planner, low-level policy, and evaluation contract fixed.</p></section>
+              <section class="study-gate"><h4>Completion gate</h4><p>Across held-out pushes, terrain, payloads, and objectives, full C-PHAST must significantly improve closed-loop recovery, survival, task progress, work, harms, and command regret over fixed recovery and black-box world models under the same planner.</p></section>
+            </div>
+
+            <figure class="decision-visual">
+              <div class="decision-visual-heading">
+                <span>Flagship scenario · disturbed Go2 recovery</span>
+                <h3>Forecast alternatives, execute briefly, observe again</h3>
+                <p>The current study stops after one selected command. Frontier Question 2 closes the loop by repeating the same measurement and planning contract.</p>
+              </div>
+              <video controls muted loop playsinline preload="metadata" poster="assets/go2-candidate-futures-preview.png" aria-label="Three matched Go2 recovery-command branches after the same push">
+                <source src="assets/go2-candidate-futures.mp4" type="video/mp4">
+              </video>
+              <ol class="decision-loop-strip" aria-label="Proposed repeated decision loop">
+                <li><span>01</span><strong>Observe</strong><small>Root, joints, contacts, slip, terrain</small></li>
+                <li><span>02</span><strong>Forecast</strong><small>Same state, nine candidate commands</small></li>
+                <li><span>03</span><strong>Select</strong><small>Fixed planner scores typed consequences</small></li>
+                <li><span>04</span><strong>Execute briefly</strong><small>Frozen RSL-RL policy</small></li>
+                <li><span>05</span><strong>Refresh</strong><small>New telemetry starts the next cycle</small></li>
+              </ol>
+              <figcaption><strong>Why action-conditioned futures matter:</strong> these matched Isaac branches begin from the same disturbed Go2 state but produce different survival outcomes. They motivate repeated planning; the video itself shows independently executed candidate branches, not a receding-horizon C-PHAST controller.</figcaption>
+            </figure>
+
+            <section class="decision-evidence" aria-labelledby="decision-evidence-title">
+              <div class="decision-evidence-heading">
+                <span>Evidence already collected</span>
+                <h3 id="decision-evidence-title">One forecast query already changes one executed decision</h3>
+                <p>Twenty held-out scenarios use seeds 60–64, both push signs, and normal or declared low-friction terrain. No held-out branch outcome is used to fit the selector.</p>
+              </div>
+              <div class="decision-metrics">
+                <div><strong>+5.25 steps</strong><span>mean survival over the best fixed command</span><small>95% seed-clustered CI [2.50, 7.05]</small></div>
+                <div><strong>14/20</strong><span>longest-survival selections with typed pH readouts</span><small>versus 12/20 with predicted kinematics only</small></div>
+                <div><strong>7.7 steps</strong><span>mean survival shortfall from the outcome oracle</span><small>reduced from 10.8 steps</small></div>
+                <div><strong>10/20</strong><span>binary recoveries</span><small>ties the best fixed command; nominal obtains 8/20 and the oracle 12/20</small></div>
+              </div>
+              <p class="decision-boundary"><strong>Evidence boundary:</strong> the result supports executed one-shot command selection and reduced failure severity. It does not yet establish repeated replanning or recovery-rate dominance.</p>
+            </section>
+
+            <aside class="decision-literature" aria-labelledby="decision-literature-title">
+              <div class="decision-literature-heading">
+                <span>Established planning problem</span>
+                <h3 id="decision-literature-title">World models matter when their predictions change actions</h3>
+                <p>Model-based control and decision-focused learning already establish the predict–optimize–execute loop. C-PHAST’s narrower question is whether compositional, pH-typed consequences improve decisions when the downstream planner is held fixed.</p>
+              </div>
+              <ol class="decision-literature-links">
+                <li><a href="https://proceedings.neurips.cc/paper_files/paper/2018/hash/3de568f8597b94bda53149c7d7f5958c-Abstract.html" target="_blank" rel="noopener">PETS</a><span>Uncertainty-aware learned dynamics with trajectory-sampling control.</span></li>
+                <li><a href="https://openreview.net/forum?id=Oxh5CstDJU" target="_blank" rel="noopener">TD-MPC2</a><span>Latent world-model planning for scalable continuous control.</span></li>
+                <li><a href="https://arxiv.org/abs/1707.02342" target="_blank" rel="noopener">Information-Theoretic MPC / MPPI</a><span>Sampling-based model-predictive optimization over action sequences.</span></li>
+                <li><a href="https://proceedings.mlr.press/v162/mandi22a.html" target="_blank" rel="noopener">Decision-Focused Learning</a><span>Evaluates predictions through downstream decision quality and regret.</span></li>
+              </ol>
+            </aside>
+
+            <section class="decision-explanation" aria-labelledby="decision-sequence-title">
+              <div class="decision-explanation-heading">
+                <span>Closed-loop experiment · one cycle at a time</span>
+                <h3 id="decision-sequence-title">What enters C-PHAST, what it returns, and who acts</h3>
+                <p>The model predicts candidate consequences. A separate planner selects a high-level command, and the frozen locomotion policy converts that command into joint actions.</p>
+              </div>
+
+              <ol class="decision-sequence">
+                <li>
+                  <span class="decision-number">01</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Current and proposed · observation</span>
+                    <strong>Measure the disturbed robot</strong>
+                    <p>After the lateral push, C-PHAST receives recent root and joint telemetry, contact/slip geometry, declared terrain material, and the supplied command library. It receives no push label, push magnitude, or future simulator state.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=inferred-state}{\hat x_t}=\htmlData{var=observer}{\mathcal O_\phi}\!\left(\htmlData{var=telemetry-history}{y_{t-K:t}},\htmlData{var=deployment-spec}{\mathcal S_t}\right)"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">02</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Current and proposed · matched choices</span>
+                    <strong>Start every candidate from the same inferred state</strong>
+                    <p>The nine labels are nominal, hold, forward, backward, left, right, turn-left, turn-right, and default stance. Candidate access is identical across predictive models.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=command-library}{\mathcal A}=\{\htmlData{var=command-candidate}{a^{(1)}},\ldots,\htmlData{var=command-candidate}{a^{(9)}}\}"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">03</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Current and proposed · action-conditioned rollout</span>
+                    <strong>Forecast the physical future under every command</strong>
+                    <p>The submitted one-shot study uses an eight-step forecast. The repeated experiment will sweep the useful lookahead instead of assuming that a longer horizon is always better.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=predicted-trajectory}{\hat\tau_{t:t+\htmlData{var=prediction-horizon}{H}}^{(a)}}=\htmlData{var=world-model}{F_\theta^{\mathcal S_t}}\!\left(\htmlData{var=inferred-state}{\hat x_t},\htmlData{var=command-sequence}{a_{t:t+\htmlData{var=prediction-horizon}{H}-1}}\right),\qquad \htmlData{var=command-candidate}{a}\in\htmlData{var=command-library}{\mathcal A}"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">04</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Current and proposed · fixed downstream planner</span>
+                    <strong>Convert each rollout into decision-facing consequences</strong>
+                    <p>The consequence vector contains predicted stability, support/contact, slip, energy and dissipation, task progress, and other declared factors. The planner, not C-PHAST, specifies how those consequences are prioritized.</p>
+                    <div class="decision-equation" data-katex="\begin{aligned}\htmlData{var=consequence-vector}{c_t^{(a)}}&=\htmlData{var=consequence-readout}{\Phi}\!\left(\htmlData{var=predicted-trajectory}{\hat\tau_{t:t+\htmlData{var=prediction-horizon}{H}}^{(a)}}\right),\\ \htmlData{var=selected-command}{a_t^\star}&=\arg\min_{\htmlData{var=command-candidate}{a}\in\htmlData{var=command-library}{\mathcal A}}\htmlData{var=planner-objective}{J_w}\!\left(\htmlData{var=consequence-vector}{c_t^{(a)}}\right)\end{aligned}"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">05</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Current and proposed · physical execution</span>
+                    <strong>Execute the selected high-level command briefly</strong>
+                    <p>The frozen RSL-RL policy maps the selected velocity command to low-level joint actions. In the current study, the choice is executed for 24 control steps and no second planning decision is made.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=joint-actions}{u_{t:t+\htmlData{var=execution-interval}{M}-1}}=\htmlData{var=low-level-policy}{\pi_{\mathrm{RSL\text{-}RL}}}\!\left(\htmlData{var=current-telemetry}{y_t},\htmlData{var=selected-command}{a_t^\star}\right)"></div>
+                  </div>
+                </li>
+                <li class="decision-proposed">
+                  <span class="decision-number">06</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Proposed frontier · close the loop</span>
+                    <strong>Refresh the observer and make the next decision</strong>
+                    <p>After a short execution interval, new telemetry replaces the old belief. Forecasts are recomputed from the realized state rather than chaining indefinitely through model predictions.</p>
+                    <div class="decision-equation" data-katex="t\leftarrow t+\htmlData{var=execution-interval}{M},\qquad \htmlData{var=inferred-state}{\hat x_t}\leftarrow\htmlData{var=observer}{\mathcal O_\phi}(\htmlData{var=telemetry-history}{y_{t-K:t}},\htmlData{var=deployment-spec}{\mathcal S_t}),\qquad \text{repeat}"></div>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="decision-roles" aria-label="Responsibilities in the closed-loop experiment">
+                <div><span>World model</span><strong>C-PHAST</strong><p>Infers state and returns action-conditioned trajectories and typed physical consequences.</p></div>
+                <div><span>Decision layer</span><strong>Planner</strong><p>Applies the declared objective, feasibility rules, and switching policy to select one command.</p></div>
+                <div><span>Low-level control</span><strong>Frozen RSL-RL</strong><p>Tracks the selected high-level command through joint-level actions. Its weights remain fixed.</p></div>
+                <div><span>Ground truth</span><strong>Isaac Lab</strong><p>Executes the action, produces new telemetry, and determines recovery, survival, slip, and failure.</p></div>
+              </div>
+            </section>
+
+            <details class="protocol-details">
+              <summary>Experiments and deliverables</summary>
+              <div class="protocol-grid">
+                <div><strong>Matched intervention grid</strong><span>Held-out push direction and magnitude, normal/low friction, payload, command objective, and sensor quality. Initial state, disturbance, action candidates, planner, execution interval, and policy remain matched.</span></div>
+                <div><strong>Primary completion artifact</strong><span>A repeated-planning benchmark, videos of matched closed-loop outcomes, decision and safety metrics, horizon/replanning ablations, and a frozen reproducible model–planner–policy interface.</span></div>
+              </div>
+              <section class="decision-baseline-plan" aria-labelledby="frontier-two-baselines">
+                <div class="baseline-plan-heading">
+                  <span>Matched comparison plan</span>
+                  <h4 id="frontier-two-baselines">What must the repeated C-PHAST loop beat?</h4>
+                  <p>The primary attribution comparison holds the downstream planner fixed and changes only the predictive representation or consequence channels.</p>
+                </div>
+                <div class="decision-baseline-groups">
+                  <section>
+                    <h5>No learned world model</h5>
+                    <dl>
+                      <div><dt>Nominal policy</dt><dd>Continues the commanded task without a recovery layer.</dd></div>
+                      <div><dt>Alarm + fixed recovery</dt><dd>A calibrated scalar alarm triggers one declared conservative response.</dd></div>
+                      <div><dt>Best fixed command</dt><dd>Uses the strongest single command chosen on development scenarios.</dd></div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h5>Same planner · different predictions</h5>
+                    <dl>
+                      <div><dt>Measured state only</dt><dd>Selects from current telemetry without candidate rollouts.</dd></div>
+                      <div><dt>Black-box world model</dt><dd>Supplies predicted kinematics to the identical planner.</dd></div>
+                      <div><dt>C-PHAST without pH readouts</dt><dd>Preserves rollout capacity while withholding energy, dissipation, and port evidence.</dd></div>
+                      <div><dt>Full C-PHAST</dt><dd>Adds the complete typed consequence interface.</dd></div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h5>Planner and oracle references</h5>
+                    <dl>
+                      <div><dt>Discrete candidate MPC</dt><dd>Primary planner over the same nine-command library and fixed objective.</dd></div>
+                      <div><dt>MPPI / CEM</dt><dd>Secondary study over continuous command sequences; reported separately because the planner changes.</dd></div>
+                      <div><dt>Outcome oracle</dt><dd>Selects the best independently executed branch and bounds attainable performance.</dd></div>
+                    </dl>
+                  </section>
+                </div>
+                <p class="baseline-contract"><strong>Fairness rule:</strong> all model comparisons use the same observation history, action candidates, planner objective, feasibility rules, execution duration, low-level policy, disturbance, and random seed.</p>
+              </section>
+              <section class="decision-measurement-plan" aria-labelledby="decision-measurement-title">
+                <div>
+                  <span>Outcome metrics</span>
+                  <h4 id="decision-measurement-title">Did the robot do better?</h4>
+                  <p>Recovery, survival time, task progress, falls, support loss, slip, mechanical work, and harmful-event count.</p>
+                </div>
+                <div><span>Decision metrics</span><h4>Did the model choose better?</h4><p>Survival regret, longest-survival selection, false-safe choice rate, unnecessary intervention, command switching, and objective regret.</p></div>
+                <div><span>Design ablations</span><h4>When does replanning help?</h4><p>Forecast horizon <span class="katex-inline" data-katex="H"></span>, execution interval <span class="katex-inline" data-katex="M"></span>, candidate-library coverage, objective weights, and observer history length <span class="katex-inline" data-katex="K"></span>.</p></div>
+              </section>
+              <p class="decision-theory-note"><strong>Theory boundary:</strong> Energy–Casimir and passivity-based synthesis remain controller-interface evidence under their assumptions. The repeated Go2 study first evaluates empirical model-predictive decision utility; a robust certificate must additionally account for observer, model, matching, and finite-step errors.</p>
+            </details>
+          </div>
+        </details>
+
+        <details class="workstream workstream-purple" id="stochastic-cphast-study">
+          <summary>
+            <span class="workstream-number">Frontier question 03</span>
+            <span class="workstream-title">Can C-PHAST choose both what a system does and what it becomes?</span>
+            <span class="workstream-question">Move from control under a fixed deployment to planning motion, contact, morphology, sensing, or connectivity as coupled physical decisions.</span>
+            <span class="workstream-action" aria-hidden="true">Open target</span>
+          </summary>
+          <div class="workstream-body">
+            <div class="study-summary">
+              <section><h4>Current evidence</h4><p>C-PHAST reuses blocks after a supplied embodiment or topology change and ranks candidate actions for a fixed deployed composition. It does not yet treat physical configuration as a state that the system can deliberately control online.</p></section>
+              <section><h4>Research advance required</h4><p>Infer physical state from partial history, reuse local models across supported configurations, and compare coupled motion-reconfiguration futures through named work, energy, contact, and task consequences.</p></section>
+              <section class="study-gate"><h4>Completion gate</h4><p>On a variable-footprint or modular robot, improve held-out passage success, physical cost, and decision regret over reactive, policy, graph-world-model, and switching-pH baselines without retraining the local block library.</p></section>
+            </div>
+
+            <section class="reconfiguration-frame" aria-labelledby="reconfiguration-frame-title">
+              <div class="reconfiguration-frame-heading">
+                <span>Frontier scientific problem · active physical reconfiguration</span>
+                <h3 id="reconfiguration-frame-title">Control must choose both the next state and the dynamics that produce it</h3>
+                <p>Ordinary action moves a system inside its current configuration. Reconfiguration changes shape, stiffness, contact, active components, or connectivity, and therefore changes the model needed for the next forecast.</p>
+              </div>
+
+              <figure class="reconfiguration-scenario">
+                <img src="assets/active-reconfiguration-route.png" loading="lazy" alt="A modular robot observes a disaster route, compares wide, compact, and extended configurations, narrows itself to pass through a collapsed conduit, and extends across a broken trench before observing again">
+                <figcaption><strong>Why configuration becomes a control variable:</strong> the same route requires a wide stance on unstable rubble, a compact body inside a collapsed conduit, and an extended stance across a trench. C-PHAST must compare these configuration changes together with ordinary motion, execute a short segment, and re-observe.</figcaption>
+              </figure>
+
+              <div class="reconfiguration-distinction" aria-label="Three causal roles of physical configuration">
+                <article><span>Question 01</span><strong>Change happened to the system</strong><p>Damage, sensor loss, or an unreported contact change alters configuration. C-PHAST must infer what changed.</p></article>
+                <article><span>Question 02</span><strong>Action changes ordinary state</strong><p>A command moves the system while its declared morphology, sensors, and connectivity remain fixed.</p></article>
+                <article><span>Question 03</span><strong>Action changes configuration</strong><p>The system deliberately changes shape, contacts, active modules, sensing, or connectivity to complete the task.</p></article>
+              </div>
+
+              <section class="reconfiguration-motivation" aria-labelledby="reconfiguration-motivation-title">
+                <div class="reconfiguration-motivation-heading">
+                  <span>Why this is a cross-domain control problem</span>
+                  <h3 id="reconfiguration-motivation-title">The same decision appears whenever configuration changes the governing dynamics</h3>
+                  <p>Continuous reconfiguration is needed when useful configurations form a continuum and intermediate shapes affect safety, work, or performance. Hybrid reconfiguration combines those smooth adjustments with discrete contact, topology, or module transitions.</p>
+                </div>
+                <div class="configuration-types" aria-label="Continuous, discrete, and hybrid physical reconfiguration">
+                  <article><span>Continuous <span class="katex-inline" data-katex="\htmlData{var=continuous-configuration}{\rho_t}"></span></span><strong>Shape, stiffness, geometry</strong><p>The configuration evolves smoothly while the task continues. Intermediate configurations are physical states, not free jumps.</p></article>
+                  <article><span>Discrete <span class="katex-inline" data-katex="\htmlData{var=discrete-mode}{\kappa_t}"></span></span><strong>Contact, topology, active modules</strong><p>A mode change can reroute power or impose a state reset, so the transition itself requires an energy account.</p></article>
+                  <article><span>Hybrid</span><strong>Continuous motion plus switching</strong><p>A morphing body may deform continuously while making and breaking contact; a microgrid continuously redispatches around discrete feeder changes.</p></article>
+                </div>
+                <div class="reconfiguration-domain-grid">
+                  <article><small>Continuous · morphing flight</small><strong>Wing sweep, twist, and tail geometry change aerodynamic authority during flight.</strong><p>The shape that saves energy in cruise may not supply the forces needed for a gust or rapid maneuver.</p><a href="https://www.nature.com/articles/s44182-024-00015-y" target="_blank" rel="noopener">Adaptive wing-and-tail morphing</a></article>
+                  <article><small>Continuous · medical robotics</small><strong>A continuum manipulator must remain compliant for access and stiffen for precise operation.</strong><p>Curvature and operating stiffness change while the instrument is already interacting with tissue.</p><a href="https://spj.science.org/doi/10.34133/cbsystems.0110" target="_blank" rel="noopener">Time-varying operating stiffness</a></article>
+                  <article><small>Continuous · adaptive optics</small><strong>A deformable mirror changes shape as atmospheric distortion evolves.</strong><p>The controlled geometry determines the optical dynamics and must be refreshed throughout observation.</p><a href="https://arxiv.org/abs/1604.08787" target="_blank" rel="noopener">On-sky wavefront control</a></article>
+                  <article><small>Continuous + compositional · soft robots</small><strong>Shape, material stiffness, and segment arrangement jointly determine motion and contact.</strong><p>Recent work transfers control across many configurations, making cross-configuration adaptation a direct comparison point.</p><a href="https://www.nature.com/articles/s41467-026-72491-9" target="_blank" rel="noopener">Control across 33 soft-robot configurations</a></article>
+                  <article><small>Discrete + compositional · modular robots</small><strong>Active limbs and module graphs change the available state and action spaces.</strong><p>Graph policies and learned dynamics already transfer across designs; the remaining question is physically typed counterfactual planning during reconfiguration.</p><a href="https://arxiv.org/abs/2105.10049" target="_blank" rel="noopener">Learning modular robot control policies</a></article>
+                  <article><small>Hybrid · microgrids</small><strong>Continuous converter control and redispatch operate around discrete switching and islanding.</strong><p>Opening a feeder changes the interconnection structure; voltage, current, and stored energy continue evolving on the new graph.</p><a href="https://doi.org/10.1016/j.automatica.2006.12.022" target="_blank" rel="noopener">pH systems with varying constraints</a></article>
+                  <article><small>Natural motivation · living matter</small><strong>Cells and tissues actively vary shape, contractile stress, and network organization.</strong><p>Growth, repair, and locomotion require force production and physical remodeling to proceed together.</p><a href="https://www.nature.com/articles/s42254-019-0036-4" target="_blank" rel="noopener">Active biopolymer networks</a></article>
+                  <article class="long-horizon-example"><small>Long-horizon embodiment · octopus-like motion</small><strong>A continuously deformable body must reshape around a confined, contact-rich path.</strong><p>This remains the motivating limit case, but it is not the first benchmark: continuum mechanics and dense contact would otherwise confound the initial C-PHAST attribution study.</p></article>
+                </div>
+                <p class="reconfiguration-literature-gap"><strong>What is already known:</strong> prior work separately demonstrates morphology selection, modular transfer, partial-observation graph simulation, switching pH learning, and model-predictive control. <strong>C-PHAST's question is their intersection:</strong> can one partially observed compositional pH world model reuse local blocks and rank coupled action-configuration futures through explicit energy, work, dissipation, contact, and task consequences?</p>
+              </section>
+
+              <ol class="reconfiguration-sequence" aria-label="Active reconfiguration decision cycle">
+                <li><span>01</span><strong>Observe</strong><small>Infer motion and contact state from sensor history; receive the supported current composition.</small></li>
+                <li><span>02</span><strong>Propose</strong><small>Pair motion candidates with wide, narrow, asymmetric, reduced-limb, or retreat configurations.</small></li>
+                <li><span>03</span><strong>Forecast</strong><small>Predict progress, actuator and reconfiguration work, support, contact force, and failure risk.</small></li>
+                <li><span>04</span><strong>Execute</strong><small>Apply only a short motion-reconfiguration segment through the matched lower-level controller.</small></li>
+                <li><span>05</span><strong>Refresh</strong><small>Re-observe realized motion, geometry, and contact before comparing the next futures.</small></li>
+              </ol>
+
+              <div class="reconfiguration-math">
+                <div>
+                  <span>Continuous configuration inside one mode</span>
+                  <p><span class="katex-inline" data-katex="\htmlData{var=physical-state}{x_t}"></span> is the physical state, <span class="katex-inline" data-katex="\htmlData{var=continuous-configuration}{\rho_t}"></span> is a smooth configuration coordinate, and <span class="katex-inline" data-katex="\htmlData{var=discrete-mode}{\kappa_t}"></span> selects the current contact or topology mode. The pH operators below depend on <span class="katex-inline" data-katex="(x;\rho)"></span>.</p>
+                  <div class="decision-equation" data-katex="\begin{aligned}\dot{\htmlData{var=physical-state}{x}}&=[J_{\htmlData{var=discrete-mode}{\kappa}}-R_{\htmlData{var=discrete-mode}{\kappa}}]\nabla_xH_{\htmlData{var=discrete-mode}{\kappa}}+G_{\htmlData{var=discrete-mode}{\kappa}}\htmlData{var=ordinary-control}{u},\\ \dot{\htmlData{var=continuous-configuration}{\rho}}&=\htmlData{var=reconfiguration-dynamics}{g_\rho}(\htmlData{var=continuous-configuration}{\rho},\htmlData{var=reconfiguration-control}{r})\end{aligned}"></div>
+                </div>
+                <div>
+                  <span>Reconfiguration power is mechanism-specific</span>
+                  <p>Deformation already represented in the mechanical coordinates is not charged twice. The additional term is either power through a declared reconfiguration port or parameter work when configuration is modeled externally.</p>
+                  <div class="decision-equation" data-katex="\dot H_{\htmlData{var=discrete-mode}{\kappa}}=-\nabla_xH_{\htmlData{var=discrete-mode}{\kappa}}^\top R_{\htmlData{var=discrete-mode}{\kappa}}\nabla_xH_{\htmlData{var=discrete-mode}{\kappa}}+y_u^\top\htmlData{var=ordinary-control}{u}+\htmlData{var=reconfiguration-power}{P_{\mathrm{reconfig}}}"></div>
+                  <div class="decision-equation compact-equation" data-katex="\begin{aligned}\htmlData{var=reconfiguration-power}{P_{\mathrm{reconfig}}}&=y_r^\top\htmlData{var=reconfiguration-control}{r}&&\text{(physical port)},\\ \htmlData{var=reconfiguration-power}{P_{\mathrm{reconfig}}}&=\partial_{\htmlData{var=continuous-configuration}{\rho}}H_{\htmlData{var=discrete-mode}{\kappa}}^\top\dot{\htmlData{var=continuous-configuration}{\rho}}&&\text{(external parameter)}.\end{aligned}"></div>
+                </div>
+                <div>
+                  <span>Discrete transitions need a state and energy account</span>
+                  <p>Changing contact or topology can reset the state. The transition map and its energy jump must be modeled or bounded rather than treated as a cost-free graph edit.</p>
+                  <div class="decision-equation" data-katex="\begin{aligned}\htmlData{var=post-switch-state}{x^+}&=\htmlData{var=state-reset}{\Delta_{\kappa^-\!\to\kappa^+}}(\htmlData{var=pre-switch-state}{x^-}),\\ \htmlData{var=switching-energy}{\Delta H_{\mathrm{switch}}}&=H_{\kappa^+}(x^+)-H_{\kappa^-}(x^-).\end{aligned}"></div>
+                </div>
+              </div>
+
+              <div class="reconfiguration-objective-band">
+                <div><span>Joint receding-horizon decision</span><p>Select ordinary action, reconfiguration actuation, and supported mode sequence while pricing task cost, physical reconfiguration work, and calibrated tail risk.</p></div>
+                <div class="decision-equation" data-katex="\begin{aligned}(\htmlData{var=ordinary-control}{u}^\star,\htmlData{var=reconfiguration-control}{r}^\star,\htmlData{var=mode-sequence}{\kappa}^\star)&=\arg\min_{u,r,\kappa}\\[-2pt]&\quad\htmlData{var=cvar}{\operatorname{CVaR}_\alpha}[J],\\ J&=J_{\mathrm{task}}+\lambda_W W_{\mathrm{reconfig}}\\[-2pt]&\quad+\lambda_S C_{\mathrm{switch}}.\end{aligned}"></div>
+              </div>
+
+              <div class="math-boundary"><strong>Scientific boundary:</strong> present C-PHAST supports supplied composition changes and fixed-composition counterfactual actions. The proposed advance is not morphology choice by itself; it is partially observed, typed, compositional prediction and receding-horizon selection across continuous configuration and discrete physical modes.</div>
+            </section>
+
+            <figure class="decision-visual risk-visual">
+              <div class="decision-visual-heading">
+                <span>Near-term assurance layer · Spot confirm-to-execute</span>
+                <h3>Before active reconfiguration reaches hardware, the model must know when not to act</h3>
+                <p>The existing Spot query supplies the first bounded test of this assurance layer. One live telemetry history is paired with the same four behavior candidates already used in the paper; candidate descriptors come from the intended primitive library rather than future measurements.</p>
+              </div>
+              <img src="../../../cphast/images/spot_real_query_context.png" loading="lazy" alt="Real Spot telemetry and four possible next-behavior queries converted into typed consequence action cards">
+              <div class="risk-candidates" aria-label="Bounded Spot candidate behaviors">
+                <span>Fast base loop</span><span>Slow base loop</span><span>Move-and-scan</span><span>Static arm scan</span>
+              </div>
+              <ol class="risk-outcomes" aria-label="Three allowed supervisory outcomes">
+                <li><span>01</span><strong>Execute</strong><small>A calibrated candidate clears every declared risk envelope.</small></li>
+                <li><span>02</span><strong>Re-observe</strong><small>State uncertainty is high but another measurement can resolve it.</small></li>
+                <li><span>03</span><strong>Abstain / hold</strong><small>No candidate is sufficiently supported; the conservative fallback remains active.</small></li>
+              </ol>
+              <figcaption><strong>Hardware boundary:</strong> this pilot does not reconfigure Spot's morphology. It tests whether calibrated typed forecasts can support execute, re-observe, or abstain decisions before the broader active-reconfiguration study. A human confirms the first pilot, and Spot's native safety stack remains independent.</figcaption>
+            </figure>
+
+            <section class="decision-evidence risk-evidence" aria-labelledby="risk-evidence-title">
+              <div class="decision-evidence-heading">
+                <span>Evidence already collected</span>
+                <h3 id="risk-evidence-title">Strong point forecasts exist; calibrated decision confidence does not</h3>
+                <p>Six teleoperated Spot episodes provide 1,070 five-second windows. The model predicts named future consequences from real telemetry, but the reported experiment remains logged shadow mode.</p>
+              </div>
+              <div class="decision-metrics">
+                <div><strong>0.973</strong><span>positive-work Pearson correlation</span><small>measured torque–velocity work versus prediction</small></div>
+                <div><strong>0.975</strong><span>absolute-work Pearson correlation</span><small>energetic demand on the realized robot</small></div>
+                <div><strong>0.943</strong><span>battery-draw Pearson correlation</span><small>real hardware consequence forecasting</small></div>
+                <div><strong>0</strong><span>autonomous Spot choices</span><small>the submitted hardware evaluation is shadow mode</small></div>
+              </div>
+              <p class="decision-boundary"><strong>Evidence boundary:</strong> high correlation supports accurate real-robot consequence forecasting. It does not establish calibrated intervals, chance-constraint validity, or safe autonomous intervention.</p>
+            </section>
+
+            <section class="risk-uncertainty" aria-labelledby="risk-uncertainty-title">
+              <div class="risk-uncertainty-heading">
+                <span>Do not collapse every error into one variance</span>
+                <h3 id="risk-uncertainty-title">Three uncertainties require different evidence</h3>
+                <p>Physical randomness, partial observation, and an incorrect deployment model are not interchangeable. The risk layer should expose their source before it decides whether more sensing or a conservative action can help.</p>
+              </div>
+              <div class="risk-uncertainty-grid">
+                <article><span>State belief</span><strong>What is the robot doing now?</strong><p>Partial and delayed telemetry leave uncertainty in velocity, momentum, contact, and other hidden state. Anchored filtering updates this belief when measurements arrive.</p><small>Resolved by informative observations when the observer is valid.</small></article>
+                <article><span>Physical process</span><strong>How variable is the future?</strong><p>Contact fluctuations, sensor noise, and stochastic forcing generate different outcomes even under the same state and command.</p><small>Represented by process noise; stochastic PHAST constrains its dissipative placement.</small></article>
+                <article><span>Model / deployment</span><strong>Is the twin itself wrong?</strong><p>Changed payload, friction, contact law, sensing, or embodiment can invalidate learned dynamics or calibration.</p><small>Requires held-out residual calibration, ensembles, or change detection; FDT noise alone cannot represent it.</small></article>
+              </div>
+            </section>
+
+            <aside class="risk-foundation" aria-labelledby="risk-foundation-title">
+              <div class="risk-foundation-heading">
+                <span>Parallel foundation · not yet integrated with Spot C-PHAST</span>
+                <h3 id="risk-foundation-title">Stochastic PHAST already identifies three design constraints</h3>
+              </div>
+              <div class="risk-foundation-grid">
+                <div><strong>Noise follows dissipation</strong><p>The stochastic pH model uses fluctuation–dissipation collocation, so physical process noise enters through declared dissipative channels rather than an unconstrained output variance.</p></div>
+                <div><strong>The energy ledger calibrates</strong><p>The stochastic energy ledger estimates a noise floor and audits generator consistency. It cannot detect plant divergence when evaluated only on the model's own rollout.</p></div>
+                <div><strong>Observation timing needs guardrails</strong><p>Unconstrained score triggers can measure repeatedly and then leave long gaps. Fixed or deadline-clamped cadence is the robust baseline before state-dependent re-observation is trusted.</p></div>
+              </div>
+              <p><strong>Integration frontier:</strong> carry this belief and noise accounting through the compositional C-PHAST rollout, then add separately calibrated model/deployment uncertainty before using it for hardware decisions.</p>
+            </aside>
+
+            <aside class="decision-literature risk-literature" aria-labelledby="risk-literature-title">
+              <div class="decision-literature-heading">
+                <span>Established uncertainty and assurance problem</span>
+                <h3 id="risk-literature-title">Calibration must change decisions, while runtime assurance stays independent</h3>
+                <p>Probabilistic planning, conformal control, and runtime-assurance architectures provide the comparison points. C-PHAST's question is whether typed physical consequences make calibrated abstention and tail-aware selection more informative under deployment change.</p>
+              </div>
+              <ol class="decision-literature-links">
+                <li><a href="https://proceedings.mlr.press/v97/malik19a.html" target="_blank" rel="noopener">Calibrated Model-Based Deep RL</a><span>Connects empirical probability calibration to planning performance.</span></li>
+                <li><a href="https://proceedings.mlr.press/v164/vlastelica22a.html" target="_blank" rel="noopener">Risk-Averse Zero-Order Trajectory Optimization</a><span>Separates aleatoric and epistemic uncertainty inside risk-aware trajectory optimization.</span></li>
+                <li><a href="https://arxiv.org/abs/2407.03569" target="_blank" rel="noopener">Adaptive Conformal Prediction for Safety-Critical Control</a><span>Uses calibrated uncertainty inside probabilistic control constraints under stated assumptions.</span></li>
+                <li><a href="https://arxiv.org/abs/2102.12981" target="_blank" rel="noopener">Black-Box Simplex Runtime Assurance</a><span>Keeps an independent conservative controller available when an advanced controller cannot be trusted.</span></li>
+              </ol>
+            </aside>
+
+            <section class="decision-explanation risk-explanation" aria-labelledby="risk-sequence-title">
+              <div class="decision-explanation-heading">
+                <span>Risk-aware decision · one cycle in order</span>
+                <h3 id="risk-sequence-title">From telemetry to execute, re-observe, or abstain</h3>
+                <p>C-PHAST supplies distributions over typed consequences. The risk selector applies the declared objective and confidence requirements; an independent safety layer retains final authority.</p>
+              </div>
+
+              <ol class="decision-sequence risk-sequence">
+                <li>
+                  <span class="decision-number">01</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">State uncertainty · anchored belief</span>
+                    <strong>Condition the current physical state on measurements</strong>
+                    <p>The observer maintains a distribution over the present state rather than one latent point. New telemetry updates hidden velocity, momentum, and contact uncertainty.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=state-belief}{\pi_t}=p\!\left(\htmlData{var=physical-state}{x_t}\mid\htmlData{var=measurement-record}{y_{0:t}},\htmlData{var=deployment-spec}{\mathcal S_t}\right)"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">02</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Physical process uncertainty · structured noise</span>
+                    <strong>Constrain physical stochasticity to dissipative channels</strong>
+                    <p>The stochastic pH component models physical variability through the dissipation operator. Separately, model residuals track evidence that the deployed twin or its calibration is wrong.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=diffusion}{\Sigma_\theta\Sigma_\theta^\top}=2\htmlData{var=temperature}{\Theta}\htmlData{var=dissipation}{R_\theta},\qquad \htmlData{var=model-residual}{r_t}=\htmlData{var=current-telemetry}{y_t}-\htmlData{var=predicted-measurement}{\hat y_t}"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">03</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Candidate uncertainty · matched futures</span>
+                    <strong>Roll every candidate through the same belief</strong>
+                    <p>Each state or model sample produces one possible typed future. The candidate set and sample budget remain identical across predictive baselines.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=risk-trajectory}{\hat\tau_{t:t+H}^{(a,s)}}=\htmlData{var=world-model}{F_\theta^{\mathcal S_t}}\!\left(\htmlData{var=state-sample}{x_t^{(s)}},\htmlData{var=command-candidate}{a}\right),\quad \htmlData{var=state-sample}{x_t^{(s)}}\sim\htmlData{var=state-belief}{\pi_t}"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">04</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Held-out calibration · consequence bounds</span>
+                    <strong>Calibrate the uncertainty of each typed consequence</strong>
+                    <p>Coverage is evaluated separately by consequence, forecast horizon, and deployment condition. Narrow intervals are useful only when their empirical coverage remains valid.</p>
+                    <div class="decision-equation" data-katex="\Pr\!\left[\htmlData{var=risk-consequence}{c_{j,t}^{(a)}}\le\htmlData{var=calibrated-bound}{U_{j,1-\delta}^{(a)}}\right]\ge 1-\htmlData{var=risk-level}{\delta}"></div>
+                  </div>
+                </li>
+                <li>
+                  <span class="decision-number">05</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Tail-aware selection · downstream risk layer</span>
+                    <strong>Optimize the bad tail, subject to calibrated envelopes</strong>
+                    <p>The selector favors low tail cost rather than only the mean. Every safety-critical consequence must also satisfy its declared chance constraint.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=risk-selected-command}{a_t^\star}=\arg\min_{\htmlData{var=command-candidate}{a}\in\htmlData{var=command-library}{\mathcal A}}\htmlData{var=cvar}{\operatorname{CVaR}_\alpha}\!\left[\htmlData{var=risk-objective}{J_w(c_t^{(a)})}\right],\quad \Pr[\htmlData{var=safety-envelope}{g_j(c_t^{(a)})}\le0]\ge1-\htmlData{var=risk-level}{\delta}"></div>
+                  </div>
+                </li>
+                <li class="decision-proposed">
+                  <span class="decision-number">06</span>
+                  <div class="decision-content">
+                    <span class="decision-kind">Bounded authority · hardware action</span>
+                    <strong>Execute, re-observe, or fall back</strong>
+                    <p>If a candidate passes, the human-approved pilot sends its intended descriptor to Spot's native controller. If uncertainty is reducible by sensing, the system pauses and refreshes. Otherwise it holds under the independent safety layer.</p>
+                    <div class="decision-equation" data-katex="\htmlData{var=supervisory-mode}{m_t}\in\{\htmlData{var=execute-mode}{\mathrm{execute}},\htmlData{var=reobserve-mode}{\mathrm{reobserve}},\htmlData{var=abstain-mode}{\mathrm{abstain}}\},\qquad \htmlData{var=shielded-action}{u_t}=\htmlData{var=hardware-shield}{\mathsf{Shield}}\!\left(\htmlData{var=spot-policy}{\pi_{\mathrm{Spot}}}(\htmlData{var=current-telemetry}{y_t},\htmlData{var=risk-selected-command}{a_t^\star})\right)"></div>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="decision-roles risk-roles" aria-label="Responsibilities in the bounded hardware pilot">
+                <div><span>Belief world model</span><strong>Stochastic C-PHAST</strong><p>Returns action-conditioned distributions over typed physical consequences.</p></div>
+                <div><span>Decision layer</span><strong>Risk selector</strong><p>Applies calibration, CVaR, chance constraints, and the act/re-observe/abstain rule.</p></div>
+                <div><span>Initial authority</span><strong>Human confirmation</strong><p>Approves each selected high-level primitive during the first hardware pilot.</p></div>
+                <div><span>Independent protection</span><strong>Spot safety stack</strong><p>Enforces native limits, conservative fallback behavior, and emergency stop independently of C-PHAST.</p></div>
+              </div>
+            </section>
+
+            <details class="protocol-details">
+              <summary>Experiments and deliverables</summary>
+              <div class="protocol-grid reconfiguration-protocol">
+                <div><strong>Near-term active-reconfiguration benchmark</strong><span>A variable-footprint or modular legged robot traverses openings and uncertain terrain while choosing motion and supported configuration. Vary aperture geometry, friction, payload, contact disturbance, sensing quality, and held-out module layouts.</span></div>
+                <div><strong>Primary artifact</strong><span>A receding-horizon benchmark with matched lower-level control, independently executed candidate branches, state and information contracts, energy and contact ledgers, videos, and exact train-to-configuration transfer splits.</span></div>
+              </div>
+              <section class="decision-baseline-plan reconfiguration-baseline-plan" aria-labelledby="reconfiguration-baselines">
+                <div class="baseline-plan-heading">
+                  <span>Active-reconfiguration comparisons</span>
+                  <h4 id="reconfiguration-baselines">What must joint motion-and-configuration planning beat?</h4>
+                  <p>All methods receive the same observations, lower-level controller, candidate budget, limits, and compute budget. Only the predictive representation and whether configuration is planned may differ.</p>
+                </div>
+                <div class="decision-baseline-groups">
+                  <section><h5>Behavior references</h5><dl><div><dt>Fixed configuration</dt><dd>Plans motion while holding footprint, active limbs, and supported contacts fixed.</dd></div><div><dt>Reactive / supplied schedule</dt><dd>Uses aperture and force thresholds or an externally supplied configuration reference without comparing dynamical futures.</dd></div><div><dt><a href="https://ltrweb.github.io/learning_to_reconfigure/" target="_blank" rel="noopener">Learned scheduler</a></dt><dd>Represents direct policy-based configuration-control co-optimization.</dd></div></dl></section>
+                  <section><h5>Learned world models</h5><dl><div><dt><a href="https://arxiv.org/abs/2105.10049" target="_blank" rel="noopener">Modular GNN model-based control</a></dt><dd>Tests transfer from shared learned module dynamics and policies across robot designs.</dd></div><div><dt><a href="https://proceedings.mlr.press/v331/chen26a.html" target="_blank" rel="noopener">Partial-observation graph model + MPPI</a></dt><dd>Tests whether graph dynamics and closed-loop sampling suffice without pH-typed channels.</dd></div><div><dt>Matched black-box ablation</dt><dd>Uses the same observer, candidate budget, and planner while removing pH structure.</dd></div></dl></section>
+                  <section><h5>Physical attribution</h5><dl><div><dt><a href="https://arxiv.org/abs/2305.09689" target="_blank" rel="noopener">Switching GP-PHS</a></dt><dd>Tests switching-condition learning and pH uncertainty without C-PHAST's scalable observer and block composition.</dd></div><div><dt>C-PHAST motion only / active</dt><dd>Isolates the value of planning configuration from typed forecasting under a fixed one.</dd></div><div><dt>Outcome oracle</dt><dd>Selects from independently executed branches and reports attainable headroom only.</dd></div></dl></section>
+                </div>
+              </section>
+              <section class="decision-measurement-plan reconfiguration-measurement-plan" aria-labelledby="reconfiguration-measurement-title">
+                <div><span>Task and transfer</span><h4 id="reconfiguration-measurement-title">Does reconfiguration generalize?</h4><p>Passage success, progress, traversal time, retreat frequency, and zero- or few-shot performance on held-out apertures, payloads, friction, and supported module layouts.</p></div>
+                <div><span>Physical accounting</span><h4>Is the chosen transformation credible?</h4><p>Actuator and reconfiguration work, switching-energy residual, peak and cumulative contact force, dissipation, support loss, and hard-limit violations.</p></div>
+                <div><span>Decision quality</span><h4>Did the model choose well?</h4><p>Tail cost, failure severity, oracle regret, correct configuration ranking, false-safe choice rate, replanning count, and compute latency.</p></div>
+              </section>
+              <div class="protocol-grid">
+                <div><strong>Cross-cutting assurance grid</strong><span>Held-out Spot episodes and simulator conditions vary payload, friction, contact disturbance, sensing quality, and deployment mismatch. Candidate library, objective, execution interval, and independent shield remain matched.</span></div>
+                <div><strong>Assurance artifact</strong><span>Per-channel reliability diagrams, calibrated consequence tubes, tail-risk and abstention curves, matched simulator outcomes, latency profiles, shadow-mode logs, and a bounded confirm-to-execute Spot demonstration.</span></div>
+              </div>
+              <section class="risk-ladder" aria-labelledby="risk-ladder-title">
+                <div class="risk-ladder-heading"><span>Evidence ladder</span><h4 id="risk-ladder-title">Hardware authority increases only after the previous gate passes</h4></div>
+                <ol>
+                  <li><span>01</span><strong>Offline replay</strong><p>Fit calibration only on development episodes; lock all thresholds before held-out evaluation.</p></li>
+                  <li><span>02</span><strong>Simulator stress</strong><p>Test tail risk, abstention, and coverage under controlled disturbances and deployment shifts.</p></li>
+                  <li><span>03</span><strong>Live shadow mode</strong><p>Run the complete risk query beside Spot without transmitting commands.</p></li>
+                  <li><span>04</span><strong>Confirm-to-execute</strong><p>A human approves one bounded primitive while the native safety stack retains authority.</p></li>
+                  <li><span>05</span><strong>Bounded autonomy</strong><p>Consider autonomous selection only after preregistered calibration, latency, and simulator gates pass.</p></li>
+                </ol>
+              </section>
+              <section class="decision-baseline-plan risk-baseline-plan" aria-labelledby="frontier-three-baselines">
+                <div class="baseline-plan-heading">
+                  <span>Matched comparison plan</span>
+                  <h4 id="frontier-three-baselines">What must the assurance layer beat?</h4>
+                  <p>The primary attribution comparison fixes the candidates, observations, planner objective, execution duration, and shield while changing the predictive uncertainty supplied to the risk layer.</p>
+                </div>
+                <div class="decision-baseline-groups">
+                  <section>
+                    <h5>No calibrated consequence distribution</h5>
+                    <dl>
+                      <div><dt>Native policy + shield</dt><dd>Executes the operator's primitive without learned counterfactual risk.</dd></div>
+                      <div><dt>Scalar alarm + hold</dt><dd>A calibrated telemetry threshold can stop the robot but cannot rank alternative futures.</dd></div>
+                      <div><dt>Deterministic C-PHAST</dt><dd>Uses mean typed consequences with no predictive interval.</dd></div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h5>Same risk layer · different uncertainty</h5>
+                    <dl>
+                      <div><dt>Probabilistic black-box ensemble</dt><dd>Supplies state or consequence samples to the identical selector.</dd></div>
+                      <div><dt>Process-noise-only C-PHAST</dt><dd>Tests why fluctuation–dissipation noise alone is insufficient under deployment error.</dd></div>
+                      <div><dt>Uncalibrated C-PHAST ensemble</dt><dd>Separates sampling from held-out probability calibration.</dd></div>
+                      <div><dt>Full calibrated C-PHAST</dt><dd>Combines belief, process, and model/deployment uncertainty over typed consequences.</dd></div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h5>Decision-rule and oracle references</h5>
+                    <dl>
+                      <div><dt>Mean-risk selector</dt><dd>Shows whether uncertainty helps without explicit tail optimization.</dd></div>
+                      <div><dt>CVaR / chance-constrained selector</dt><dd>Tests tail-aware ranking and probabilistic feasibility separately.</dd></div>
+                      <div><dt>Outcome oracle</dt><dd>Uses independently executed simulator branches and bounds attainable selection quality.</dd></div>
+                    </dl>
+                  </section>
+                </div>
+                <p class="baseline-contract"><strong>Fairness rule:</strong> non-oracle methods receive the same telemetry, intended primitive descriptors, calibration split, sample budget, objective, hard limits, and execution context. Methods using future outcomes or the true deployment shift are reported only as oracle references.</p>
+              </section>
+              <section class="decision-measurement-plan risk-measurement-plan" aria-labelledby="risk-measurement-title">
+                <div><span>Calibration metrics</span><h4 id="risk-measurement-title">Are the probabilities honest?</h4><p>Per-channel and per-horizon coverage, interval width, negative log-likelihood, CRPS, reliability under held-out payload/sensing conditions, and calibration drift.</p></div>
+                <div><span>Decision metrics</span><h4>Does uncertainty improve choices?</h4><p>False-safe and false-abstain rates, chance-constraint violations, tail cost, CVaR regret, task progress, energy, intervention frequency, and oracle regret.</p></div>
+                <div><span>Deployment metrics</span><h4>Can the interface run responsibly?</h4><p>Planning latency, stale-belief duration, re-observation frequency, shield interventions, emergency stops, operator overrides, and hard-limit margins.</p></div>
+              </section>
+              <p class="decision-theory-note"><strong>Claim boundary:</strong> calibrated coverage is conditional on the calibration protocol and its deployment assumptions. A bounded pilot validates the decision interface, timing, and independent fallback path; a small number of harmless trials does not prove universal hardware safety.</p>
+            </details>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="pathway-section" aria-labelledby="pathway-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">PhD proposal pathway</p>
+          <h2 id="pathway-title">One sequence of increasingly difficult claims</h2>
+        </div>
+        <p>The proposal is not a collection of domains. Each stage removes one assumption from the previous stage while preserving an inspectable physical interface.</p>
+      </div>
+      <ol class="dissertation-path">
+        <li class="complete"><span>01</span><strong>PHAST</strong><small>Infer a structured physical state from partial observations and roll out one fixed system.</small><em>Single-system structure</em></li>
+        <li class="complete"><span>02</span><strong>C-PHAST</strong><small>Reuse typed physical blocks across deployment changes and expose consequences before scoring.</small><em>Compositional redeployment</em></li>
+        <li><span>03</span><strong>Change-aware C-PHAST</strong><small>Infer an uncommanded physical change and synchronize the affected composition without a change label.</small><em>Configuration inference</em></li>
+        <li><span>04</span><strong>Decision-aware C-PHAST</strong><small>Use typed consequences for repeated action selection, observation refresh, and replanning under a fixed configuration.</small><em>Closed-loop utility</em></li>
+        <li><span>05</span><strong>Active-reconfiguration C-PHAST</strong><small>Jointly plan motion and physical configuration with explicit reconfiguration work, calibrated tail risk, and bounded authority.</small><em>Adaptive physical agency</em></li>
+      </ol>
+      <aside class="release-track" aria-label="Cross-cutting reproducibility commitment">
+        <div><span class="release-label">Cross-cutting requirement</span><h3>Every claim remains auditable</h3></div>
+        <p>Release code, checkpoints, configurations, splits, analysis scripts, and result manifests. Use matched states, seeds, disturbances, terrain, policies, and information contracts so that improvements can be attributed to representation, physical structure, uncertainty, or the downstream controller.</p>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <strong>C-PHAST</strong>
+    <span>Compositional Port-Hamiltonian World Models for Structured Dynamics Transfer</span>
+    <span>Shubham Bhardwaj | The University of Texas at Austin | Mihawk.ai</span>
+  </footer>
+</body>
+</html>
