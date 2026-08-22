@@ -174,16 +174,23 @@
     <section class="claim-upgrade-section" id="claim-upgrades" aria-labelledby="claim-upgrades-title">
       <div class="section-heading">
         <div>
-          <p class="section-label">State of the art and open problems</p>
-          <h2 id="claim-upgrades-title">Strengths and limitations</h2>
+          <p class="section-label">Current evidence</p>
+          <h2 id="claim-upgrades-title">Where C-PHAST leads, and where it does not</h2>
         </div>
-        <p>Two experiments establish SOTA results. Three show capabilities not covered by existing baselines. Positive and negative results are independently inspectable.</p>
+        <p>The strongest result is dynamics transfer. Spot action cards work, but not because one predictor dominates. Command selection remains suggestive, while microgrid reconfiguration exposes the clearest weakness.</p>
+      </div>
+
+      <div class="evidence-verdicts" aria-label="Summary of current evidence">
+        <article class="verdict-lead"><small>Best</small><strong>Robot dynamics transfer</strong><span>Lowest Go2 rollout and post-push prediction error.</span></article>
+        <article class="verdict-shared"><small>Interface evidence</small><strong>Spot action cards</strong><span>Named consequences retain ranking quality, but no C-PHAST rollout is used.</span></article>
+        <article class="verdict-open"><small>Promising</small><strong>Command selection</strong><span>Lower regret, but the confidence interval includes zero.</span></article>
+        <article class="verdict-weak"><small>Worst</small><strong>Microgrid reconfiguration</strong><span>N-PHDAE transfers more faithfully; topology is supplied.</span></article>
       </div>
 
       <div class="sota-limit-table" role="table" aria-label="C-PHAST strengths and limitations">
         <div class="sota-limit-head" role="row">
-          <span role="columnheader">Strengths</span>
-          <span role="columnheader">Limitations</span>
+          <span role="columnheader">Where C-PHAST leads or contributes</span>
+          <span role="columnheader">Where the evidence falls short</span>
         </div>
 
         <div class="comparison-pair">
@@ -214,7 +221,7 @@
               <div role="row"><span role="cell">DeepSets</span><span role="cell">28.1 ± 45.7</span></div>
               <div role="row"><span role="cell">MPNN</span><span role="cell">263 ± 361</span></div>
             </div>
-            <div class="sota-reading"><small>Result</small><strong>C-PHAST sets the SOTA for zero-shot ANYmal-D-to-Go2 rollout.</strong><p>Its transfer degradation is only <span class="katex-inline" data-katex="1.6\times"></span>; the fixed GRU degrades <span class="katex-inline" data-katex="21\times"></span>.</p></div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST sets the SOTA for zero-shot ANYmal-D-to-Go2 rollout.</strong><p>Its transfer degradation is only <span class="katex-inline" data-katex="1.6\times"></span>; the fixed GRU degrades <span class="katex-inline" data-katex="21\times"></span>. On 432 executed push branches, C-PHAST also has the lowest post-push one-step MSE: 0.00244 versus 0.00383 for Shared-GRU, 0.00455 for DeepSets, and 0.00500 for MPNN.</p></div>
           </div>
           <div class="sota-evidence limitation-evidence evidence-panel" id="contact-limit" data-evidence-panel hidden>
             <div class="experiment-brief"><small>Experiment</small><p>Use the source-domain half of the same five-seed transfer experiment. Compare open-loop <span class="katex-inline" data-katex="H=50"></span> error on ANYmal-D before embodiment transfer.</p></div>
@@ -247,42 +254,90 @@
             </article>
           </div>
           <div class="sota-evidence evidence-panel" id="morphology-strength" data-evidence-panel hidden>
-            <div class="experiment-brief"><small>Experiment</small><p>Train on the four-leg MuJoCo robot, then instantiate the same learned 2-DOF leg block on two- and six-leg robots without retraining. Three seeds; open-loop <span class="katex-inline" data-katex="H=50"></span> MSE.</p></div>
+            <div class="experiment-brief"><small>Experiment</small><p>Train on the four-leg MuJoCo robot, then instantiate the same learned 2-DOF leg block on two- and six-leg robots without retraining. Compare with the three matched variable-size baselines; fixed-dimensional models cannot accept the changed joint count. Three seeds; open-loop <span class="katex-inline" data-katex="H=50"></span> MSE.</p></div>
             <div class="score-table morphology-scores" role="table" aria-label="Leg-count transfer scores">
               <div role="row"><b role="columnheader">Method</b><b role="columnheader">2 legs</b><b role="columnheader">4 legs</b><b role="columnheader">6 legs</b></div>
               <div class="winner" role="row"><span role="cell">C-PHAST</span><strong role="cell">0.002</strong><strong role="cell">0.005</strong><strong role="cell">0.003</strong></div>
               <div role="row"><span role="cell">Shared-GRU</span><span role="cell">0.013</span><span role="cell">0.014</span><span role="cell">0.020</span></div>
+              <div class="negative" role="row"><span role="cell">DeepSets</span><span role="cell">unstable</span><span role="cell">0.14</span><span role="cell">0.26</span></div>
               <div role="row"><span role="cell">MPNN</span><span role="cell">unstable</span><span role="cell">unstable</span><span role="cell">unstable</span></div>
             </div>
-            <div class="sota-reading"><small>Result</small><strong>C-PHAST sets the SOTA for zero-shot homologous leg-count transfer.</strong><p>The advantage over the nearest stable compositional baseline is <span class="katex-inline" data-katex="2.8\text{--}6.7\times"></span>.</p></div>
+            <div class="sota-reading"><small>Result</small><strong>C-PHAST sets the SOTA for zero-shot homologous leg-count transfer.</strong><p>The advantage over the nearest stable compositional baseline is <span class="katex-inline" data-katex="2.8\text{--}6.7\times"></span>. One of three DeepSets and MPNN seeds diverges; the remaining seeds stay bounded.</p></div>
           </div>
         </div>
 
         <div class="comparison-pair">
           <div class="comparison-summary" role="row">
             <article class="sota-side" role="cell">
-              <small><b>Hardware result</b> Real-robot consequence prediction</small>
-              <strong>Physical action cards from Spot telemetry</strong>
-              <span>0.880 Pearson · 0.860 Spearman</span>
+              <small><b>Interface result</b> Real-robot consequence prediction</small>
+              <strong>Named consequences preserve action-ranking quality</strong>
+              <span>Typed then scored: 0.880 Pearson · 0.860 Spearman</span>
               <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="spot-strength" data-evidence-target="spot-strength">Open experiment</button>
             </article>
             <article class="limit-side" role="cell">
-              <small>Weakness</small>
-              <strong>Hardware evidence is narrow</strong>
-              <span>Six teleoperated episodes in shadow mode. Leave-one-episode-out agreement falls to 0.652/0.545.</span>
+              <small>Missing comparison</small>
+              <strong>This is not a C-PHAST rollout experiment</strong>
+              <span>The tabular critic bypasses C-PHAST dynamics. C-PHAST, GRU, and MPNN must still roll out the same candidate commands before one fixed scorer ranks them.</span>
               <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="hardware-limit" data-evidence-target="hardware-limit">Open experiment</button>
             </article>
           </div>
-          <div class="sota-evidence evidence-panel" id="spot-strength" data-evidence-panel hidden>
-            <div class="experiment-brief"><small>Experiment</small><p>Use six Spot-with-arm ROS-bag episodes: 897 training and 173 held-out five-second windows. Predict work, battery draw, support, sensing, and map consequences, then rank behavior candidates under five objectives.</p></div>
-            <div class="score-table spot-scores" role="table" aria-label="Spot action-card ranking scores">
-              <div role="row"><b role="columnheader">Input / model</b><b role="columnheader">Pearson</b><b role="columnheader">Spearman</b></div>
-              <div class="winner" role="row"><span role="cell">Typed C-PHAST query</span><strong role="cell">0.880</strong><strong role="cell">0.860</strong></div>
-              <div role="row"><span role="cell">Direct scalar head</span><span role="cell">0.871</span><span role="cell">0.875</span></div>
-              <div role="row"><span role="cell">Descriptors only</span><span role="cell">0.780</span><span role="cell">0.778</span></div>
-              <div role="row"><span role="cell">History only</span><span role="cell">0.767</span><span role="cell">0.737</span></div>
+          <div class="sota-evidence spot-evidence-flow evidence-panel" id="spot-strength" data-evidence-panel hidden>
+            <div class="spot-scenario">
+              <small>Shared decision point</small>
+              <strong>Given Spot's recent telemetry, how would four possible next behaviors differ?</strong>
+              <p>Six Spot-with-arm ROS-bag episodes provide 897 training and 173 held-out five-second windows. Each window is paired with the paper's four candidates: fast base loop, slow base loop, move-and-scan, and static arm scan.</p>
             </div>
-            <div class="sota-reading"><small>Result</small><strong>C-PHAST predicts physically named consequences from real Spot telemetry.</strong><p>Joint-work targets reach 0.971–0.975 Pearson and battery draw reaches 0.943, while the typed interface retains scalar-head ranking quality.</p></div>
+            <div class="spot-paths" aria-label="Four information paths used to evaluate a possible next behavior">
+              <article class="spot-path spot-path-typed">
+                <span class="spot-path-number">01</span>
+                <div class="spot-path-copy">
+                  <div class="spot-path-title"><strong>Typed consequences</strong><small>Recent robot history + possible next behavior</small></div>
+                  <p>Predict progress, mechanical work, battery draw, support, collision, sensing, and novelty. A declared objective then scores those named consequences.</p>
+                  <div class="spot-path-diagram" aria-label="Robot history and possible behavior produce typed consequences that are scored for an objective">
+                    <span>history + behavior</span><i aria-hidden="true"></i><span>physical consequences</span><i aria-hidden="true"></i><span>objective score</span>
+                  </div>
+                </div>
+                <div class="spot-path-metrics"><span><b>0.880</b> Pearson</span><span><b>0.860</b> Spearman</span></div>
+              </article>
+              <article class="spot-path">
+                <span class="spot-path-number">02</span>
+                <div class="spot-path-copy">
+                  <div class="spot-path-title"><strong>Direct scalar objective</strong><small>Recent robot history + possible next behavior</small></div>
+                  <p>Predict one final utility score directly. It can rank alternatives, but cannot show whether energy, stability, or sensing caused the ranking.</p>
+                  <div class="spot-path-diagram" aria-label="Robot history and possible behavior directly produce an objective score">
+                    <span>history + behavior</span><i aria-hidden="true"></i><span>objective score</span>
+                  </div>
+                </div>
+                <div class="spot-path-metrics"><span><b>0.871</b> Pearson</span><span><b>0.875</b> Spearman</span></div>
+              </article>
+              <article class="spot-path">
+                <span class="spot-path-number">03</span>
+                <div class="spot-path-copy">
+                  <div class="spot-path-title"><strong>Possible behavior only</strong><small>Base motion, arm motion, and sensing mode</small></div>
+                  <p>The same behavior looks identical in every situation because the predictor never sees the robot's current physical condition.</p>
+                  <div class="spot-path-diagram" aria-label="Possible behavior without robot history produces an objective score">
+                    <span>behavior only</span><i aria-hidden="true"></i><span>objective score</span>
+                  </div>
+                </div>
+                <div class="spot-path-metrics"><span><b>0.780</b> Pearson</span><span><b>0.778</b> Spearman</span></div>
+              </article>
+              <article class="spot-path">
+                <span class="spot-path-number">04</span>
+                <div class="spot-path-copy">
+                  <div class="spot-path-title"><strong>Recent history only</strong><small>Motion, contact, support, and sensing history</small></div>
+                  <p>Every alternative at one decision point receives the same history. Without the proposed behavior, this path cannot explain how their futures differ.</p>
+                  <div class="spot-path-diagram" aria-label="Robot history without a possible behavior produces an objective score">
+                    <span>history only</span><i aria-hidden="true"></i><span>objective score</span>
+                  </div>
+                </div>
+                <div class="spot-path-metrics"><span><b>0.767</b> Pearson</span><span><b>0.737</b> Spearman</span></div>
+              </article>
+            </div>
+            <div class="spot-path-result">
+              <small>What this establishes</small>
+              <strong>Named physical consequences preserve ranking quality while exposing why alternatives differ.</strong>
+              <p>This validates the action-card interface. It does not yet compare C-PHAST, GRU, and MPNN dynamics rollouts under the same candidate commands and scorer.</p>
+            </div>
           </div>
           <div class="sota-evidence limitation-evidence evidence-panel" id="hardware-limit" data-evidence-panel hidden>
             <div class="experiment-brief"><small>Experiment</small><p>Replace the random held-out-window split with leave-one-episode-out evaluation. Each run removes an entire teleoperated episode from training.</p></div>
@@ -291,86 +346,84 @@
               <div role="row"><span role="cell">Held-out windows</span><span role="cell">0.880</span><span role="cell">0.860</span></div>
               <div class="negative" role="row"><span role="cell">Leave one episode out</span><strong role="cell">0.652</strong><strong role="cell">0.545</strong></div>
             </div>
-            <div class="limitation-reading"><small>Negative result</small><strong>Generalization falls across whole missions.</strong><p>The evidence comes from six episodes and remains shadow mode. The next study needs more operators, payloads, environments, battery conditions, and decision-time-only descriptors.</p></div>
+            <div class="limitation-reading"><small>Boundary</small><strong>Generalization falls across whole missions.</strong><p>The evidence comes from six episodes and remains shadow mode. A full C-PHAST rollout baseline and broader operators, payloads, environments, and battery conditions are still needed.</p></div>
           </div>
         </div>
 
         <div class="comparison-pair">
           <div class="comparison-summary" role="row">
             <article class="sota-side" role="cell">
-              <small><b>Best tested</b> Consequence-informed recovery</small>
-              <strong>Highest non-oracle mean survival</strong>
-              <span>+5.25 steps over the best fixed command</span>
+              <small><b>Promising</b> Consequence-informed recovery</small>
+              <strong>Candidate-specific C-PHAST factors reduce regret</strong>
+              <span>5.8 steps versus 11.4 for the candidate prior</span>
               <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="recovery-strength" data-evidence-target="recovery-strength">Open experiment</button>
             </article>
             <article class="limit-side" role="cell">
-              <small>Weakness</small>
-              <strong>Control is one shot</strong>
-              <span>Binary recovery still ties the best fixed command at 10/20. The selector does not replan.</span>
+              <small>Not established</small>
+              <strong>The selection gain is not robust yet</strong>
+              <span>The 95% confidence interval includes zero, one selector worsens with C-PHAST factors, and the policy does not replan.</span>
               <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="control-limit" data-evidence-target="control-limit">Open experiment</button>
             </article>
           </div>
           <div class="sota-evidence evidence-panel" id="recovery-strength" data-evidence-panel hidden>
-            <div class="experiment-brief"><small>Experiment</small><p>Across 20 held-out Go2 pushes, C-PHAST forecasts nine recovery commands for eight steps. A selector trained on separate seeds chooses one command; the frozen locomotion policy executes it for 24 steps.</p></div>
+            <div class="experiment-brief"><small>Experiment</small><p>Evaluate 432 independently executed candidate branches grouped into 54 perturbations. “Best match” counts selection of a maximum-survival command. “Regret” is the oracle survival time minus the selected command's survival time; lower is better.</p></div>
             <div class="score-table recovery-scores" role="table" aria-label="Go2 recovery selection scores">
-              <div role="row"><b role="columnheader">Method</b><b role="columnheader">Mean survival</b><b role="columnheader">Recovery</b></div>
-              <div class="winner" role="row"><span role="cell">C-PHAST selection</span><strong role="cell">121.80</strong><strong role="cell">10/20</strong></div>
-              <div role="row"><span role="cell">Best fixed command</span><span role="cell">116.55</span><span role="cell">10/20</span></div>
-              <div role="row"><span role="cell">Nominal continuation</span><span role="cell">—</span><span role="cell">8/20</span></div>
-              <div role="row"><span role="cell">Outcome oracle</span><span role="cell">upper bound</span><span role="cell">12/20</span></div>
+              <div role="row"><b role="columnheader">Information given to selector</b><b role="columnheader">Best match</b><b role="columnheader">Regret</b></div>
+              <div role="row"><span role="cell">Command's training-set average</span><span role="cell">33/54</span><span role="cell">11.4</span></div>
+              <div role="row"><span role="cell">+ current state and push</span><span role="cell">33/54</span><span role="cell">11.4</span></div>
+              <div class="winner" role="row"><span role="cell">+ C-PHAST viability and energy factors</span><span role="cell">35/54</span><strong role="cell">5.8</strong></div>
+              <div class="winner" role="row"><span role="cell">+ physical ledger and terminal state</span><strong role="cell">37/54</strong><span role="cell">7.0</span></div>
             </div>
-            <div class="sota-reading"><small>Result</small><strong>C-PHAST achieves the best tested non-oracle survival in this Go2 benchmark.</strong><p>The gain is 5.25 steps with seed-clustered 95% CI [2.50, 7.05]. Typed factors improve longest-survival selection from 12/20 to 14/20.</p></div>
+            <div class="sota-reading"><small>Result</small><strong>Only candidate-specific forecasts can change the ranking.</strong><p>Current state and push are shared by every command in one scenario, so the additive linear selector gives them the same offset and reproduces the prior. C-PHAST factors differ by candidate and can alter the choice.</p></div>
           </div>
           <div class="sota-evidence limitation-evidence evidence-panel" id="control-limit" data-evidence-panel hidden>
-            <div class="experiment-brief"><small>Experiment</small><p>Read the binary-recovery outcome from the same 20 held-out pushes. Recovery means the robot does not fall before the 140-step episode ends.</p></div>
-            <div class="score-table recovery-scores" role="table" aria-label="Go2 binary recovery scores">
-              <div role="row"><b role="columnheader">Method</b><b role="columnheader">Recovery</b><b role="columnheader">Shortfall</b></div>
-              <div class="negative" role="row"><span role="cell">C-PHAST selection</span><strong role="cell">10/20</strong><strong role="cell">7.7 steps</strong></div>
-              <div class="winner" role="row"><span role="cell">Best fixed command</span><strong role="cell">10/20</strong><span role="cell">—</span></div>
-              <div role="row"><span role="cell">Kinematics-only selector</span><span role="cell">—</span><span role="cell">10.8 steps</span></div>
-              <div role="row"><span role="cell">Outcome oracle</span><span role="cell">12/20</span><span role="cell">0</span></div>
+            <div class="experiment-brief"><small>Robustness check</small><p>Bootstrap the paired regret difference by perturbation scenario and fit a separate interaction selector with and without C-PHAST factors.</p></div>
+            <div class="score-table recovery-scores" role="table" aria-label="Go2 selector robustness scores">
+              <div role="row"><b role="columnheader">Comparison</b><b role="columnheader">Gain</b><b role="columnheader">95% CI</b></div>
+              <div class="negative" role="row"><span role="cell">Typed vs prior regret</span><strong role="cell">5.57</strong><strong role="cell">[-3.02, 15.02]</strong></div>
+              <div class="negative" role="row"><span role="cell">Interaction selector</span><strong role="cell">-0.2</strong><span role="cell">not improved</span></div>
             </div>
-            <div class="limitation-reading"><small>Negative result</small><strong>Survival improves, but recovery rate does not.</strong><p>The selector acts once and command-direction sensitivity remains weak. The next study must condition more strongly on actions and replan after short execution intervals.</p></div>
+            <div class="limitation-reading"><small>Open problem</small><strong>The action claim is not statistically secure.</strong><p>The next decisive test must score every candidate with every dynamics baseline under one frozen selector, then execute repeated replanning rather than a single choice.</p></div>
           </div>
         </div>
 
         <div class="comparison-pair">
           <div class="comparison-summary" role="row">
             <article class="sota-side" role="cell">
-              <small><b>New capability</b> Typed reconfiguration diagnosis</small>
-              <strong>Physical residuals identify what changed</strong>
-              <span>183× energy · 42× current · 43× interconnect</span>
+              <small><b>Conditional signal</b> Typed reconfiguration diagnosis</small>
+              <strong>Typed residuals help only in the UNKNOWN regime</strong>
+              <span>58.0% five-way accuracy versus 20% chance</span>
               <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="diagnosis-strength" data-evidence-target="diagnosis-strength">Open experiment</button>
             </article>
             <article class="limit-side" role="cell">
-              <small>Weakness</small>
-              <strong>Topology is supplied</strong>
-              <span>C-PHAST diagnoses mismatch but does not infer the new graph. N-PHDAE remains stronger on raw rollout in several regimes.</span>
+              <small><b>Worst result</b> Reconfiguration fidelity</small>
+              <strong>N-PHDAE transfers far more faithfully</strong>
+              <span>C-PHAST degrades sharply after difficult layout changes, while the evaluator is still given the changed graph.</span>
               <button class="evidence-toggle" type="button" aria-expanded="false" aria-controls="topology-limit" data-evidence-target="topology-limit">Open experiment</button>
             </article>
           </div>
           <div class="sota-evidence evidence-panel" id="diagnosis-strength" data-evidence-panel hidden>
-            <div class="experiment-brief"><small>Experiment</small><p>Train the DGU and line blocks on a three-node DC microgrid, then remove or add a DGU and rewire the feeder. Compare C-PHAST with N-PHDAE under the same declared topology.</p></div>
-            <div class="score-table residual-scores" role="table" aria-label="Microgrid typed residual amplification">
-              <div role="row"><b role="columnheader">Change</b><b role="columnheader">Energy</b><b role="columnheader">Current</b><b role="columnheader">Interconnect</b></div>
-              <div class="winner" role="row"><span role="cell">Removed DGU</span><strong role="cell">183×</strong><strong role="cell">42×</strong><strong role="cell">43×</strong></div>
-              <div role="row"><span role="cell">Added DGU</span><span role="cell">26×</span><span role="cell">5.4×</span><span role="cell">4.0×</span></div>
-              <div role="row"><span role="cell">Ring rewire</span><span role="cell">37×</span><span role="cell">7.0×</span><span role="cell">5.9×</span></div>
-              <div role="row"><span role="cell">Star rewire</span><span role="cell">0.94×</span><span role="cell">0.94×</span><span role="cell">0.86×</span></div>
+            <div class="experiment-brief"><small>Experiment</small><p>Train only on the four-DGU chain, then classify five declared layouts from forecast residuals. All evaluators receive active masks and the test incidence matrix; chance accuracy is 20%.</p></div>
+            <div class="score-table residual-scores" role="table" aria-label="Microgrid diagnosis accuracy">
+              <div role="row"><b role="columnheader">Predictor</b><b role="columnheader">Scalar</b><b role="columnheader">Raw</b><b role="columnheader">Typed</b></div>
+              <div role="row"><span role="cell">C-PHAST Known</span><span role="cell">43.6%</span><strong role="cell">48.0%</strong><span role="cell">38.0%</span></div>
+              <div role="row"><span role="cell">C-PHAST Partial</span><span role="cell">43.2%</span><strong role="cell">45.2%</strong><span role="cell">39.2%</span></div>
+              <div class="winner" role="row"><span role="cell">C-PHAST Unknown</span><span role="cell">42.4%</span><span role="cell">40.0%</span><strong role="cell">58.0%</strong></div>
+              <div class="negative" role="row"><span role="cell">Padded MLP</span><span role="cell">67.0%</span><strong role="cell">83.1%</strong><span role="cell">81.5%</span></div>
+              <div class="negative" role="row"><span role="cell">Padded GRU</span><span role="cell">65.1%</span><strong role="cell">81.9%</strong><span role="cell">73.2%</span></div>
             </div>
-            <div class="sota-reading"><small>Result</small><strong>C-PHAST adds typed physical diagnosis to compositional reconfiguration.</strong><p>Unlike raw rollout error, the separated residuals reveal whether mismatch enters through storage, line current, or interconnection.</p></div>
+            <div class="sota-reading"><small>Result</small><strong>Typed residuals add information for C-PHAST UNKNOWN, but they are not uniquely diagnostic.</strong><p>The simple predictors classify changes better because their changed-layout forecasts fail badly. Residual classification alone is therefore not evidence of a faithful twin.</p></div>
           </div>
           <div class="sota-evidence limitation-evidence evidence-panel" id="topology-limit" data-evidence-panel hidden>
-            <div class="experiment-brief"><small>Experiment</small><p>Compare raw <span class="katex-inline" data-katex="H=50"></span> rollout error after DGU-count and feeder-topology changes. Both methods receive the changed graph.</p></div>
+            <div class="experiment-brief"><small>Experiment</small><p>Compare raw <span class="katex-inline" data-katex="H=50"></span> rollout error after DGU-count and feeder-topology changes. Both structured methods receive the changed graph.</p></div>
             <div class="score-table spot-scores" role="table" aria-label="Microgrid raw rollout comparison">
               <div role="row"><b role="columnheader">Change</b><b role="columnheader">C-PHAST</b><b role="columnheader">N-PHDAE</b></div>
-              <div role="row"><span role="cell">Reference</span><span role="cell">3.71e−5</span><span role="cell">6.49e−5</span></div>
-              <div class="negative" role="row"><span role="cell">Removed DGU</span><strong role="cell">3.00e−2</strong><strong role="cell">7.64e−5</strong></div>
-              <div class="negative" role="row"><span role="cell">Added DGU</span><strong role="cell">2.53e−3</strong><strong role="cell">7.69e−5</strong></div>
-              <div class="negative" role="row"><span role="cell">Ring rewire</span><strong role="cell">3.79e−3</strong><strong role="cell">5.82e−5</strong></div>
-              <div role="row"><span role="cell">Star rewire</span><span role="cell">4.00e−5</span><span role="cell">6.48e−5</span></div>
+              <div role="row"><span role="cell">Reference chain</span><span role="cell">3.17e−5</span><span role="cell">6.49e−5</span></div>
+              <div class="negative" role="row"><span role="cell">Removed DGU</span><strong role="cell">2.99e−2</strong><strong role="cell">7.64e−5</strong></div>
+              <div class="negative" role="row"><span role="cell">Added DGU</span><strong role="cell">2.55e−3</strong><strong role="cell">7.69e−5</strong></div>
+              <div class="negative" role="row"><span role="cell">Ring rewire</span><strong role="cell">3.82e−3</strong><strong role="cell">5.82e−5</strong></div>
             </div>
-            <div class="limitation-reading"><small>Negative result</small><strong>N-PHDAE is the stronger raw forecaster under difficult changes.</strong><p>C-PHAST receives rather than infers the changed topology. The next model must infer supported graph modes from residuals and improve its circuit dynamics without losing typed diagnosis.</p></div>
+            <div class="limitation-reading"><small>Negative result</small><strong>This is C-PHAST's clearest current failure.</strong><p>N-PHDAE remains near <span class="katex-inline" data-katex="10^{-5}"></span> error across layouts. C-PHAST receives rather than infers the changed topology and still loses forecast fidelity after hard changes.</p></div>
           </div>
         </div>
       </div>
