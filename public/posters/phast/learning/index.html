@@ -6,13 +6,14 @@
   <meta name="description" content="Visual and quantitative comparison of PHAST with the structured and sequence-model families discussed in the paper.">
   <title>How PHAST Learns</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <link rel="stylesheet" href="learning.css?v=3">
+  <link rel="stylesheet" href="learning.css?v=4">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="../">PHAST</a>
     <nav aria-label="Learning comparison navigation">
       <a href="#experiment">Experiment</a>
+      <a href="#mechanisms">Mechanisms</a>
       <a href="#evidence">Evidence</a>
       <a href="#method-families">Table 2</a>
       <a href="#interpretation">Interpretation</a>
@@ -50,6 +51,14 @@
         <button type="button" role="tab" data-system="2" aria-selected="false">Windy cart-pole</button>
       </div>
 
+      <div class="mechanism-lens" id="mechanisms">
+        <div>
+          <p class="eyebrow">Mechanism lens</p>
+          <h3>What does each PHAST capability change?</h3>
+        </div>
+        <div class="mechanism-tabs" id="mechanism-tabs" role="tablist" aria-label="Choose a capability to inspect"></div>
+      </div>
+
       <div class="playback" aria-label="Animation controls">
         <button type="button" id="play-toggle">Pause</button>
         <label for="time-scrubber">Rollout step <output id="step-output">1</output> / 100</label>
@@ -64,6 +73,20 @@
       <div class="method-filter" id="method-filter" aria-label="Choose animated methods"></div>
       <div class="motion-grid" id="motion-grid" aria-label="Synchronized physical rollouts"></div>
       <p class="selection-note" id="selection-note"></p>
+
+      <div class="mechanism-evidence" id="mechanism-evidence" aria-live="polite">
+        <div class="mechanism-copy">
+          <span class="evidence-kind" id="mechanism-kind"></span>
+          <h3 id="mechanism-title"></h3>
+          <p class="mechanism-question" id="mechanism-question"></p>
+          <p id="mechanism-interpretation"></p>
+        </div>
+        <figure class="mechanism-figure">
+          <figcaption id="mechanism-caption"></figcaption>
+          <svg id="mechanism-plot" viewBox="0 0 900 310" role="img" aria-label="Selected mechanism evidence"></svg>
+          <div class="mechanism-result" id="mechanism-result"></div>
+        </figure>
+      </div>
     </section>
 
     <section class="evidence" id="evidence" aria-labelledby="evidence-title">
@@ -141,9 +164,9 @@
       <div class="section-heading">
         <div>
           <p class="eyebrow">Table 2, made inspectable</p>
-          <h2 id="method-families-title">Capability claims are not all empirical comparisons.</h2>
+          <h2 id="method-families-title">Which capabilities are tested here?</h2>
         </div>
-        <p>Table 2 summarizes properties established by each architecture. The final column records what evidence this page actually provides, preventing a literature checkmark from being mistaken for a matched experiment.</p>
+        <p>Table 2 states architectural properties. The mechanism lens above shows what was tested, how it was tested, and where the evidence is only theoretical or indirect.</p>
       </div>
       <div class="capability-table-wrap">
         <table id="capability-table">
@@ -210,6 +233,6 @@
   </footer>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script defer src="learning.js?v=3"></script>
+  <script defer src="learning.js?v=4"></script>
 </body>
 </html>

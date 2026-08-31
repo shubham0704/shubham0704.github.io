@@ -37,12 +37,14 @@ const state = {
   timer: null,
   interval: 120,
   coordinate: 0,
+  mechanism: "comparison",
   visibleMethods: new Set(),
 };
 
 const byId = (id) => document.getElementById(id);
 const currentSystem = () => state.data.systems[state.systemIndex];
 const currentMethod = (id) => currentSystem().methods.find((method) => method.id === id);
+const currentMechanism = () => state.data.mechanism_evidence.find((item) => item.id === state.mechanism);
 
 function shortLabel(methodId) {
   if (methodId === "phast_unknown_qonly") return "PHAST";
@@ -64,6 +66,10 @@ function escapeText(value) {
 function formatScore(value) {
   if (value < 0.001) return value.toExponential(2);
   return value.toFixed(value < 0.1 ? 4 : 3);
+}
+
+function formatScientific(value) {
+  return Number(value).toExponential(2);
 }
 
 function coordinateLabels(system) {
@@ -217,7 +223,9 @@ function renderMotionPanels() {
 }
 
 function renderMethodFilter() {
-  const methods = currentSystem().methods;
+  const methods = state.mechanism === "comparison"
+    ? currentSystem().methods
+    : mechanismMethods().map(currentMethod).filter(Boolean);
   byId("method-filter").innerHTML = methods.map((method) => `<label style="--method-color:${COLORS[method.id]}">
     <input type="checkbox" value="${escapeText(method.id)}" ${state.visibleMethods.has(method.id) ? "checked" : ""}>
     <span>${escapeText(shortLabel(method.id))}</span>
@@ -228,6 +236,35 @@ function renderMethodFilter() {
       else state.visibleMethods.delete(input.value);
       renderMotionPanels();
       drawPlots();
+    });
+  });
+}
+
+function mechanismMethods() {
+  const available = new Set(currentSystem().methods.map((method) => method.id));
+  return currentMechanism().methods.filter((id) => available.has(id));
+}
+
+function applyMechanismMethods() {
+  state.visibleMethods = new Set(mechanismMethods());
+}
+
+function renderMechanismTabs() {
+  byId("mechanism-tabs").innerHTML = state.data.mechanism_evidence.map((item) => `<button
+    type="button"
+    role="tab"
+    data-mechanism="${escapeText(item.id)}"
+    aria-selected="${item.id === state.mechanism ? "true" : "false"}"
+  >${escapeText(item.label)}</button>`).join("");
+  byId("mechanism-tabs").querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.mechanism = button.dataset.mechanism;
+      applyMechanismMethods();
+      renderMechanismTabs();
+      renderMethodFilter();
+      renderMotionPanels();
+      drawPlots();
+      renderMechanismEvidence();
     });
   });
 }
@@ -290,6 +327,116 @@ function drawPlots() {
     color: COLORS[method.id],
     values: method.aggregate.training_history_seed42.map((item) => item.train),
   })), { logY: true, cursor: false });
+  drawMechanismPlot();
+}
+
+function normalizedPower(values, length) {
+  if (!Array.isArray(values)) return Array(length).fill(0);
+  const scale = Math.max(...values.map((value) => Math.abs(value)), 1e-12);
+  return values.map((value) => value / scale);
+}
+
+function drawMechanismPlot() {
+  const svg = byId("mechanism-plot");
+  const system = currentSystem();
+  if (state.mechanism === "dissipation") {
+    const methods = mechanismMethods().map(currentMethod).filter(Boolean);
+    renderPlot(svg, methods.map((method) => ({
+      label: method.id === "hnn_observer_qonly" ? "HNN: R=0" : shortLabel(method.id),
+      color: COLORS[method.id],
+      values: normalizedPower(method.native_dissipation_power, system.truth.length),
+    })));
+    return;
+  }
+  if (state.mechanism === "passivity") {
+    const methods = mechanismMethods().map(currentMethod).filter((method) => Array.isArray(method.native_energy_change_normalized));
+    renderPlot(svg, methods.map((method) => ({
+      label: shortLabel(method.id),
+      color: COLORS[method.id],
+      values: method.native_energy_change_normalized,
+    })));
+    return;
+  }
+  svg.innerHTML = "";
+}
+
+function mechanismResultTable(headers, rows) {
+  return `<div class="mechanism-table-wrap"><table><thead><tr>${headers.map((header) => `<th>${escapeText(header)}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+
+function renderMechanismEvidence() {
+  const mechanism = currentMechanism();
+  const system = currentSystem();
+  const plot = byId("mechanism-plot");
+  byId("mechanism-kind").textContent = mechanism.evidence_type;
+  byId("mechanism-title").textContent = mechanism.title;
+  byId("mechanism-question").textContent = mechanism.question;
+  byId("mechanism-interpretation").textContent = mechanism.interpretation;
+  const result = byId("mechanism-result");
+
+  if (mechanism.id === "comparison") {
+    byId("mechanism-caption").textContent = "Matched five-seed result for the selected system";
+    plot.hidden = true;
+    result.innerHTML = mechanismResultTable(
+      ["Model", "H=100 error", "Relative to PHAST"],
+      system.methods.map((method) => {
+        const phast = system.methods[0].aggregate.mean;
+        const ratio = method.aggregate.mean / phast;
+        return [
+          escapeText(shortLabel(method.id)),
+          `${formatScore(method.aggregate.mean)} +/- ${formatScore(method.aggregate.std)}`,
+          method.id === "phast_unknown_qonly" ? "1.0x" : `${ratio.toFixed(1)}x higher`,
+        ];
+      }),
+    );
+  } else if (mechanism.id === "dissipation") {
+    byId("mechanism-caption").textContent = "Native dissipated-power readout, normalized within each model";
+    plot.hidden = false;
+    result.innerHTML = `<p class="result-callout"><strong>What the animation tests:</strong> HNN cannot contract energy through $R$; pHNN and PHAST can. Power curves are normalized separately because their learned Hamiltonian scales are not comparable.</p>`;
+  } else if (mechanism.id === "passivity") {
+    byId("mechanism-caption").textContent = "Change in each model's own Hamiltonian, normalized within model";
+    plot.hidden = false;
+    result.innerHTML = mechanismResultTable(
+      ["Model", "Native channel", "Upward finite-step increments"],
+      mechanismMethods().map(currentMethod).filter(Boolean).map((method) => [
+        escapeText(shortLabel(method.id)),
+        method.native_channels.psd_damping ? "Hamiltonian + PSD loss" : "Hamiltonian only",
+        method.native_energy_increase_steps == null ? "not available" : `${method.native_energy_increase_steps} / ${system.truth.length - 1}`,
+      ]),
+    ) + `<p class="result-caveat">This count describes the displayed finite-step rollout. PHAST's formal passivity claim is continuous-time; the full numerical map is not asserted to be unconditionally energy-monotone.</p>`;
+  } else if (mechanism.id === "spectral") {
+    const [base, controlled] = mechanism.result.rows;
+    byId("mechanism-caption").textContent = mechanism.result.benchmark;
+    plot.hidden = true;
+    result.innerHTML = `<div class="result-pair">
+      <div><span>${mechanism.result.rollout_improvement.toFixed(1)}x</span><strong>lower rollout error</strong><small>${formatScientific(base.rollout)} to ${formatScientific(controlled.rollout)}</small></div>
+      <div><span>${mechanism.result.power_improvement.toFixed(0)}x</span><strong>lower modal-power error</strong><small>${formatScientific(base.power_mse)} to ${formatScientific(controlled.power_mse)}</small></div>
+    </div><p class="result-caveat">Direct targeted ablation; no synchronized checkpoint animation is attached to this result.</p>`;
+  } else if (mechanism.id === "ports") {
+    byId("mechanism-caption").textContent = mechanism.result.benchmark;
+    plot.hidden = true;
+    result.innerHTML = mechanismResultTable(
+      ["Feedback signal", "Success", "Mean control effort"],
+      mechanism.result.rows.map((row) => [escapeText(row.label), `${Math.round(row.success * 100)}%`, row.effort.toFixed(1)]),
+    ) + `<p class="result-callout"><strong>Result:</strong> the learned PHAST port matches oracle success and uses 6.8% less control effort. This is a separate full-state control experiment, not the q-only rollout shown above.</p>`;
+  } else {
+    byId("mechanism-caption").textContent = "Structured primitive scaling reported in the paper";
+    plot.hidden = true;
+    result.innerHTML = `<div class="complexity-row">
+      <div><code>D(q)v</code><strong>Householder damping</strong><span>O(nr)</span></div>
+      <div><code>M(q)^-1 p</code><strong>Woodbury mass solve</strong><span>O(nr^2 + r^3)</span></div>
+    </div><p class="result-caveat">Measured near-linear CPU scaling at fixed rank r=2. End-to-end throughput against HNN, pHNN, and the sequence baselines was not measured.</p>`;
+  }
+  drawMechanismPlot();
+  if (typeof window.renderMathInElement === "function") {
+    window.renderMathInElement(byId("mechanism-evidence"), {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+    });
+  }
 }
 
 function renderSubmittedScoreTable() {
@@ -358,7 +505,7 @@ function renderSystem() {
   const system = currentSystem();
   state.step = 0;
   state.coordinate = 0;
-  state.visibleMethods = new Set(system.methods.map((method) => method.id));
+  applyMechanismMethods();
   byId("time-scrubber").value = 0;
   byId("step-output").value = 1;
   byId("system-question").textContent = system.question;
@@ -372,6 +519,7 @@ function renderSystem() {
   renderInterpretation();
   renderProvenance();
   drawPlots();
+  renderMechanismEvidence();
 }
 
 function advance() {
@@ -423,10 +571,11 @@ function wireControls() {
 }
 
 async function init() {
-  const response = await fetch("data/comparison.json?v=3");
+  const response = await fetch("data/comparison.json?v=4");
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   state.data = await response.json();
   renderCapabilityTable();
+  renderMechanismTabs();
   wireControls();
   renderSystem();
   restartTimer();
