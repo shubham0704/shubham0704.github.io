@@ -3,12 +3,24 @@ const COLORS = {
   phast_unknown_qonly: "#167251",
   hnn_observer_qonly: "#bd4d4d",
   phnn_observer_qonly: "#326fa6",
+  s5: "#b7791f",
+  dlinoss: "#7252a3",
 };
 
 const CONTRACTS = {
   phast_unknown_qonly: "q-history; coordinate chart; learned V/M/D/G",
   hnn_observer_qonly: "q-history; coordinate chart; learned Hamiltonian",
   phnn_observer_qonly: "q-history; coordinate chart; learned Hamiltonian + PSD damping",
+  s5: "q-history; no supplied physical components",
+  dlinoss: "q-history; no supplied physical components",
+};
+
+const METHOD_DESCRIPTIONS = {
+  phast_unknown_qonly: "typed V/M/D channels",
+  hnn_observer_qonly: "conservative Hamiltonian flow",
+  phnn_observer_qonly: "Hamiltonian flow + PSD damping",
+  s5: "general state-space sequence model",
+  dlinoss: "damped oscillatory state-space model",
 };
 
 const state = {
@@ -19,6 +31,7 @@ const state = {
   timer: null,
   interval: 120,
   coordinate: 0,
+  visibleMethods: new Set(),
 };
 
 const byId = (id) => document.getElementById(id);
@@ -29,6 +42,8 @@ function shortLabel(methodId) {
   if (methodId === "phast_unknown_qonly") return "PHAST";
   if (methodId === "hnn_observer_qonly") return "HNN";
   if (methodId === "phnn_observer_qonly") return "pHNN";
+  if (methodId === "s5") return "S5";
+  if (methodId === "dlinoss") return "D-LinOSS";
   return "Truth";
 }
 
@@ -171,7 +186,41 @@ function drawScenes() {
   });
   system.methods.forEach((method) => {
     const node = document.querySelector(`[data-error="${method.id}"]`);
-    node.textContent = `step MSE ${formatScore(method.error_by_step[state.step])}`;
+    if (node) node.textContent = `step MSE ${formatScore(method.error_by_step[state.step])}`;
+  });
+}
+
+function renderMotionPanels() {
+  const system = currentSystem();
+  const visible = system.methods.filter((method) => state.visibleMethods.has(method.id));
+  byId("motion-grid").innerHTML = [
+    `<figure class="motion-panel truth-panel">
+      <figcaption><strong>Ground truth</strong><span>held-out simulator trajectory</span></figcaption>
+      <canvas data-scene="truth" width="560" height="360"></canvas>
+      <p class="instant-error">Reference</p>
+    </figure>`,
+    ...visible.map((method) => `<figure class="motion-panel" style="--method-color:${COLORS[method.id]}">
+      <figcaption><strong>${escapeText(method.label)}</strong><span>${escapeText(METHOD_DESCRIPTIONS[method.id])}</span></figcaption>
+      <canvas data-scene="${escapeText(method.id)}" width="560" height="360"></canvas>
+      <p class="instant-error" data-error="${escapeText(method.id)}"></p>
+    </figure>`),
+  ].join("");
+  drawScenes();
+}
+
+function renderMethodFilter() {
+  const methods = currentSystem().methods;
+  byId("method-filter").innerHTML = methods.map((method) => `<label style="--method-color:${COLORS[method.id]}">
+    <input type="checkbox" value="${escapeText(method.id)}" ${state.visibleMethods.has(method.id) ? "checked" : ""}>
+    <span>${escapeText(shortLabel(method.id))}</span>
+  </label>`).join("");
+  byId("method-filter").querySelectorAll("input").forEach((input) => {
+    input.addEventListener("change", () => {
+      if (input.checked) state.visibleMethods.add(input.value);
+      else state.visibleMethods.delete(input.value);
+      renderMotionPanels();
+      drawPlots();
+    });
   });
 }
 
@@ -192,6 +241,10 @@ function renderPlot(svg, series, options = {}) {
   const width = 900;
   const height = 310;
   const margin = { left: 72, right: 24, top: 22, bottom: 48 };
+  if (!series.length) {
+    svg.innerHTML = `<text class="plot-label" x="450" y="155" text-anchor="middle">Select at least one model above.</text>`;
+    return;
+  }
   const allValues = series.map((item) => item.values);
   const [minY, maxY] = options.logY
     ? extent(allValues.map((values) => values.map((value) => Math.log10(Math.max(value, 1e-9)))))
@@ -208,25 +261,51 @@ function renderPlot(svg, series, options = {}) {
   }).join("");
   const paths = series.map((item) => `<path class="plot-line" stroke="${item.color}" d="${makePath(item.values, x, y)}"/>`).join("");
   const cursor = options.cursor === false ? "" : `<line class="plot-cursor" x1="${x(state.step)}" x2="${x(state.step)}" y1="${margin.top}" y2="${height - margin.bottom}"/>`;
-  const legend = series.map((item, index) => `<g transform="translate(${margin.left + index * 190},${height - 12})"><line x2="28" stroke="${item.color}" stroke-width="4"/><text class="plot-label" x="36" y="7">${escapeText(item.label)}</text></g>`).join("");
+  const legendGap = Math.min(145, (width - margin.left - margin.right) / Math.max(1, series.length));
+  const legend = series.map((item, index) => `<g transform="translate(${margin.left + index * legendGap},${height - 12})"><line x2="24" stroke="${item.color}" stroke-width="4"/><text class="plot-label" x="31" y="7">${escapeText(item.label)}</text></g>`).join("");
   svg.innerHTML = `${grid}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${paths}${cursor}${legend}`;
 }
 
 function drawPlots() {
   const system = currentSystem();
   const coordinate = state.coordinate;
+  const methods = system.methods.filter((method) => state.visibleMethods.has(method.id));
   renderPlot(byId("trajectory-plot"), [
     { label: "Truth", color: COLORS.truth, values: system.truth.map((q) => q[coordinate]) },
-    ...system.methods.map((method) => ({ label: shortLabel(method.id), color: COLORS[method.id], values: method.prediction.map((q) => q[coordinate]) })),
+    ...methods.map((method) => ({ label: shortLabel(method.id), color: COLORS[method.id], values: method.prediction.map((q) => q[coordinate]) })),
   ]);
-  renderPlot(byId("error-plot"), system.methods.map((method) => ({
+  renderPlot(byId("error-plot"), methods.map((method) => ({
     label: shortLabel(method.id), color: COLORS[method.id], values: method.error_by_step,
   })), { logY: true });
-  renderPlot(byId("training-plot"), system.methods.map((method) => ({
+  renderPlot(byId("training-plot"), methods.map((method) => ({
     label: shortLabel(method.id),
     color: COLORS[method.id],
     values: method.aggregate.training_history_seed42.map((item) => item.train),
   })), { logY: true, cursor: false });
+}
+
+function renderSubmittedScoreTable() {
+  const rows = currentSystem().submitted_results;
+  const best = Math.min(...rows.map((row) => row.mean));
+  byId("submitted-score-table").querySelector("tbody").innerHTML = rows.map((row) => `<tr>
+    <td>${escapeText(row.label)}</td>
+    <td>${escapeText(row.contract)}</td>
+    <td class="${row.mean === best ? "best-score" : ""}">${formatScore(row.mean)} +/- ${formatScore(row.std)}</td>
+    <td>${row.parameter_count.toLocaleString()}</td>
+  </tr>`).join("");
+}
+
+function renderCapabilityTable() {
+  const mark = (value) => value === null ? "Varies" : value ? "Yes" : "No";
+  byId("capability-table").querySelector("tbody").innerHTML = state.data.table2_methods.map((row) => `<tr>
+    <td><strong>${escapeText(row.method)}</strong><small>${escapeText(row.note)}</small></td>
+    <td class="capability-${String(row.dissipative)}">${mark(row.dissipative)}</td>
+    <td class="capability-${String(row.passivity)}">${mark(row.passivity)}</td>
+    <td class="capability-${String(row.spectral_control)}">${mark(row.spectral_control)}</td>
+    <td class="capability-${String(row.efficient)}">${mark(row.efficient)}</td>
+    <td><span class="evidence-tag">${escapeText(row.evidence)}</span></td>
+  </tr>`).join("");
+  byId("comparison-note").textContent = state.data.comparison_note;
 }
 
 function renderScoreTable() {
@@ -271,16 +350,19 @@ function renderSystem() {
   const system = currentSystem();
   state.step = 0;
   state.coordinate = 0;
+  state.visibleMethods = new Set(system.methods.map((method) => method.id));
   byId("time-scrubber").value = 0;
   byId("step-output").value = 1;
   byId("system-question").textContent = system.question;
   byId("selection-note").textContent = `${system.selection}; held-out trajectory index ${system.trajectory_index}.`;
   const select = byId("coordinate-select");
   select.innerHTML = coordinateLabels(system).map((label, index) => `<option value="${index}">${escapeText(label)}</option>`).join("");
+  renderMethodFilter();
+  renderMotionPanels();
   renderScoreTable();
+  renderSubmittedScoreTable();
   renderInterpretation();
   renderProvenance();
-  drawScenes();
   drawPlots();
 }
 
@@ -336,6 +418,7 @@ async function init() {
   const response = await fetch("data/comparison.json");
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   state.data = await response.json();
+  renderCapabilityTable();
   wireControls();
   renderSystem();
   restartTimer();

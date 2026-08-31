@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Matched visual comparison of PHAST, HNN, and pHNN learning dissipative dynamics from position histories.">
+  <meta name="description" content="Visual and quantitative comparison of PHAST with the structured and sequence-model families discussed in the paper.">
   <title>How PHAST Learns</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <link rel="stylesheet" href="learning.css">
@@ -14,6 +14,7 @@
     <nav aria-label="Learning comparison navigation">
       <a href="#experiment">Experiment</a>
       <a href="#evidence">Evidence</a>
+      <a href="#method-families">Table 2</a>
       <a href="#interpretation">Interpretation</a>
       <a href="../phast-paper.pdf">Paper</a>
     </nav>
@@ -22,9 +23,9 @@
   <main>
     <section class="intro" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">Matched q-only comparison</p>
-        <h1 id="page-title">Watch three models learn the same physical system.</h1>
-        <p class="intro-copy">Every model sees the same ten measured positions. None receives velocity, momentum, simulator state, or supplied potential, mass, damping, or port equations. The animations show what their learned dynamics predict next.</p>
+        <p class="eyebrow">PHAST versus related model families</p>
+        <h1 id="page-title">What changes when physical structure enters the model?</h1>
+        <p class="intro-copy">The synchronized animations compare frozen models under a strict position-only contract. The tables then widen the view to every sequence baseline in the submitted experiment and every architectural family named in Table 2.</p>
       </div>
       <div class="contract" aria-label="Experimental information contract">
         <span><strong>Input</strong> $q_{t-9:t}$</span>
@@ -60,28 +61,8 @@
         </select>
       </div>
 
-      <div class="motion-grid" aria-label="Synchronized physical rollouts">
-        <figure class="motion-panel truth-panel">
-          <figcaption><strong>Ground truth</strong><span>held-out simulator trajectory</span></figcaption>
-          <canvas data-scene="truth" width="560" height="360"></canvas>
-          <p class="instant-error">Reference</p>
-        </figure>
-        <figure class="motion-panel phast-panel">
-          <figcaption><strong>PHAST-UNKNOWN</strong><span>typed $V/M/D$ channels</span></figcaption>
-          <canvas data-scene="phast_unknown_qonly" width="560" height="360"></canvas>
-          <p class="instant-error" data-error="phast_unknown_qonly"></p>
-        </figure>
-        <figure class="motion-panel hnn-panel">
-          <figcaption><strong>HNN + observer</strong><span>conservative Hamiltonian flow</span></figcaption>
-          <canvas data-scene="hnn_observer_qonly" width="560" height="360"></canvas>
-          <p class="instant-error" data-error="hnn_observer_qonly"></p>
-        </figure>
-        <figure class="motion-panel phnn-panel">
-          <figcaption><strong>pHNN + observer</strong><span>Hamiltonian flow + PSD damping</span></figcaption>
-          <canvas data-scene="phnn_observer_qonly" width="560" height="360"></canvas>
-          <p class="instant-error" data-error="phnn_observer_qonly"></p>
-        </figure>
-      </div>
+      <div class="method-filter" id="method-filter" aria-label="Choose animated methods"></div>
+      <div class="motion-grid" id="motion-grid" aria-label="Synchronized physical rollouts"></div>
       <p class="selection-note" id="selection-note"></p>
     </section>
 
@@ -110,7 +91,7 @@
 
       <div class="score-table-wrap">
         <table id="score-table">
-          <caption>Five-seed $H=100$ open-loop rollout error</caption>
+          <caption>Matched 100-epoch study: five-seed $H=100$ open-loop rollout error</caption>
           <thead>
             <tr>
               <th scope="col">Model</th>
@@ -124,6 +105,28 @@
         </table>
       </div>
 
+      <div class="submitted-results">
+        <div>
+          <p class="eyebrow">Submitted breadth</p>
+          <h3>What about the other sequence models?</h3>
+          <p>This is the separate 50-epoch, five-seed comparison reported in the paper. It includes the SSM and VPT families from Table 2. Its PHAST row may use declared physics, so it answers a different question from PHAST-UNKNOWN above.</p>
+        </div>
+        <div class="score-table-wrap">
+          <table id="submitted-score-table">
+            <caption>Submitted broad comparison at $H=100$</caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Contract</th>
+                <th scope="col">Mean +/- std.</th>
+                <th scope="col">Parameters</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="training-band">
         <div>
           <p class="eyebrow">Optimization trace</p>
@@ -132,6 +135,32 @@
         </div>
         <svg id="training-plot" viewBox="0 0 900 310" role="img" aria-label="Training loss by epoch"></svg>
       </div>
+    </section>
+
+    <section class="method-families" id="method-families" aria-labelledby="method-families-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Table 2, made inspectable</p>
+          <h2 id="method-families-title">Capability claims are not all empirical comparisons.</h2>
+        </div>
+        <p>Table 2 summarizes properties established by each architecture. The final column records what evidence this page actually provides, preventing a literature checkmark from being mistaken for a matched experiment.</p>
+      </div>
+      <div class="capability-table-wrap">
+        <table id="capability-table">
+          <thead>
+            <tr>
+              <th scope="col">Method family</th>
+              <th scope="col">$R \ne 0$</th>
+              <th scope="col">Passivity</th>
+              <th scope="col">Spectral control</th>
+              <th scope="col">Efficient rollout</th>
+              <th scope="col">Evidence here</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="matrix-note" id="comparison-note"></p>
     </section>
 
     <section class="interpretation" id="interpretation" aria-labelledby="interpretation-title">
@@ -162,8 +191,8 @@
 
     <section class="provenance" aria-labelledby="provenance-title">
       <p class="eyebrow">Reproducibility</p>
-      <h2 id="provenance-title">Every panel is tied to the submitted experiment.</h2>
-      <p>The page loads frozen seed-42 checkpoints for animation and reads the reported mean and standard deviation from the same five-seed result files. The displayed trajectory is selected mechanically: the median PHAST seed-42 test trajectory by $H=100$ rollout error.</p>
+      <h2 id="provenance-title">Every animated panel is tied to a frozen checkpoint.</h2>
+      <p>The displayed trajectory is selected mechanically: the median PHAST seed-42 test trajectory by $H=100$ rollout error. The page labels the 100-epoch animation study separately from the submitted 50-epoch broad comparison.</p>
       <details>
         <summary>Show exact information contract</summary>
         <p id="contract-detail"></p>
