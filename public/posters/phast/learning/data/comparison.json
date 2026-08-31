@@ -1,5 +1,5 @@
 {
-  "comparison_note": "The 100-epoch animation study and the submitted 50-epoch broad comparison are distinct experiments. The page labels them separately and never substitutes a literature capability mark for an empirical result.",
+  "comparison_note": "This is an architectural taxonomy, not a matched result table. Conservation for HNN/LNN is not input-output port passivity; D-LinOSS forgetting is not a PSD damping operator in physical coordinates; and the rollout-primitive column is not an end-to-end speed ranking. The experiments below test the claims under explicit information contracts.",
   "evaluation": "H=100 open-loop rollout; dataset seed 42; five model seeds; illustrative trajectory uses model seed 42.",
   "information_contract": "Every model receives the same K=10 position history and coordinate-domain chart. No model receives velocity, momentum, simulator phase state, or supplied V/M/D/G components.",
   "mechanism_evidence": [
@@ -31015,67 +31015,67 @@
   ],
   "table2_methods": [
     {
-      "dissipative": false,
-      "efficient": true,
+      "damping_spectrum": "No",
       "evidence": "matched animation + theorem",
+      "loss_channel": "None",
       "method": "HNN",
       "note": "Animated with the matched FD-TCN observer under the strict q-only contract.",
-      "passivity": true,
-      "spectral_control": false
+      "rollout_primitive": "Direct vector field",
+      "storage_law": "Conservation"
     },
     {
-      "dissipative": false,
-      "efficient": false,
+      "damping_spectrum": "No",
       "evidence": "literature only",
+      "loss_channel": "None",
       "method": "LNN",
       "note": "Table 2 is a literature comparison; no matched q-only LNN run is reported.",
-      "passivity": true,
-      "spectral_control": false
+      "rollout_primitive": "Hessian solve",
+      "storage_law": "Conservation"
     },
     {
-      "dissipative": true,
-      "efficient": true,
+      "damping_spectrum": "No",
       "evidence": "matched pHNN proxy",
+      "loss_channel": "PSD R",
       "method": "Dissipative SymODEN",
       "note": "The animated pHNN observer supplies the closest matched dissipative Hamiltonian comparison, but is not relabeled as SymODEN.",
-      "passivity": true,
-      "spectral_control": false
+      "rollout_primitive": "Direct vector field",
+      "storage_law": "Passivity"
     },
     {
-      "dissipative": true,
-      "efficient": true,
+      "damping_spectrum": "No",
       "evidence": "not matched here",
+      "loss_channel": "Learned loss",
       "method": "DHNN",
       "note": "A full-state DHNN diagnostic exists elsewhere; no matched q-only run is claimed here.",
-      "passivity": false,
-      "spectral_control": false
+      "rollout_primitive": "Direct vector field",
+      "storage_law": "Not certified"
     },
     {
-      "dissipative": false,
-      "efficient": true,
+      "damping_spectrum": "No",
       "evidence": "matched animation + score",
+      "loss_channel": "None",
       "method": "SympNets / VPT",
       "note": "VPT is evaluated under the same q-only contract in the matched animation study and the submitted five-seed score table.",
-      "passivity": false,
-      "spectral_control": false
+      "rollout_primitive": "Explicit map",
+      "storage_law": "Geometric invariant"
     },
     {
-      "dissipative": null,
-      "efficient": true,
+      "damping_spectrum": "No",
       "evidence": "matched animation + scores",
+      "loss_channel": "Latent / varies",
       "method": "SSMs: S5, LinOSS, D-LinOSS",
-      "note": "S5, LinOSS, and D-LinOSS are evaluated under the same q-only contract in both the matched animation study and the submitted score table.",
-      "passivity": false,
-      "spectral_control": false
+      "note": "D-LinOSS exposes latent forgetting, not a PSD damping operator in the physical coordinates. All three SSMs use the matched q-only contract.",
+      "rollout_primitive": "Linear recurrence",
+      "storage_law": "Not physical"
     },
     {
-      "dissipative": true,
-      "efficient": true,
+      "damping_spectrum": "Bounded",
       "evidence": "matched + targeted tests",
+      "loss_channel": "PSD D",
       "method": "PHAST",
       "note": "PHAST-UNKNOWN is animated without supplied physical components; separate tests cover spectral control, primitive scaling, and port-based feedback.",
-      "passivity": true,
-      "spectral_control": true
+      "rollout_primitive": "Low-rank pH",
+      "storage_law": "Passivity"
     }
   ],
   "title": "How PHAST learns dissipative dynamics from position history"

@@ -473,13 +473,12 @@ function renderSubmittedScoreTable() {
 }
 
 function renderCapabilityTable() {
-  const mark = (value) => value === null ? "Varies" : value ? "Yes" : "No";
   byId("capability-table").querySelector("tbody").innerHTML = state.data.table2_methods.map((row) => `<tr>
     <td><strong>${escapeText(row.method)}</strong><small>${escapeText(row.note)}</small></td>
-    <td class="capability-${String(row.dissipative)}">${mark(row.dissipative)}</td>
-    <td class="capability-${String(row.passivity)}">${mark(row.passivity)}</td>
-    <td class="capability-${String(row.spectral_control)}">${mark(row.spectral_control)}</td>
-    <td class="capability-${String(row.efficient)}">${mark(row.efficient)}</td>
+    <td>${escapeText(row.loss_channel)}</td>
+    <td>${escapeText(row.storage_law)}</td>
+    <td>${escapeText(row.damping_spectrum)}</td>
+    <td>${escapeText(row.rollout_primitive)}</td>
     <td><span class="evidence-tag">${escapeText(row.evidence)}</span></td>
   </tr>`).join("");
   byId("comparison-note").textContent = state.data.comparison_note;
@@ -593,7 +592,7 @@ function wireControls() {
 }
 
 async function init() {
-  const response = await fetch("data/comparison.json?v=5");
+  const response = await fetch("data/comparison.json?v=6");
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   state.data = await response.json();
   renderCapabilityTable();

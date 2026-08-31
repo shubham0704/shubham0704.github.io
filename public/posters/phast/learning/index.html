@@ -6,7 +6,7 @@
   <meta name="description" content="Visual and quantitative comparison of PHAST with the structured and sequence-model families discussed in the paper.">
   <title>How PHAST Learns</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <link rel="stylesheet" href="learning.css?v=5">
+  <link rel="stylesheet" href="learning.css?v=6">
 </head>
 <body>
   <header class="site-header">
@@ -103,6 +103,32 @@
             <p>PHAST-UNKNOWN receives no supplied $V$, $M$, $D$, $G$, velocity, momentum, or simulator phase state. Every animated method stops receiving observations after the same burn-in window.</p>
           </div>
         </div>
+      </div>
+
+      <div class="architecture-comparison" id="method-families" aria-labelledby="method-families-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Table 2: architectural position</p>
+            <h2 id="method-families-title">What structure does each model expose?</h2>
+          </div>
+          <p>The table describes model-native properties. It does not claim that every row was compared in one experiment.</p>
+        </div>
+        <div class="capability-table-wrap">
+          <table id="capability-table">
+            <thead>
+              <tr>
+                <th scope="col">Method family</th>
+                <th scope="col">Loss channel</th>
+                <th scope="col">Certified law</th>
+                <th scope="col">Bounded physical $D$ spectrum</th>
+                <th scope="col">Rollout primitive</th>
+                <th scope="col">Evidence on this page</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="matrix-note" id="comparison-note"></p>
       </div>
 
       <div class="system-tabs" role="tablist" aria-label="Choose a physical system">
@@ -228,32 +254,6 @@
       </div>
     </section>
 
-    <section class="method-families" id="method-families" aria-labelledby="method-families-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Table 2, made inspectable</p>
-          <h2 id="method-families-title">Which capabilities are tested here?</h2>
-        </div>
-        <p>Table 2 states architectural properties. The mechanism lens above shows what was tested, how it was tested, and where the evidence is only theoretical or indirect.</p>
-      </div>
-      <div class="capability-table-wrap">
-        <table id="capability-table">
-          <thead>
-            <tr>
-              <th scope="col">Method family</th>
-              <th scope="col">$R \ne 0$</th>
-              <th scope="col">Passivity</th>
-              <th scope="col">Spectral control</th>
-              <th scope="col">Efficient rollout</th>
-              <th scope="col">Evidence here</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <p class="matrix-note" id="comparison-note"></p>
-    </section>
-
     <section class="interpretation" id="interpretation" aria-labelledby="interpretation-title">
       <div class="section-heading">
         <div>
@@ -301,6 +301,6 @@
   </footer>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script defer src="learning.js?v=5"></script>
+  <script defer src="learning.js?v=6"></script>
 </body>
 </html>
