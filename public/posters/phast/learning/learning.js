@@ -415,7 +415,7 @@ function wireControls() {
 }
 
 async function init() {
-  const response = await fetch("data/comparison.json");
+  const response = await fetch("data/comparison.json?v=2");
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   state.data = await response.json();
   renderCapabilityTable();
