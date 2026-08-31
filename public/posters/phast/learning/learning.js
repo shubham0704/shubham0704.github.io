@@ -4,7 +4,9 @@ const COLORS = {
   hnn_observer_qonly: "#bd4d4d",
   phnn_observer_qonly: "#326fa6",
   s5: "#b7791f",
+  linoss: "#00838f",
   dlinoss: "#7252a3",
+  vpt: "#4f5862",
 };
 
 const CONTRACTS = {
@@ -12,7 +14,9 @@ const CONTRACTS = {
   hnn_observer_qonly: "q-history; coordinate chart; learned Hamiltonian",
   phnn_observer_qonly: "q-history; coordinate chart; learned Hamiltonian + PSD damping",
   s5: "q-history; no supplied physical components",
+  linoss: "q-history; no supplied physical components",
   dlinoss: "q-history; no supplied physical components",
+  vpt: "q-history; no supplied physical components",
 };
 
 const METHOD_DESCRIPTIONS = {
@@ -20,7 +24,9 @@ const METHOD_DESCRIPTIONS = {
   hnn_observer_qonly: "conservative Hamiltonian flow",
   phnn_observer_qonly: "Hamiltonian flow + PSD damping",
   s5: "general state-space sequence model",
+  linoss: "oscillatory linear state-space model",
   dlinoss: "damped oscillatory state-space model",
+  vpt: "volume-preserving transformer",
 };
 
 const state = {
@@ -43,7 +49,9 @@ function shortLabel(methodId) {
   if (methodId === "hnn_observer_qonly") return "HNN";
   if (methodId === "phnn_observer_qonly") return "pHNN";
   if (methodId === "s5") return "S5";
+  if (methodId === "linoss") return "LinOSS";
   if (methodId === "dlinoss") return "D-LinOSS";
+  if (methodId === "vpt") return "VPT";
   return "Truth";
 }
 
@@ -415,7 +423,7 @@ function wireControls() {
 }
 
 async function init() {
-  const response = await fetch("data/comparison.json?v=2");
+  const response = await fetch("data/comparison.json?v=3");
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   state.data = await response.json();
   renderCapabilityTable();
