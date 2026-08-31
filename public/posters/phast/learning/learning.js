@@ -29,6 +29,13 @@ const METHOD_DESCRIPTIONS = {
   vpt: "volume-preserving transformer",
 };
 
+const DEFAULT_COMPARE_METHODS = [
+  "phast_unknown_qonly",
+  "hnn_observer_qonly",
+  "phnn_observer_qonly",
+  "s5",
+];
+
 const state = {
   data: null,
   systemIndex: 0,
@@ -246,7 +253,11 @@ function mechanismMethods() {
 }
 
 function applyMechanismMethods() {
-  state.visibleMethods = new Set(mechanismMethods());
+  const available = new Set(mechanismMethods());
+  const selected = state.mechanism === "comparison"
+    ? DEFAULT_COMPARE_METHODS.filter((id) => available.has(id))
+    : [...available];
+  state.visibleMethods = new Set(selected);
 }
 
 function renderMechanismTabs() {
@@ -372,6 +383,17 @@ function renderMechanismEvidence() {
   byId("mechanism-title").textContent = mechanism.title;
   byId("mechanism-question").textContent = mechanism.question;
   byId("mechanism-interpretation").textContent = mechanism.interpretation;
+  byId("construction-input").textContent = mechanism.construction.input;
+  byId("construction-intervention").textContent = mechanism.construction.intervention;
+  byId("construction-fixed").textContent = mechanism.construction.fixed;
+  byId("construction-readout").textContent = mechanism.construction.readout;
+  byId("method-instruction").textContent = mechanism.id === "comparison"
+    ? "PHAST, HNN, pHNN, and S5 are shown initially. Check LinOSS, D-LinOSS, or VPT to add their synchronized rollouts."
+    : "Only the model outputs relevant to this mechanism are shown below.";
+  const relevantRows = new Set(mechanism.formula_rows);
+  document.querySelectorAll("[data-formula]").forEach((row) => {
+    row.classList.toggle("is-relevant", relevantRows.has(row.dataset.formula));
+  });
   const result = byId("mechanism-result");
 
   if (mechanism.id === "comparison") {
@@ -571,7 +593,7 @@ function wireControls() {
 }
 
 async function init() {
-  const response = await fetch("data/comparison.json?v=4");
+  const response = await fetch("data/comparison.json?v=5");
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   state.data = await response.json();
   renderCapabilityTable();

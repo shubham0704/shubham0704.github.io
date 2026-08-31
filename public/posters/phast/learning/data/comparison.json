@@ -4,7 +4,17 @@
   "information_contract": "Every model receives the same K=10 position history and coordinate-domain chart. No model receives velocity, momentum, simulator phase state, or supplied V/M/D/G components.",
   "mechanism_evidence": [
     {
+      "construction": {
+        "fixed": "Dataset, burn-in, $H=100$ horizon, optimizer, and seed protocol",
+        "input": "$q_{t-9:t}$ for every method",
+        "intervention": "Change the model family",
+        "readout": "Open-loop position trajectory and wrapped rollout MSE"
+      },
       "evidence_type": "Matched experiment",
+      "formula_rows": [
+        "observer",
+        "dynamics"
+      ],
       "id": "comparison",
       "interpretation": "All seven models receive the same q-history. The synchronized animation and five-seed scores compare their open-loop predictions directly.",
       "label": "Compare models",
@@ -21,7 +31,17 @@
       "title": "Forecast the same held-out trajectory"
     },
     {
+      "construction": {
+        "fixed": "Data, training budget, evaluation horizon, and matched HNN/pHNN observer",
+        "input": "$q_{t-9:t}$ under the same position-only contract",
+        "intervention": "Conservative $R=0$ versus learned PSD $R$",
+        "readout": "Position rollout plus each structured model's dissipated-power signal"
+      },
       "evidence_type": "Matched family comparison",
+      "formula_rows": [
+        "dynamics",
+        "power"
+      ],
       "id": "dissipation",
       "interpretation": "HNN is conservative. The matched pHNN adds a PSD damping channel. PHAST adds typed potential, mass, and damping channels plus its split transition. This isolates the value of representing loss at the family level, but it is not a one-switch PHAST ablation.",
       "label": "Represent loss",
@@ -34,7 +54,17 @@
       "title": "Remove or restore irreversible loss"
     },
     {
+      "construction": {
+        "fixed": "One selected trajectory and each model's frozen parameters",
+        "input": "The same held-out position history",
+        "intervention": "Inspect the native $H_\\theta$ and PSD-loss channel",
+        "readout": "Normalized $H_t-H_0$ and upward finite-step increments"
+      },
       "evidence_type": "Theorem + trajectory diagnostic",
+      "formula_rows": [
+        "energy",
+        "power"
+      ],
       "id": "passivity",
       "interpretation": "The continuous-time passivity statement follows from PSD damping. The plotted native energy is a finite-step diagnostic on one held-out trajectory; it is not a stronger discrete-time theorem, and raw energy scales are not compared across models.",
       "label": "Track energy",
@@ -47,7 +77,17 @@
       "title": "Inspect each model's native energy ledger"
     },
     {
+      "construction": {
+        "fixed": "The q-only benchmark and evaluation metrics",
+        "input": "Modal-damped LJ-3 position histories",
+        "intervention": "Change the parameterization and anchoring of $D_\\theta$",
+        "readout": "Rollout error and modal dissipated-power error"
+      },
       "evidence_type": "Targeted ablation",
+      "formula_rows": [
+        "dynamics",
+        "power"
+      ],
       "id": "spectral",
       "interpretation": "On the modal-damped LJ-3 benchmark, adding the PSD/modal anchor and dissipated-power loss reduces both rollout error and modal-power error. The gallery checkpoint itself is unbounded, so these numbers are shown separately rather than attached to its animation.",
       "label": "Bound damping",
@@ -75,7 +115,17 @@
       "title": "Constrain which modes can absorb error"
     },
     {
+      "construction": {
+        "fixed": "Energy-Casimir controller, gains, initial-condition regimes, and 100 trials",
+        "input": "Observed $(q,p)$ on the controlled pendulum",
+        "intervention": "Oracle velocity versus $y^{\\mathrm{port}}=\\partial\\hat H/\\partial p$",
+        "readout": "Stabilization success and control effort"
+      },
       "evidence_type": "Closed-loop experiment",
+      "formula_rows": [
+        "dynamics",
+        "power"
+      ],
       "id": "ports",
       "interpretation": "In the separate Energy-Casimir pendulum study with q and p observed, the controller changes only how velocity is obtained. The PHAST port output reaches the same success rate as oracle velocity with lower mean control effort.",
       "label": "Use the port",
@@ -101,7 +151,17 @@
       "title": "Use the learned Hamiltonian in feedback"
     },
     {
+      "construction": {
+        "fixed": "CPU implementation and low-rank operator rank",
+        "input": "Vectors of increasing dimension $n$ at fixed rank $r=2$",
+        "intervention": "Increase physical-state dimension",
+        "readout": "Wall-clock time per damping application and mass solve"
+      },
       "evidence_type": "CPU primitive benchmark",
+      "formula_rows": [
+        "energy",
+        "dynamics"
+      ],
       "id": "efficiency",
       "interpretation": "The paper benchmarks Householder damping application and Woodbury mass solves and observes near-linear CPU scaling in dimension at fixed rank r=2. This is a primitive microbenchmark, not an end-to-end runtime comparison against the animated baselines.",
       "label": "Scale primitives",

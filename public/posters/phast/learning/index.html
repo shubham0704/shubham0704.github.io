@@ -6,7 +6,7 @@
   <meta name="description" content="Visual and quantitative comparison of PHAST with the structured and sequence-model families discussed in the paper.">
   <title>How PHAST Learns</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <link rel="stylesheet" href="learning.css?v=4">
+  <link rel="stylesheet" href="learning.css?v=5">
 </head>
 <body>
   <header class="site-header">
@@ -39,10 +39,70 @@
     <section class="experiment" id="experiment" aria-labelledby="experiment-title">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">Three representative systems</p>
-          <h2 id="experiment-title">Same observations. Different dynamical structure.</h2>
+          <p class="eyebrow">Model before comparison</p>
+          <h2 id="experiment-title">From ten observed positions to an open-loop physical rollout.</h2>
         </div>
-        <p id="system-question">Loading experiment data...</p>
+        <p>PHAST first reconstructs the missing phase state. It then advances that state with an explicit energy, interconnection, dissipation, and port model.</p>
+      </div>
+
+      <div class="formulation" aria-labelledby="formulation-title">
+        <div class="formulation-heading">
+          <p class="eyebrow">Core formulation</p>
+          <h3 id="formulation-title">The four equations used by the experiments</h3>
+          <p>The highlighted rows change with the mechanism selected below.</p>
+        </div>
+        <div class="formulation-table-wrap">
+          <table class="formulation-table">
+            <thead>
+              <tr>
+                <th scope="col">Stage</th>
+                <th scope="col">Equation</th>
+                <th scope="col">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-formula="observer">
+                <th scope="row">Observe</th>
+                <td>$\hat p_t=\mathcal C_\psi\!\left(q_t,\mathcal O_\phi(q_{t-9:t})\right)$</td>
+                <td>Infer the unobserved momentum from recent positions.</td>
+              </tr>
+              <tr data-formula="energy">
+                <th scope="row">Store</th>
+                <td>$H_\theta(q,p)=V_\theta(q)+\tfrac12p^\top M_\theta(q)^{-1}p$</td>
+                <td>Separate potential and kinetic energy.</td>
+              </tr>
+              <tr data-formula="dynamics">
+                <th scope="row">Evolve</th>
+                <td>$\dot x=(J-R_\theta)\nabla H_\theta(x)+G_\theta(q)u$</td>
+                <td>Combine conservative exchange, irreversible loss, and applied effort.</td>
+              </tr>
+              <tr data-formula="power">
+                <th scope="row">Account</th>
+                <td><span>$y^{\mathrm{port}}=G_\theta^\top\nabla H_\theta$</span><span>$\dot H=-\nabla H^\top R_\theta\nabla H+u^\top y^{\mathrm{port}}$</span></td>
+                <td>Expose dissipated power and power entering through the port.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="formulation-notes">
+          <div class="symbol-guide">
+            <h4>What the symbols mean</h4>
+            <dl>
+              <div><dt>$q$</dt><dd>observed generalized position, such as an angle or cart location</dd></div>
+              <div><dt>$\hat p$</dt><dd>momentum inferred by observer $\mathcal O_\phi$ and canonicalizer $\mathcal C_\psi$</dd></div>
+              <div><dt>$x=(q,p)$</dt><dd>the phase state advanced after the observation window</dd></div>
+              <div><dt>$V_\theta,\ M_\theta$</dt><dd>potential energy and positive-definite mass or inertia</dd></div>
+              <div><dt>$J,\ R_\theta$</dt><dd>skew interconnection and positive-semidefinite dissipation</dd></div>
+              <div><dt>$G_\theta u$</dt><dd>where generalized effort enters; the animated forecasts use $u=0$</dd></div>
+              <div><dt>$y^{\mathrm{port}}$</dt><dd>the output conjugate to $u$, so $u^\top y^{\mathrm{port}}$ is supplied power</dd></div>
+            </dl>
+          </div>
+          <div class="rollout-contract">
+            <h4>Matched rollout contract</h4>
+            <p><strong>Input:</strong> $q_{t-9:t}$. <strong>Output:</strong> $\hat q_{t+1:t+100}$.</p>
+            <p>PHAST-UNKNOWN receives no supplied $V$, $M$, $D$, $G$, velocity, momentum, or simulator phase state. Every animated method stops receiving observations after the same burn-in window.</p>
+          </div>
+        </div>
       </div>
 
       <div class="system-tabs" role="tablist" aria-label="Choose a physical system">
@@ -50,13 +110,34 @@
         <button type="button" role="tab" data-system="1" aria-selected="false">Damped double pendulum</button>
         <button type="button" role="tab" data-system="2" aria-selected="false">Windy cart-pole</button>
       </div>
+      <p class="system-question" id="system-question">Loading experiment data...</p>
 
       <div class="mechanism-lens" id="mechanisms">
         <div>
-          <p class="eyebrow">Mechanism lens</p>
-          <h3>What does each PHAST capability change?</h3>
+          <p class="eyebrow">Selected mechanism</p>
+          <h3>Which part of the formulation is being tested?</h3>
         </div>
         <div class="mechanism-tabs" id="mechanism-tabs" role="tablist" aria-label="Choose a capability to inspect"></div>
+      </div>
+
+      <div class="mechanism-evidence" id="mechanism-evidence" aria-live="polite">
+        <div class="mechanism-copy">
+          <span class="evidence-kind" id="mechanism-kind"></span>
+          <h3 id="mechanism-title"></h3>
+          <p class="mechanism-question" id="mechanism-question"></p>
+          <p id="mechanism-interpretation"></p>
+        </div>
+        <dl class="experiment-construction" aria-label="Selected experiment construction">
+          <div><dt>Input</dt><dd id="construction-input"></dd></div>
+          <div><dt>Intervention</dt><dd id="construction-intervention"></dd></div>
+          <div><dt>Held fixed</dt><dd id="construction-fixed"></dd></div>
+          <div><dt>Readout</dt><dd id="construction-readout"></dd></div>
+        </dl>
+        <figure class="mechanism-figure">
+          <figcaption id="mechanism-caption"></figcaption>
+          <svg id="mechanism-plot" viewBox="0 0 900 310" role="img" aria-label="Selected mechanism evidence"></svg>
+          <div class="mechanism-result" id="mechanism-result"></div>
+        </figure>
       </div>
 
       <div class="playback" aria-label="Animation controls">
@@ -70,23 +151,10 @@
         </select>
       </div>
 
+      <p class="method-instruction" id="method-instruction">PHAST, HNN, pHNN, and S5 are shown initially. Check LinOSS, D-LinOSS, or VPT to add their synchronized rollouts.</p>
       <div class="method-filter" id="method-filter" aria-label="Choose animated methods"></div>
       <div class="motion-grid" id="motion-grid" aria-label="Synchronized physical rollouts"></div>
       <p class="selection-note" id="selection-note"></p>
-
-      <div class="mechanism-evidence" id="mechanism-evidence" aria-live="polite">
-        <div class="mechanism-copy">
-          <span class="evidence-kind" id="mechanism-kind"></span>
-          <h3 id="mechanism-title"></h3>
-          <p class="mechanism-question" id="mechanism-question"></p>
-          <p id="mechanism-interpretation"></p>
-        </div>
-        <figure class="mechanism-figure">
-          <figcaption id="mechanism-caption"></figcaption>
-          <svg id="mechanism-plot" viewBox="0 0 900 310" role="img" aria-label="Selected mechanism evidence"></svg>
-          <div class="mechanism-result" id="mechanism-result"></div>
-        </figure>
-      </div>
     </section>
 
     <section class="evidence" id="evidence" aria-labelledby="evidence-title">
@@ -233,6 +301,6 @@
   </footer>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-  <script defer src="learning.js?v=4"></script>
+  <script defer src="learning.js?v=5"></script>
 </body>
 </html>
