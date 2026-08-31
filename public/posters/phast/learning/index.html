@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Matched visual comparison of PHAST, HNN, and pHNN learning dissipative dynamics from position histories.">
+  <title>How PHAST Learns</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="learning.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../">PHAST</a>
+    <nav aria-label="Learning comparison navigation">
+      <a href="#experiment">Experiment</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#interpretation">Interpretation</a>
+      <a href="../phast-paper.pdf">Paper</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Matched q-only comparison</p>
+        <h1 id="page-title">Watch three models learn the same physical system.</h1>
+        <p class="intro-copy">Every model sees the same ten measured positions. None receives velocity, momentum, simulator state, or supplied potential, mass, damping, or port equations. The animations show what their learned dynamics predict next.</p>
+      </div>
+      <div class="contract" aria-label="Experimental information contract">
+        <span><strong>Input</strong> $q_{t-9:t}$</span>
+        <span><strong>Forecast</strong> $\hat q_{t+1:t+100}$</span>
+        <span><strong>Data seed</strong> 42</span>
+        <span><strong>Model seeds</strong> 5</span>
+      </div>
+    </section>
+
+    <section class="experiment" id="experiment" aria-labelledby="experiment-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Three representative systems</p>
+          <h2 id="experiment-title">Same observations. Different dynamical structure.</h2>
+        </div>
+        <p id="system-question">Loading experiment data...</p>
+      </div>
+
+      <div class="system-tabs" role="tablist" aria-label="Choose a physical system">
+        <button type="button" role="tab" data-system="0" aria-selected="true">Windy pendulum</button>
+        <button type="button" role="tab" data-system="1" aria-selected="false">Damped double pendulum</button>
+        <button type="button" role="tab" data-system="2" aria-selected="false">Windy cart-pole</button>
+      </div>
+
+      <div class="playback" aria-label="Animation controls">
+        <button type="button" id="play-toggle">Pause</button>
+        <label for="time-scrubber">Rollout step <output id="step-output">1</output> / 100</label>
+        <input id="time-scrubber" type="range" min="0" max="99" value="0">
+        <select id="speed-control" aria-label="Playback speed">
+          <option value="240">0.5x</option>
+          <option value="120" selected>1x</option>
+          <option value="60">2x</option>
+        </select>
+      </div>
+
+      <div class="motion-grid" aria-label="Synchronized physical rollouts">
+        <figure class="motion-panel truth-panel">
+          <figcaption><strong>Ground truth</strong><span>held-out simulator trajectory</span></figcaption>
+          <canvas data-scene="truth" width="560" height="360"></canvas>
+          <p class="instant-error">Reference</p>
+        </figure>
+        <figure class="motion-panel phast-panel">
+          <figcaption><strong>PHAST-UNKNOWN</strong><span>typed $V/M/D$ channels</span></figcaption>
+          <canvas data-scene="phast_unknown_qonly" width="560" height="360"></canvas>
+          <p class="instant-error" data-error="phast_unknown_qonly"></p>
+        </figure>
+        <figure class="motion-panel hnn-panel">
+          <figcaption><strong>HNN + observer</strong><span>conservative Hamiltonian flow</span></figcaption>
+          <canvas data-scene="hnn_observer_qonly" width="560" height="360"></canvas>
+          <p class="instant-error" data-error="hnn_observer_qonly"></p>
+        </figure>
+        <figure class="motion-panel phnn-panel">
+          <figcaption><strong>pHNN + observer</strong><span>Hamiltonian flow + PSD damping</span></figcaption>
+          <canvas data-scene="phnn_observer_qonly" width="560" height="360"></canvas>
+          <p class="instant-error" data-error="phnn_observer_qonly"></p>
+        </figure>
+      </div>
+      <p class="selection-note" id="selection-note"></p>
+    </section>
+
+    <section class="evidence" id="evidence" aria-labelledby="evidence-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Quantitative evidence</p>
+          <h2 id="evidence-title">The motion and the score tell the same story.</h2>
+        </div>
+        <div class="coordinate-control">
+          <label for="coordinate-select">Trace</label>
+          <select id="coordinate-select"></select>
+        </div>
+      </div>
+
+      <div class="plot-band">
+        <figure>
+          <figcaption><strong>Open-loop coordinate</strong><span>truth and prediction after the burn-in window</span></figcaption>
+          <svg id="trajectory-plot" viewBox="0 0 900 310" role="img" aria-label="Open-loop coordinate traces"></svg>
+        </figure>
+        <figure>
+          <figcaption><strong>Error accumulation</strong><span>wrapped on periodic coordinates</span></figcaption>
+          <svg id="error-plot" viewBox="0 0 900 310" role="img" aria-label="Rollout mean squared error by step"></svg>
+        </figure>
+      </div>
+
+      <div class="score-table-wrap">
+        <table id="score-table">
+          <caption>Five-seed $H=100$ open-loop rollout error</caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">Information supplied</th>
+              <th scope="col">Mean +/- std.</th>
+              <th scope="col">Parameters</th>
+              <th scope="col">Relative to PHAST</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="training-band">
+        <div>
+          <p class="eyebrow">Optimization trace</p>
+          <h3>Did the comparison stop before the baselines learned?</h3>
+          <p>The curves show seed 42 under the shared 100-epoch protocol. The table above reports all five model seeds.</p>
+        </div>
+        <svg id="training-plot" viewBox="0 0 900 310" role="img" aria-label="Training loss by epoch"></svg>
+      </div>
+    </section>
+
+    <section class="interpretation" id="interpretation" aria-labelledby="interpretation-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Mechanism, not decoration</p>
+          <h2 id="interpretation-title">What structure changes in each example.</h2>
+        </div>
+        <p>These are architectural comparisons under a matched observation contract. They do not supply PHAST with the true physics.</p>
+      </div>
+
+      <div class="claim-row">
+        <div><span>01</span><strong id="claim-title">Position-dependent dissipation</strong></div>
+        <p id="claim-explanation"></p>
+        <p id="claim-result"></p>
+      </div>
+      <div class="claim-row">
+        <div><span>02</span><strong>Passivity is a native statement only for structured models</strong></div>
+        <p>HNN, pHNN, and PHAST expose a learned Hamiltonian. pHNN and PHAST also expose PSD dissipation. Their Hamiltonians are learned up to scale and gauge, so the page does not compare raw energy magnitudes across models.</p>
+        <p>The visual comparison therefore uses the common object all methods predict: the held-out physical trajectory.</p>
+      </div>
+      <div class="claim-row">
+        <div><span>03</span><strong>Forecasting and physical identification remain different questions</strong></div>
+        <p>Low rollout error shows that the learned transition predicts the observed system. It does not prove that every learned $V$, $M$, or $D$ component is uniquely identifiable from positions.</p>
+        <p>PHAST's recovery claims remain conditional on declared anchors and bounds.</p>
+      </div>
+    </section>
+
+    <section class="provenance" aria-labelledby="provenance-title">
+      <p class="eyebrow">Reproducibility</p>
+      <h2 id="provenance-title">Every panel is tied to the submitted experiment.</h2>
+      <p>The page loads frozen seed-42 checkpoints for animation and reads the reported mean and standard deviation from the same five-seed result files. The displayed trajectory is selected mechanically: the median PHAST seed-42 test trajectory by $H=100$ rollout error.</p>
+      <details>
+        <summary>Show exact information contract</summary>
+        <p id="contract-detail"></p>
+      </details>
+      <details>
+        <summary>Show checkpoint fingerprints</summary>
+        <pre id="checkpoint-detail"></pre>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <a href="../">Return to the PHAST poster</a>
+    <span>Shubham Bhardwaj and Chandrajit Bajaj</span>
+  </footer>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script defer src="learning.js"></script>
+</body>
+</html>
