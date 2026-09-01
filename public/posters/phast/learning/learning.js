@@ -55,6 +55,7 @@ const state = {
   interval: 120,
   coordinate: 0,
   mechanism: "dissipation",
+  equationTerm: "R",
   scalingAxis: "data",
   visibleMethods: new Set(),
   initialVisibleMethods: null,
@@ -74,6 +75,9 @@ function readViewState() {
 
   const mechanisms = new Set(state.data.mechanism_evidence.map((item) => item.id));
   if (mechanisms.has(params.get("mechanism"))) state.mechanism = params.get("mechanism");
+
+  const equationTerms = new Set(["H", "J", "R", "G"]);
+  if (equationTerms.has(params.get("term"))) state.equationTerm = params.get("term");
 
   const axes = new Set(["data", "excitation", "width", "optimization"]);
   if (axes.has(params.get("axis"))) state.scalingAxis = params.get("axis");
@@ -96,6 +100,7 @@ function writeViewState() {
   const url = new URL(window.location.href);
   url.searchParams.set("system", currentSystem().scene);
   url.searchParams.set("mechanism", state.mechanism);
+  url.searchParams.set("term", state.equationTerm);
   url.searchParams.set("axis", state.scalingAxis);
   url.searchParams.set("coordinate", String(state.coordinate));
   url.searchParams.set("methods", [...state.visibleMethods].join(",") || "none");
@@ -374,6 +379,129 @@ function extent(series) {
 
 function makePath(values, xScale, yScale) {
   return values.map((value, index) => `${index ? "L" : "M"}${xScale(index).toFixed(2)},${yScale(value).toFixed(2)}`).join(" ");
+}
+
+function drawHeroRollout() {
+  const svg = byId("hero-rollout");
+  if (!svg || !state.data) return;
+  const system = currentSystem();
+  const coordinate = Math.min(state.coordinate, system.truth[0].length - 1);
+  const observed = system.context.map((value) => value[coordinate]);
+  const truth = system.truth.map((value) => value[coordinate]);
+  const phast = currentMethod("phast_unknown_qonly").prediction.map((value) => value[coordinate]);
+  const all = [...observed, ...truth, ...phast];
+  const [minY, maxY] = extent([all]);
+  const width = 960;
+  const height = 360;
+  const margin = { left: 58, right: 24, top: 38, bottom: 54 };
+  const total = observed.length + truth.length;
+  const x = (index) => margin.left + index / (total - 1) * (width - margin.left - margin.right);
+  const y = (value) => margin.top + (maxY - value) / (maxY - minY) * (height - margin.top - margin.bottom);
+  const joinedTruth = [...observed.slice(-1), ...truth];
+  const joinedPhast = [...observed.slice(-1), ...phast];
+  const futureX = (index) => x(index + observed.length - 1);
+  const grid = [0, .5, 1].map((ratio) => {
+    const gy = margin.top + ratio * (height - margin.top - margin.bottom);
+    const value = maxY - ratio * (maxY - minY);
+    return `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"/><text class="plot-label" x="${margin.left - 10}" y="${gy + 5}" text-anchor="end">${value.toFixed(2)}</text>`;
+  }).join("");
+  const observedPath = makePath(observed, x, y);
+  const truthPath = makePath(joinedTruth, futureX, y);
+  const phastPath = makePath(joinedPhast, futureX, y);
+  const split = x(observed.length - 1);
+  svg.innerHTML = `
+    <rect class="hero-observed-band" x="${margin.left}" y="${margin.top}" width="${split - margin.left}" height="${height - margin.top - margin.bottom}"/>
+    ${grid}
+    <path class="hero-observed-line" d="${observedPath}"/>
+    ${observed.map((value, index) => `<circle class="hero-observed-point" cx="${x(index)}" cy="${y(value)}" r="4"/>`).join("")}
+    <path class="hero-truth-line" d="${truthPath}"/>
+    <path class="hero-phast-line" d="${phastPath}"/>
+    <line class="hero-split" x1="${split}" x2="${split}" y1="${margin.top}" y2="${height - margin.bottom}"/>
+    <text class="hero-region-label" x="${split - 10}" y="24" text-anchor="end">observed history</text>
+    <text class="hero-region-label" x="${split + 10}" y="24">open-loop future</text>
+    <g class="hero-legend" transform="translate(${width - 260},${height - 18})">
+      <line x2="24" class="hero-truth-line"/><text x="31" y="5">truth</text>
+      <line x1="82" x2="106" class="hero-phast-line"/><text x="113" y="5">PHAST</text>
+    </g>`;
+}
+
+const EQUATION_TERMS = {
+  H: {
+    label: "Stored energy",
+    title: "$H_\\theta$ gives the latent state a physical scale.",
+    copy: "Potential and kinetic energy share one scalar ledger. A forecast can therefore be inspected in energy units rather than only coordinate error.",
+    formula: "$H_\\theta(q,p)=V_\\theta(q)+\\tfrac12p^\\top M_\\theta(q)^{-1}p$",
+    caption: "Change in the learned Hamiltonian along the selected PHAST rollout.",
+  },
+  J: {
+    label: "Conservative exchange",
+    title: "$J$ moves energy without creating or destroying it.",
+    copy: "Its skew symmetry makes the internal power cancel. In a mechanical system, this is the reversible exchange between potential and kinetic energy.",
+    formula: "$J^\\top=-J,\\qquad \\nabla H_\\theta^\\top J\\nabla H_\\theta=0$",
+    caption: "The interconnection redistributes energy while the total ledger is unchanged.",
+  },
+  R: {
+    label: "Dissipation",
+    title: "$R_\\theta$ makes irreversible loss explicit.",
+    copy: "Its mechanical block $D_\\theta(q)\\succeq0$ removes energy without being allowed to create it. This is the quantity tested in the recovery study.",
+    formula: "$P_{\\mathrm{loss}}=\\nabla H_\\theta^\\top R_\\theta\\nabla H_\\theta\\geq0$",
+    caption: "PHAST exposes a non-negative dissipated-power channel along the rollout.",
+  },
+  G: {
+    label: "External port",
+    title: "$G_\\theta$ records where external effort enters.",
+    copy: "The input and its conjugate output form a power pair. This lets a controller act through a declared physical interface without changing the internal energy model.",
+    formula: "$y^{\\mathrm{port}}=G_\\theta^\\top\\nabla H_\\theta,\\qquad P_{\\mathrm{in}}=u^\\top y^{\\mathrm{port}}$",
+    caption: "The port separates externally supplied power from internal storage and loss.",
+  },
+};
+
+function drawEquationVisual() {
+  const svg = byId("equation-visual");
+  if (!svg || !state.data) return;
+  const method = currentMethod("phast_unknown_qonly");
+  if (state.equationTerm === "H") {
+    const values = method.native_energy_change_normalized || [];
+    renderPlot(svg, [{ label: "delta H", color: COLORS.phast_unknown_qonly, values }], { cursor: false });
+    return;
+  }
+  if (state.equationTerm === "R") {
+    const values = normalizedPower(method.native_dissipation_power, currentSystem().truth.length);
+    renderPlot(svg, [{ label: "dissipated power", color: COLORS.phast_unknown_qonly, values }], { cursor: false });
+    return;
+  }
+  if (state.equationTerm === "J") {
+    svg.innerHTML = `<defs><marker id="exchange-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#167251"/></marker></defs>
+      <circle class="equation-node" cx="280" cy="138" r="72"/><circle class="equation-node" cx="620" cy="138" r="72"/>
+      <text class="equation-node-title" x="280" y="132" text-anchor="middle">potential</text><text class="equation-node-symbol" x="280" y="158" text-anchor="middle">V(q)</text>
+      <text class="equation-node-title" x="620" y="132" text-anchor="middle">kinetic</text><text class="equation-node-symbol" x="620" y="158" text-anchor="middle">T(p)</text>
+      <path class="equation-arrow" marker-end="url(#exchange-arrow)" d="M360,108 C420,65 480,65 540,108"/><path class="equation-arrow" marker-end="url(#exchange-arrow)" d="M540,168 C480,211 420,211 360,168"/>
+      <text class="equation-total" x="450" y="272" text-anchor="middle">exchange changes V and T, not H = V + T</text>`;
+    return;
+  }
+  svg.innerHTML = `<defs><marker id="port-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#167251"/></marker></defs>
+    <text class="equation-port-label" x="108" y="130">effort u</text><line class="equation-arrow" marker-end="url(#port-arrow)" x1="190" y1="124" x2="340" y2="124"/>
+    <rect class="equation-port" x="350" y="65" width="200" height="118"/><text class="equation-node-title" x="450" y="116" text-anchor="middle">physical port</text><text class="equation-node-symbol" x="450" y="149" text-anchor="middle">G(q)</text>
+    <line class="equation-arrow" marker-end="url(#port-arrow)" x1="560" y1="124" x2="710" y2="124"/><text class="equation-port-label" x="728" y="130">flow y</text>
+    <text class="equation-total" x="450" y="260" text-anchor="middle">instantaneous supplied power = u transpose y</text>`;
+}
+
+function renderEquationTerm() {
+  const term = EQUATION_TERMS[state.equationTerm];
+  if (!term || !byId("equation-term-label")) return;
+  document.querySelectorAll("[data-equation-term]").forEach((button) => button.setAttribute("aria-selected", button.dataset.equationTerm === state.equationTerm ? "true" : "false"));
+  byId("equation-term-label").textContent = term.label;
+  byId("equation-term-title").textContent = term.title;
+  byId("equation-term-copy").textContent = term.copy;
+  byId("equation-term-formula").textContent = term.formula;
+  byId("equation-visual-caption").textContent = term.caption;
+  drawEquationVisual();
+  if (typeof window.renderMathInElement === "function") {
+    window.renderMathInElement(byId("model"), {
+      delimiters: [{ left: "$$", right: "$$", display: true }, { left: "$", right: "$", display: false }],
+      throwOnError: false,
+    });
+  }
 }
 
 function renderPlot(svg, series, options = {}) {
@@ -1119,6 +1247,8 @@ function renderSystem() {
   state.initialCoordinate = null;
   select.innerHTML = labels.map((label, index) => `<option value="${index}">${escapeText(label)}</option>`).join("");
   select.value = String(state.coordinate);
+  drawHeroRollout();
+  renderEquationTerm();
   renderMethodFilter();
   renderMotionPanels();
   renderScoreTable();
@@ -1177,8 +1307,16 @@ function wireControls() {
   });
   byId("coordinate-select").addEventListener("change", (event) => {
     state.coordinate = Number(event.target.value);
+    drawHeroRollout();
     drawPlots();
     writeViewState();
+  });
+  document.querySelectorAll("[data-equation-term]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.equationTerm = button.dataset.equationTerm;
+      renderEquationTerm();
+      writeViewState();
+    });
   });
   document.querySelectorAll("[data-scaling-axis]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1204,7 +1342,11 @@ function wireControls() {
     await copyText(byId("citation-text").textContent.trim());
     byId("copy-citation-status").textContent = "Copied";
   });
-  window.addEventListener("resize", drawScenes);
+  window.addEventListener("resize", () => {
+    drawScenes();
+    drawHeroRollout();
+    drawEquationVisual();
+  });
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     state.playing = false;
     byId("play-toggle").textContent = "Play";
