@@ -626,6 +626,16 @@ td:first-child { font-weight: 800; }
 .mechanism-figure { min-width: 0; margin: 2.5rem 0 0; }
 .mechanism-figure > figcaption { margin-bottom: .8rem; color: var(--muted); font-size: .78rem; font-weight: 700; }
 .mechanism-figure > svg { display: block; width: 100%; height: auto; background: var(--white); border: 1px solid var(--line); }
+.plot-zero { stroke: var(--ink); stroke-width: 1.25; stroke-dasharray: 5 5; vector-effect: non-scaling-stroke; }
+.plot-zero-label { fill: var(--ink); font-size: 11px; font-weight: 700; }
+.metric-divider { stroke: var(--line-strong); stroke-width: 1; }
+.metric-link { stroke: var(--line-strong); stroke-width: 2; }
+.metric-point { stroke: var(--white); stroke-width: 3; }
+.metric-bar { opacity: .9; }
+.metric-title { fill: var(--ink); font-size: 15px; font-weight: 750; }
+.metric-reading, .metric-name { fill: var(--muted); font-size: 11px; }
+.metric-value { fill: var(--ink); font-size: 13px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.metric-ratio { fill: var(--green); font-size: 17px; font-weight: 750; }
 .mechanism-result { max-width: 1100px; padding: 1.5rem 0 2.5rem; }
 .mechanism-result p:last-child { margin-bottom: 0; }
 .mechanism-table-wrap { overflow-x: auto; }

@@ -527,10 +527,62 @@ function renderPlot(svg, series, options = {}) {
     return `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"/><text class="plot-label" x="${margin.left - 12}" y="${gy + 7}" text-anchor="end">${label}</text>`;
   }).join("");
   const paths = series.map((item) => `<path class="plot-line" stroke="${item.color}" ${item.dash ? `stroke-dasharray="${item.dash}"` : ""} d="${makePath(item.values, x, y)}"/>`).join("");
+  const zeroLine = options.zeroLine && minY <= 0 && maxY >= 0
+    ? `<line class="plot-zero" x1="${margin.left}" x2="${width - margin.right}" y1="${y(0)}" y2="${y(0)}"/><text class="plot-zero-label" x="${width - margin.right}" y="${y(0) - 7}" text-anchor="end">initial energy</text>`
+    : "";
   const cursor = options.cursor === false ? "" : `<line class="plot-cursor" x1="${x(state.step)}" x2="${x(state.step)}" y1="${margin.top}" y2="${height - margin.bottom}"/>`;
   const legendGap = Math.min(145, (width - margin.left - margin.right) / Math.max(1, series.length));
   const legend = series.map((item, index) => `<g transform="translate(${margin.left + index * legendGap},${height - 12})"><line x2="24" stroke="${item.color}" stroke-width="4" ${item.dash ? `stroke-dasharray="${item.dash}"` : ""}/><text class="plot-label" x="31" y="7">${escapeText(item.label)}</text></g>`).join("");
-  svg.innerHTML = `${grid}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${paths}${cursor}${legend}`;
+  svg.innerHTML = `${grid}${zeroLine}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${paths}${cursor}${legend}`;
+}
+
+function drawLowerIsBetterComparison(svg, rows) {
+  const metrics = [
+    { label: "H=100 rollout MSE", key: "rollout" },
+    { label: "Modal-power MSE", key: "power_mse" },
+  ];
+  const colors = ["#9b5b4d", COLORS.phast_unknown_qonly];
+  const panels = metrics.map((metric, panelIndex) => {
+    const left = 40 + panelIndex * 450;
+    const values = rows.map((row) => row[metric.key]);
+    const logs = values.map((value) => Math.log10(value));
+    const high = Math.max(...logs) + 0.25;
+    const low = Math.min(...logs) - 0.25;
+    const y = (value) => 72 + (high - Math.log10(value)) / (high - low) * 150;
+    const ratio = values[0] / values[1];
+    const points = rows.map((row, index) => {
+      const x = left + 115 + index * 205;
+      const cy = y(row[metric.key]);
+      return `<circle class="metric-point" cx="${x}" cy="${cy}" r="7" fill="${colors[index]}"/>
+        <text class="metric-value" x="${x}" y="${cy - 15}" text-anchor="middle">${formatScientific(row[metric.key])}</text>
+        <text class="metric-name" x="${x}" y="254" text-anchor="middle">${escapeText(index === 0 ? "bounded" : "ordered + anchored")}</text>`;
+    }).join("");
+    return `<g><text class="metric-title" x="${left + 225}" y="28" text-anchor="middle">${metric.label}</text>
+      <text class="metric-reading" x="${left + 225}" y="48" text-anchor="middle">log scale · lower is better</text>
+      <line class="metric-link" x1="${left + 115}" y1="${y(values[0])}" x2="${left + 320}" y2="${y(values[1])}"/>
+      ${points}<text class="metric-ratio" x="${left + 225}" y="292" text-anchor="middle">${ratio < 10 ? ratio.toFixed(1) : ratio.toFixed(0)}x lower</text></g>`;
+  }).join("");
+  svg.innerHTML = `<line class="metric-divider" x1="450" x2="450" y1="18" y2="292"/>${panels}`;
+}
+
+function drawPortComparison(svg, rows) {
+  const [oracle, phast] = rows;
+  const bar = (x, value, max, color, valueLabel, name) => {
+    const height = 150 * value / max;
+    const y = 220 - height;
+    return `<rect class="metric-bar" x="${x}" y="${y}" width="72" height="${height}" fill="${color}"/>
+      <text class="metric-value" x="${x + 36}" y="${y - 12}" text-anchor="middle">${valueLabel}</text>
+      <text class="metric-name" x="${x + 36}" y="252" text-anchor="middle">${escapeText(name)}</text>`;
+  };
+  svg.innerHTML = `<line class="metric-divider" x1="450" x2="450" y1="18" y2="292"/>
+    <text class="metric-title" x="225" y="28" text-anchor="middle">Stabilization success</text>
+    <text class="metric-reading" x="225" y="48" text-anchor="middle">100 trials · higher is better</text>
+    ${bar(125, oracle.success, 1, "#9b5b4d", `${Math.round(oracle.success * 100)}%`, "oracle velocity")}
+    ${bar(275, phast.success, 1, COLORS.phast_unknown_qonly, `${Math.round(phast.success * 100)}%`, "PHAST port")}
+    <text class="metric-title" x="675" y="28" text-anchor="middle">Mean control effort</text>
+    <text class="metric-reading" x="675" y="48" text-anchor="middle">same controller · lower is better</text>
+    ${bar(575, oracle.effort, 290, "#9b5b4d", oracle.effort.toFixed(1), "oracle velocity")}
+    ${bar(725, phast.effort, 290, COLORS.phast_unknown_qonly, phast.effort.toFixed(1), "PHAST port")}`;
 }
 
 function drawPlots() {
@@ -573,7 +625,19 @@ function drawMechanismPlot() {
       color: COLORS[method.id],
       dash: lineDash(method.id),
       values: method.native_energy_change_normalized,
-    })));
+    })), { zeroLine: true });
+    return;
+  }
+  if (state.mechanism === "spectral") {
+    drawLowerIsBetterComparison(svg, currentMechanism().result.rows);
+    return;
+  }
+  if (state.mechanism === "ports") {
+    drawPortComparison(svg, currentMechanism().result.rows);
+    return;
+  }
+  if (state.mechanism === "efficiency") {
+    svg.innerHTML = `<image href="./assets/phast-primitives-timing.svg?v=1" x="55" y="8" width="790" height="292" preserveAspectRatio="xMidYMid meet"/>`;
     return;
   }
   svg.innerHTML = "";
@@ -639,7 +703,7 @@ function renderMechanismEvidence() {
     plot.hidden = false;
     result.innerHTML = `<p class="result-callout"><strong>What the family comparison tests:</strong> HNN has no damping channel through which energy can be lost; pHNN and PHAST do. Power curves are normalized separately because their learned Hamiltonian scales are not comparable. This is not yet a one-switch PHAST ablation.</p>`;
   } else if (mechanism.id === "passivity") {
-    byId("mechanism-caption").textContent = "Change in each model's own Hamiltonian, normalized within model";
+    byId("mechanism-caption").textContent = "Stored-energy change from rollout start, normalized within each model";
     plot.hidden = false;
     result.innerHTML = mechanismResultTable(
       ["Model", "Native channel", "Upward finite-step increments"],
@@ -648,25 +712,25 @@ function renderMechanismEvidence() {
         method.native_channels.psd_damping ? "Hamiltonian + PSD loss" : "Hamiltonian only",
         method.native_energy_increase_steps == null ? "not available" : `${method.native_energy_increase_steps} / ${system.truth.length - 1}`,
       ]),
-    ) + `<p class="result-caveat">This count describes the displayed finite-step rollout. PHAST's formal passivity claim is continuous-time; the full numerical map is not asserted to be unconditionally energy-monotone.</p>`;
+    ) + `<p class="result-callout"><strong>How to read the plot:</strong> zero is each model's energy at the start of the forecast. Moving below zero means that model reports a net loss of stored energy. Any upward segment is a finite-step energy increase. Compare direction and upward increments, not curve heights, because every learned Hamiltonian has its own scale and is normalized separately.</p><p class="result-caveat">This count describes the displayed finite-step rollout. PHAST's formal passivity claim is continuous-time; the full numerical map is not asserted to be unconditionally energy-monotone.</p>`;
   } else if (mechanism.id === "spectral") {
     const [base, controlled] = mechanism.result.rows;
     byId("mechanism-caption").textContent = mechanism.result.benchmark;
-    plot.hidden = true;
+    plot.hidden = false;
     result.innerHTML = `<div class="result-pair">
       <div><span>${mechanism.result.rollout_improvement.toFixed(1)}x</span><strong>lower rollout error</strong><small>${formatScientific(base.rollout)} to ${formatScientific(controlled.rollout)}</small></div>
       <div><span>${mechanism.result.power_improvement.toFixed(0)}x</span><strong>lower modal-power error</strong><small>${formatScientific(base.power_mse)} to ${formatScientific(controlled.power_mse)}</small></div>
     </div><p class="result-caveat">Direct targeted ablation; no synchronized checkpoint animation is attached to this result.</p>`;
   } else if (mechanism.id === "ports") {
     byId("mechanism-caption").textContent = mechanism.result.benchmark;
-    plot.hidden = true;
+    plot.hidden = false;
     result.innerHTML = mechanismResultTable(
       ["Feedback signal", "Success", "Mean control effort"],
       mechanism.result.rows.map((row) => [escapeText(row.label), `${Math.round(row.success * 100)}%`, row.effort.toFixed(1)]),
     ) + `<p class="result-callout"><strong>Result:</strong> the learned PHAST port matches oracle success and uses 6.8% less control effort. This is a separate full-state control experiment, not the q-only rollout shown above.</p>`;
   } else {
-    byId("mechanism-caption").textContent = "Structured primitive scaling reported in the paper";
-    plot.hidden = true;
+    byId("mechanism-caption").textContent = "Measured CPU time per structured operation as physical dimension increases (fixed rank r=2)";
+    plot.hidden = false;
     result.innerHTML = `<div class="complexity-row">
       <div><code>D(q)v</code><strong>Householder damping</strong><span>O(nr)</span></div>
       <div><code>M(q)^-1 p</code><strong>Woodbury mass solve</strong><span>O(nr^2 + r^3)</span></div>
