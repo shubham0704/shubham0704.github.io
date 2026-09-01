@@ -9,6 +9,15 @@ const COLORS = {
   vpt: "#4f5862",
 };
 
+const SCALING_COLORS = {
+  phast_partial_bounded: "#176f50",
+  phast_no_damping: "#b94b4b",
+  phast_unknown: "#00838f",
+  phnn_observer: "#326fa6",
+  s5: "#b7781f",
+  transformer: "#4f5862",
+};
+
 const CONTRACTS = {
   phast_unknown_qonly: "q-history; coordinate chart; learned V/M/D/G",
   hnn_observer_qonly: "q-history; coordinate chart; learned Hamiltonian",
@@ -38,20 +47,76 @@ const DEFAULT_COMPARE_METHODS = [
 
 const state = {
   data: null,
+  scalingData: null,
   systemIndex: 0,
   step: 0,
   playing: true,
   timer: null,
   interval: 120,
   coordinate: 0,
-  mechanism: "comparison",
+  mechanism: "dissipation",
+  scalingAxis: "data",
   visibleMethods: new Set(),
+  initialVisibleMethods: null,
+  initialCoordinate: null,
 };
 
 const byId = (id) => document.getElementById(id);
 const currentSystem = () => state.data.systems[state.systemIndex];
 const currentMethod = (id) => currentSystem().methods.find((method) => method.id === id);
 const currentMechanism = () => state.data.mechanism_evidence.find((item) => item.id === state.mechanism);
+
+function readViewState() {
+  const params = new URLSearchParams(window.location.search);
+  const system = params.get("system");
+  const systemIndex = state.data.systems.findIndex((item) => item.scene === system);
+  if (systemIndex >= 0) state.systemIndex = systemIndex;
+
+  const mechanisms = new Set(state.data.mechanism_evidence.map((item) => item.id));
+  if (mechanisms.has(params.get("mechanism"))) state.mechanism = params.get("mechanism");
+
+  const axes = new Set(["data", "excitation", "width", "optimization"]);
+  if (axes.has(params.get("axis"))) state.scalingAxis = params.get("axis");
+
+  const coordinate = Number(params.get("coordinate"));
+  if (params.has("coordinate") && Number.isInteger(coordinate) && coordinate >= 0) {
+    state.initialCoordinate = coordinate;
+  }
+
+  if (params.has("methods")) {
+    const available = new Set(currentSystem().methods.map((method) => method.id));
+    const requested = params.get("methods") === "none"
+      ? []
+      : params.get("methods").split(",").filter((id) => available.has(id));
+    state.initialVisibleMethods = requested;
+  }
+}
+
+function writeViewState() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("system", currentSystem().scene);
+  url.searchParams.set("mechanism", state.mechanism);
+  url.searchParams.set("axis", state.scalingAxis);
+  url.searchParams.set("coordinate", String(state.coordinate));
+  url.searchParams.set("methods", [...state.visibleMethods].join(",") || "none");
+  window.history.replaceState(null, "", url.toString());
+}
+
+async function copyText(value) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
 
 function shortLabel(methodId) {
   if (methodId === "phast_unknown_qonly") return "PHAST";
@@ -62,6 +127,27 @@ function shortLabel(methodId) {
   if (methodId === "dlinoss") return "D-LinOSS";
   if (methodId === "vpt") return "VPT";
   return "Truth";
+}
+
+function lineDash(methodId) {
+  const patterns = {
+    hnn_observer_qonly: "12 6",
+    phnn_observer_qonly: "4 5",
+    s5: "14 5 3 5",
+    linoss: "9 4",
+    dlinoss: "3 4",
+    vpt: "16 5",
+  };
+  return patterns[methodId] || "";
+}
+
+function benchmarkPurpose(system) {
+  const purposes = {
+    pendulum: "Tests damping that changes with angle.",
+    "double-pendulum": "Tests coupled nonlinear motion with irreversible loss.",
+    "cart-pole": "Tests Euclidean and periodic coordinates in one rollout.",
+  };
+  return purposes[system.scene];
 }
 
 function escapeText(value) {
@@ -230,9 +316,7 @@ function renderMotionPanels() {
 }
 
 function renderMethodFilter() {
-  const methods = state.mechanism === "comparison"
-    ? currentSystem().methods
-    : mechanismMethods().map(currentMethod).filter(Boolean);
+  const methods = currentSystem().methods;
   byId("method-filter").innerHTML = methods.map((method) => `<label style="--method-color:${COLORS[method.id]}">
     <input type="checkbox" value="${escapeText(method.id)}" ${state.visibleMethods.has(method.id) ? "checked" : ""}>
     <span>${escapeText(shortLabel(method.id))}</span>
@@ -243,6 +327,7 @@ function renderMethodFilter() {
       else state.visibleMethods.delete(input.value);
       renderMotionPanels();
       drawPlots();
+      writeViewState();
     });
   });
 }
@@ -252,16 +337,17 @@ function mechanismMethods() {
   return currentMechanism().methods.filter((id) => available.has(id));
 }
 
-function applyMechanismMethods() {
-  const available = new Set(mechanismMethods());
-  const selected = state.mechanism === "comparison"
-    ? DEFAULT_COMPARE_METHODS.filter((id) => available.has(id))
-    : [...available];
+function applyComparisonMethods() {
+  const available = new Set(currentSystem().methods.map((method) => method.id));
+  const selected = Array.isArray(state.initialVisibleMethods)
+    ? state.initialVisibleMethods.filter((id) => available.has(id))
+    : DEFAULT_COMPARE_METHODS.filter((id) => available.has(id));
   state.visibleMethods = new Set(selected);
+  state.initialVisibleMethods = null;
 }
 
 function renderMechanismTabs() {
-  byId("mechanism-tabs").innerHTML = state.data.mechanism_evidence.map((item) => `<button
+  byId("mechanism-tabs").innerHTML = state.data.mechanism_evidence.filter((item) => item.id !== "comparison").map((item) => `<button
     type="button"
     role="tab"
     data-mechanism="${escapeText(item.id)}"
@@ -270,12 +356,9 @@ function renderMechanismTabs() {
   byId("mechanism-tabs").querySelectorAll("button").forEach((button) => {
     button.addEventListener("click", () => {
       state.mechanism = button.dataset.mechanism;
-      applyMechanismMethods();
       renderMechanismTabs();
-      renderMethodFilter();
-      renderMotionPanels();
-      drawPlots();
       renderMechanismEvidence();
+      writeViewState();
     });
   });
 }
@@ -315,10 +398,10 @@ function renderPlot(svg, series, options = {}) {
     const label = options.logY ? `10^${raw.toFixed(1)}` : raw.toFixed(2);
     return `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"/><text class="plot-label" x="${margin.left - 12}" y="${gy + 7}" text-anchor="end">${label}</text>`;
   }).join("");
-  const paths = series.map((item) => `<path class="plot-line" stroke="${item.color}" d="${makePath(item.values, x, y)}"/>`).join("");
+  const paths = series.map((item) => `<path class="plot-line" stroke="${item.color}" ${item.dash ? `stroke-dasharray="${item.dash}"` : ""} d="${makePath(item.values, x, y)}"/>`).join("");
   const cursor = options.cursor === false ? "" : `<line class="plot-cursor" x1="${x(state.step)}" x2="${x(state.step)}" y1="${margin.top}" y2="${height - margin.bottom}"/>`;
   const legendGap = Math.min(145, (width - margin.left - margin.right) / Math.max(1, series.length));
-  const legend = series.map((item, index) => `<g transform="translate(${margin.left + index * legendGap},${height - 12})"><line x2="24" stroke="${item.color}" stroke-width="4"/><text class="plot-label" x="31" y="7">${escapeText(item.label)}</text></g>`).join("");
+  const legend = series.map((item, index) => `<g transform="translate(${margin.left + index * legendGap},${height - 12})"><line x2="24" stroke="${item.color}" stroke-width="4" ${item.dash ? `stroke-dasharray="${item.dash}"` : ""}/><text class="plot-label" x="31" y="7">${escapeText(item.label)}</text></g>`).join("");
   svg.innerHTML = `${grid}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${paths}${cursor}${legend}`;
 }
 
@@ -328,16 +411,11 @@ function drawPlots() {
   const methods = system.methods.filter((method) => state.visibleMethods.has(method.id));
   renderPlot(byId("trajectory-plot"), [
     { label: "Truth", color: COLORS.truth, values: system.truth.map((q) => q[coordinate]) },
-    ...methods.map((method) => ({ label: shortLabel(method.id), color: COLORS[method.id], values: method.prediction.map((q) => q[coordinate]) })),
+    ...methods.map((method) => ({ label: shortLabel(method.id), color: COLORS[method.id], dash: lineDash(method.id), values: method.prediction.map((q) => q[coordinate]) })),
   ]);
   renderPlot(byId("error-plot"), methods.map((method) => ({
-    label: shortLabel(method.id), color: COLORS[method.id], values: method.error_by_step,
+    label: shortLabel(method.id), color: COLORS[method.id], dash: lineDash(method.id), values: method.error_by_step,
   })), { logY: true });
-  renderPlot(byId("training-plot"), methods.map((method) => ({
-    label: shortLabel(method.id),
-    color: COLORS[method.id],
-    values: method.aggregate.training_history_seed42.map((item) => item.train),
-  })), { logY: true, cursor: false });
   drawMechanismPlot();
 }
 
@@ -355,6 +433,7 @@ function drawMechanismPlot() {
     renderPlot(svg, methods.map((method) => ({
       label: method.id === "hnn_observer_qonly" ? "HNN: R=0" : shortLabel(method.id),
       color: COLORS[method.id],
+      dash: lineDash(method.id),
       values: normalizedPower(method.native_dissipation_power, system.truth.length),
     })));
     return;
@@ -364,6 +443,7 @@ function drawMechanismPlot() {
     renderPlot(svg, methods.map((method) => ({
       label: shortLabel(method.id),
       color: COLORS[method.id],
+      dash: lineDash(method.id),
       values: method.native_energy_change_normalized,
     })));
     return;
@@ -379,7 +459,25 @@ function renderMechanismEvidence() {
   const mechanism = currentMechanism();
   const system = currentSystem();
   const plot = byId("mechanism-plot");
-  byId("mechanism-kind").textContent = mechanism.evidence_type;
+  const evidenceScopes = {
+    dissipation: { level: "Matched family comparison", scope: `Active benchmark · ${system.label}` },
+    passivity: { level: "Trajectory diagnostic", scope: `Active benchmark · ${system.label}` },
+    spectral: { level: "Separate benchmark", scope: "Modal-damped LJ-3" },
+    ports: { level: "Controller study", scope: "Energy–Casimir pendulum · full-state input" },
+    efficiency: { level: "Primitive microbenchmark", scope: "Synthetic dimensions · fixed rank r=2" },
+  };
+  const formulaCallbacks = {
+    dissipation: "$R_\\theta\\nabla H_\\theta$ and $-\\nabla H^\\top R_\\theta\\nabla H$",
+    passivity: "$H_\\theta$ and $\\dot H=-\\nabla H^\\top R_\\theta\\nabla H+u^\\top y^{\\mathrm{port}}$",
+    spectral: "$\\lambda(R_\\theta)\\in[0,\\bar\\beta]$",
+    ports: "$G_\\theta(q)u$ and $u^\\top y^{\\mathrm{port}}$",
+    efficiency: "$M_\\theta(q)^{-1}p$ and $R_\\theta\\nabla H_\\theta$",
+  };
+  const evidenceScope = evidenceScopes[mechanism.id] || { level: "Evidence", scope: mechanism.evidence_type };
+  byId("mechanism-level").textContent = evidenceScope.level;
+  byId("mechanism-kind").textContent = evidenceScope.scope;
+  byId("mechanism-evidence").dataset.evidenceLevel = mechanism.id;
+  byId("mechanism-formula").textContent = formulaCallbacks[mechanism.id] || "";
   byId("mechanism-title").textContent = mechanism.title;
   byId("mechanism-question").textContent = mechanism.question;
   byId("mechanism-interpretation").textContent = mechanism.interpretation;
@@ -387,9 +485,6 @@ function renderMechanismEvidence() {
   byId("construction-intervention").textContent = mechanism.construction.intervention;
   byId("construction-fixed").textContent = mechanism.construction.fixed;
   byId("construction-readout").textContent = mechanism.construction.readout;
-  byId("method-instruction").textContent = mechanism.id === "comparison"
-    ? "PHAST, HNN, pHNN, and S5 are shown initially. Check LinOSS, D-LinOSS, or VPT to add their synchronized rollouts."
-    : "Only the model outputs relevant to this mechanism are shown below.";
   const relevantRows = new Set(mechanism.formula_rows);
   document.querySelectorAll("[data-formula]").forEach((row) => {
     row.classList.toggle("is-relevant", relevantRows.has(row.dataset.formula));
@@ -414,7 +509,7 @@ function renderMechanismEvidence() {
   } else if (mechanism.id === "dissipation") {
     byId("mechanism-caption").textContent = "Native dissipated-power readout, normalized within each model";
     plot.hidden = false;
-    result.innerHTML = `<p class="result-callout"><strong>What the animation tests:</strong> HNN cannot contract energy through $R$; pHNN and PHAST can. Power curves are normalized separately because their learned Hamiltonian scales are not comparable.</p>`;
+    result.innerHTML = `<p class="result-callout"><strong>What the family comparison tests:</strong> HNN has no damping channel through which energy can be lost; pHNN and PHAST do. Power curves are normalized separately because their learned Hamiltonian scales are not comparable. This is not yet a one-switch PHAST ablation.</p>`;
   } else if (mechanism.id === "passivity") {
     byId("mechanism-caption").textContent = "Change in each model's own Hamiltonian, normalized within model";
     plot.hidden = false;
@@ -473,15 +568,48 @@ function renderSubmittedScoreTable() {
 }
 
 function renderCapabilityTable() {
-  byId("capability-table").querySelector("tbody").innerHTML = state.data.table2_methods.map((row) => `<tr>
-    <td><strong>${escapeText(row.method)}</strong><small>${escapeText(row.note)}</small></td>
-    <td>${escapeText(row.loss_channel)}</td>
-    <td>${escapeText(row.storage_law)}</td>
-    <td>${escapeText(row.damping_spectrum)}</td>
-    <td>${escapeText(row.rollout_primitive)}</td>
-    <td><span class="evidence-tag">${escapeText(row.evidence)}</span></td>
+  const contextualOnly = new Set(["LNN", "DHNN"]);
+  const displayName = (row) => row.method === "Dissipative SymODEN" ? "pHNN observer" : row.method;
+  const displayNote = (row) => row.method === "Dissipative SymODEN"
+    ? "Matched q-only dissipative Hamiltonian baseline; used as the closest experimental comparison for this capability."
+    : row.note;
+  const lossDescription = {
+    "None": "Irreversible loss is not represented",
+    "PSD R": "Positive-semidefinite damping R",
+    "Learned loss": "Unconstrained learned loss term",
+    "Latent / varies": "Latent forgetting; model dependent",
+    "PSD D": "Positive-semidefinite physical damping D",
+  };
+  const lawDescription = {
+    "Conservation": "Energy conservation",
+    "Passivity": "Passive energy balance",
+    "Not certified": "No certified energy law",
+    "Geometric invariant": "A geometric invariant, not dissipation",
+    "Not physical": "No physical energy law",
+  };
+  const rolloutDescription = {
+    "Direct vector field": "Integrate a learned vector field",
+    "Hessian solve": "Solve the Lagrangian equations",
+    "Explicit map": "Apply a learned discrete map",
+    "Linear recurrence": "Update a latent linear state",
+    "Low-rank pH": "Apply the split pH transition",
+  };
+  const evidenceLabel = (row) => {
+    if (row.method === "Dissipative SymODEN") return "Matched dissipative pH proxy";
+    if (row.evidence.includes("matched")) return "Yes";
+    return row.evidence;
+  };
+  const renderRows = (rows) => rows.map((row) => `<tr>
+    <td><strong>${escapeText(displayName(row))}</strong><small>${escapeText(displayNote(row))}</small></td>
+    <td>${escapeText(lossDescription[row.loss_channel] || row.loss_channel)}</td>
+    <td>${escapeText(lawDescription[row.storage_law] || row.storage_law)}</td>
+    <td>${row.damping_spectrum === "Bounded" ? "Yes" : "No"}</td>
+    <td>${escapeText(rolloutDescription[row.rollout_primitive] || row.rollout_primitive)}</td>
+    <td><span class="evidence-tag">${escapeText(evidenceLabel(row))}</span></td>
   </tr>`).join("");
-  byId("comparison-note").textContent = state.data.comparison_note;
+  byId("capability-table").querySelector("tbody").innerHTML = renderRows(state.data.table2_methods.filter((row) => !contextualOnly.has(row.method)));
+  byId("capability-context-table").querySelector("tbody").innerHTML = renderRows(state.data.table2_methods.filter((row) => contextualOnly.has(row.method)));
+  byId("comparison-note").textContent = "A structural capability is not itself a performance result. The experiments below test whether these differences matter when models receive the same position history and predict the same horizon.";
 }
 
 function renderScoreTable() {
@@ -501,6 +629,66 @@ function renderScoreTable() {
   }).join("");
 }
 
+function strongestMatchedBaseline(system) {
+  return system.methods.slice(1).reduce((best, method) => (
+    method.aggregate.mean < best.aggregate.mean ? method : best
+  ));
+}
+
+function nextCausalTest(system) {
+  const tests = {
+    pendulum: "Full PHAST versus R=0, unconstrained damping, and unbounded damping under the same seeds.",
+    "double-pendulum": "Observer, damping, mass, and integrator ablations under the same coupled rollout contract.",
+    "cart-pole": "Continuous chart versus raw angular coordinates, followed by matched damping and mass ablations.",
+  };
+  return tests[system.scene];
+}
+
+function renderResultSummary() {
+  byId("result-summary").innerHTML = state.data.systems.map((system, index) => {
+    const phast = system.methods[0];
+    const baseline = strongestMatchedBaseline(system);
+    const ratio = baseline.aggregate.mean / phast.aggregate.mean;
+    return `<a class="result-signal" href="#evidence" data-summary-system="${index}">
+      <div>
+        <h3>${escapeText(system.label)}</h3>
+        <p>${escapeText(system.claim)}</p>
+        <small>${escapeText(benchmarkPurpose(system))}</small>
+      </div>
+      <div>
+        <span class="result-ratio">${ratio.toFixed(1)}x</span>
+        <strong>lower mean error than ${escapeText(shortLabel(baseline.id))}</strong>
+      </div>
+      <p>PHAST ${formatScore(phast.aggregate.mean)} +/- ${formatScore(phast.aggregate.std)}</p>
+    </a>`;
+  }).join("");
+}
+
+function renderSynthesisTable() {
+  byId("synthesis-table").querySelector("tbody").innerHTML = state.data.systems.map((system) => {
+    const phast = system.methods[0];
+    const baseline = strongestMatchedBaseline(system);
+    const ratio = baseline.aggregate.mean / phast.aggregate.mean;
+    return `<tr>
+      <td>${escapeText(system.label)}</td>
+      <td class="best-score">${formatScore(phast.aggregate.mean)} +/- ${formatScore(phast.aggregate.std)}</td>
+      <td>${escapeText(shortLabel(baseline.id))}: ${formatScore(baseline.aggregate.mean)} +/- ${formatScore(baseline.aggregate.std)}</td>
+      <td>${ratio.toFixed(1)}x lower</td>
+      <td>${escapeText(nextCausalTest(system))}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderActiveResult() {
+  const system = currentSystem();
+  const phast = system.methods[0];
+  const baseline = strongestMatchedBaseline(system);
+  const ratio = baseline.aggregate.mean / phast.aggregate.mean;
+  byId("active-result-number").textContent = `${ratio.toFixed(1)}x`;
+  byId("active-result-title").textContent = `lower mean rollout error than ${shortLabel(baseline.id)}`;
+  byId("active-result-detail").textContent = `${system.label}: PHAST ${formatScore(phast.aggregate.mean)} +/- ${formatScore(phast.aggregate.std)}; ${shortLabel(baseline.id)} ${formatScore(baseline.aggregate.mean)} +/- ${formatScore(baseline.aggregate.std)} over five model seeds.`;
+}
+
 function renderInterpretation() {
   const system = currentSystem();
   const phast = system.methods[0].aggregate.mean;
@@ -508,12 +696,14 @@ function renderInterpretation() {
   const ratio = bestBaseline / phast;
   byId("claim-title").textContent = system.claim;
   const explanations = {
-    pendulum: "The true damping changes with angle. A conservative HNN cannot represent irreversible contraction; pHNN adds damping, while PHAST separates potential, mass, and damping inside its transition.",
+    pendulum: "The true damping changes with angle. A conservative HNN cannot represent irreversible energy loss; pHNN adds damping, while PHAST separates potential, mass, and damping inside its transition.",
     "double-pendulum": "The two angular coordinates exchange energy through coupled nonlinear motion while damping removes it. The observer and transition must remain stable after ground-truth positions stop.",
     "cart-pole": "The cart moves on the real line while the pole angle wraps on a circle. The declared chart prevents an artificial discontinuity at the angular branch cut.",
   };
   byId("claim-explanation").textContent = explanations[system.scene];
   byId("claim-result").textContent = `PHAST has ${ratio.toFixed(1)}x lower mean rollout error than the strongest matched structured baseline on this system.`;
+  byId("next-test-title").textContent = system.scene === "cart-pole" ? "Isolate the coordinate chart" : "Isolate the PHAST mechanism";
+  byId("next-test-copy").textContent = nextCausalTest(system);
 }
 
 function renderProvenance() {
@@ -522,21 +712,418 @@ function renderProvenance() {
   byId("checkpoint-detail").textContent = lines.join("\n\n");
 }
 
+function scalingMethod(methodId) {
+  return state.scalingData.methods[methodId];
+}
+
+function formatSigned(value, digits = 3) {
+  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}`;
+}
+
+function sortedScalingCells(rows) {
+  const excitationOrder = { narrow: 0, broad: 1 };
+  return [...rows].sort((left, right) => (
+    excitationOrder[left.excitation] - excitationOrder[right.excitation]
+    || left.n_train - right.n_train
+    || left.hidden_dim - right.hidden_dim
+  ));
+}
+
+function renderScalingSummary() {
+  const cells = sortedScalingCells(state.scalingData.forecast);
+  const wins = cells.filter((cell) => {
+    const bounded = cell.values.find((value) => value.method === "phast_partial_bounded").mean;
+    return bounded === Math.min(...cell.values.map((value) => value.mean));
+  }).length;
+  const ratios = cells.map((cell) => {
+    const bounded = cell.values.find((value) => value.method === "phast_partial_bounded").mean;
+    const alternative = Math.min(...cell.values.filter((value) => value.method !== "phast_partial_bounded").map((value) => value.mean));
+    return alternative / bounded;
+  });
+  const bestRecovery = Math.max(...state.scalingData.recovery.map((cell) => cell.bounded.mean));
+
+  byId("scaling-summary").innerHTML = `
+    <div><span>${wins}/${cells.length}</span><strong>matched conditions won</strong><p>Bounded PHAST has the lowest $H=100$ error in every cell.</p></div>
+    <div><span>${Math.min(...ratios).toFixed(2)}-${Math.max(...ratios).toFixed(2)}x</span><strong>lower rollout error</strong><p>Relative to the best alternative in each matched cell.</p></div>
+    <div><span>${formatSigned(bestRecovery)}</span><strong>best damping $R_D^2$</strong><p>Recovery improves, but remains far from complete identification.</p></div>`;
+}
+
+function renderFullForecastScaling() {
+  const methodOrder = ["phast_partial_bounded", "phast_no_damping", "phast_unknown", "phnn_observer", "s5"];
+  const rows = sortedScalingCells(state.scalingData.forecast).map((cell) => {
+    const best = Math.min(...cell.values.map((value) => value.mean));
+    const bounded = cell.values.find((value) => value.method === "phast_partial_bounded").mean;
+    const bestAlternative = Math.min(...cell.values.filter((value) => value.method !== "phast_partial_bounded").map((value) => value.mean));
+    const values = methodOrder.map((methodId) => {
+      const value = cell.values.find((candidate) => candidate.method === methodId);
+      const className = Math.abs(value.mean - best) < 1e-12 ? "best-scaling-score" : "";
+      return `<td class="${className}" data-label="${escapeText(scalingMethod(methodId).label)}"><strong>${formatScore(value.mean)}</strong><small>+/- ${formatScore(value.std)}</small></td>`;
+    }).join("");
+    return `<tr>
+      <th scope="row"><span>${escapeText(cell.excitation)}</span><small>$N=${cell.n_train}$ · width ${cell.hidden_dim}</small></th>
+      ${values}
+      <td data-label="Advantage"><strong>${(bestAlternative / bounded).toFixed(2)}x</strong><small>lower</small></td>
+    </tr>`;
+  }).join("");
+
+  byId("forecast-full-table").innerHTML = `<table class="scaling-table">
+    <thead><tr>
+      <th scope="col">Condition</th>
+      ${methodOrder.map((methodId) => `<th scope="col"><span class="method-swatch" style="--swatch:${SCALING_COLORS[methodId]}"></span>${escapeText(scalingMethod(methodId).label)}</th>`).join("")}
+      <th scope="col">Advantage</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function renderForecastScaling() {
+  const rows = sortedScalingCells(state.scalingData.forecast).filter((cell) => cell.hidden_dim === 64).map((cell) => {
+    const valueFor = (methodId) => cell.values.find((value) => value.method === methodId);
+    const bounded = valueFor("phast_partial_bounded");
+    const noDamping = valueFor("phast_no_damping");
+    const nonPhast = [valueFor("phnn_observer"), valueFor("s5")].sort((left, right) => left.mean - right.mean)[0];
+    const bestAlternative = Math.min(...cell.values.filter((value) => value.method !== "phast_partial_bounded").map((value) => value.mean));
+    return `<tr>
+      <th scope="row"><span>${escapeText(cell.excitation)} excitation</span><small>$N=${cell.n_train}$ · width 64</small></th>
+      <td class="best-scaling-score" data-label="Bounded PHAST"><strong>${formatScore(bounded.mean)}</strong><small>+/- ${formatScore(bounded.std)}</small></td>
+      <td data-label="PHAST without damping"><strong>${formatScore(noDamping.mean)}</strong><small>+/- ${formatScore(noDamping.std)}</small></td>
+      <td data-label="Best non-PHAST"><strong>${formatScore(nonPhast.mean)}</strong><small>${escapeText(scalingMethod(nonPhast.method).label)} · +/- ${formatScore(nonPhast.std)}</small></td>
+      <td data-label="Advantage"><strong>${(bestAlternative / bounded.mean).toFixed(2)}x</strong><small>vs best alternative</small></td>
+    </tr>`;
+  }).join("");
+
+  byId("forecast-scaling-table").innerHTML = `<table class="scaling-table primary-scaling-table">
+    <thead><tr><th scope="col">Condition</th><th scope="col">Bounded PHAST</th><th scope="col">Without damping</th><th scope="col">Best non-PHAST</th><th scope="col">Advantage</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+
+  renderFullForecastScaling();
+}
+
+function renderCapacityScaling() {
+  const forecast = state.scalingData.forecast;
+  const recovery = state.scalingData.recovery;
+  const rows = ["narrow", "broad"].map((excitation) => {
+    const values = [32, 64].map((width) => {
+      const forecastCell = scalingCell(forecast, excitation, 256, width);
+      const recoveryCell = scalingCell(recovery, excitation, 256, width);
+      return {
+        forecast: forecastCell.values.find((value) => value.method === "phast_partial_bounded"),
+        recovery: recoveryCell.bounded,
+      };
+    });
+    return `<tr>
+      <th scope="row"><span>${excitation} excitation</span><small>$N=256$</small></th>
+      <td data-label="Width 32 · H=100 MSE"><strong>${formatScore(values[0].forecast.mean)}</strong><small>+/- ${formatScore(values[0].forecast.std)}</small></td>
+      <td data-label="Width 64 · H=100 MSE"><strong>${formatScore(values[1].forecast.mean)}</strong><small>+/- ${formatScore(values[1].forecast.std)}</small></td>
+      <td data-label="Width 32 · damping R²"><strong>${formatSigned(values[0].recovery.mean)}</strong><small>+/- ${values[0].recovery.std.toFixed(3)}</small></td>
+      <td data-label="Width 64 · damping R²"><strong>${formatSigned(values[1].recovery.mean)}</strong><small>+/- ${values[1].recovery.std.toFixed(3)}</small></td>
+    </tr>`;
+  }).join("");
+  byId("capacity-scaling-table").innerHTML = `<table class="scaling-table capacity-scaling-table">
+    <thead><tr><th scope="col">Condition</th><th scope="col">Width 32 · $H=100$ MSE</th><th scope="col">Width 64 · $H=100$ MSE</th><th scope="col">Width 32 · $R_D^2$</th><th scope="col">Width 64 · $R_D^2$</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function renderRecoveryGrid(rows, targetId) {
+  const groups = ["narrow", "broad"].map((excitation) => {
+    const cells = rows.filter((row) => row.excitation === excitation).map((row) => {
+      const value = row.bounded.mean;
+      const positive = value >= 0;
+      const alpha = positive ? Math.min(.28, .07 + value * .45) : Math.min(.16, .07 + Math.abs(value) * .25);
+      const fill = positive ? `rgba(23, 111, 80, ${alpha})` : `rgba(185, 75, 75, ${alpha})`;
+      return `<div class="recovery-cell" style="--recovery-fill:${fill}">
+        <span>$N=${row.n_train}$ · width ${row.hidden_dim}</span>
+        <strong>${formatSigned(value)}</strong>
+        <small>+/- ${row.bounded.std.toFixed(3)}</small>
+        <p>uncapped ${formatSigned(row.uncapped.mean, 1)}</p>
+      </div>`;
+    }).join("");
+    return `<section class="recovery-group" aria-label="${excitation} excitation recovery">
+      <header><h5>${excitation} excitation</h5><p>${escapeText(state.scalingData.study.excitation[excitation])}</p></header>
+      <div>${cells}</div>
+    </section>`;
+  }).join("");
+  byId(targetId).innerHTML = groups;
+}
+
+function renderRecoveryScaling() {
+  const rows = sortedScalingCells(state.scalingData.recovery);
+  renderRecoveryGrid(rows.filter((row) => row.hidden_dim === 64), "recovery-scaling-grid");
+  renderRecoveryGrid(rows, "recovery-full-grid");
+}
+
+function renderOptimizationScalingPlot() {
+  const svg = byId("optimization-scaling-plot");
+  const width = 900;
+  const height = 350;
+  const margin = { left: 84, right: 28, top: 32, bottom: 78 };
+  const epochs = [50, 100, 200];
+  const methodOrder = ["phast_unknown", "phnn_observer", "s5", "transformer"];
+  const rows = state.scalingData.optimization.values;
+  const means = rows.map((row) => row.mean);
+  const minLog = Math.log10(Math.min(...means)) - .12;
+  const maxLog = Math.log10(Math.max(...means)) + .12;
+  const x = (epoch) => margin.left + epochs.indexOf(epoch) / (epochs.length - 1) * (width - margin.left - margin.right);
+  const y = (value) => margin.top + (maxLog - Math.log10(Math.max(value, 1e-8))) / (maxLog - minLog) * (height - margin.top - margin.bottom);
+  const ticks = Array.from({ length: 5 }, (_, index) => maxLog - index * (maxLog - minLog) / 4);
+  const grid = ticks.map((tick) => {
+    const gy = margin.top + (maxLog - tick) / (maxLog - minLog) * (height - margin.top - margin.bottom);
+    return `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"/><text class="plot-label" x="${margin.left - 12}" y="${gy + 6}" text-anchor="end">${formatScore(10 ** tick)}</text>`;
+  }).join("");
+  const series = methodOrder.map((methodId) => {
+    const values = epochs.map((epoch) => rows.find((row) => row.method === methodId && row.epochs === epoch));
+    const path = values.map((value, index) => `${index ? "L" : "M"}${x(value.epochs)},${y(value.mean)}`).join(" ");
+    const marks = values.map((value) => {
+      const low = Math.max(value.mean - value.std, 1e-8);
+      const high = value.mean + value.std;
+      return `<line class="scaling-error" stroke="${SCALING_COLORS[methodId]}" x1="${x(value.epochs)}" x2="${x(value.epochs)}" y1="${y(high)}" y2="${y(low)}"/><line class="scaling-error" stroke="${SCALING_COLORS[methodId]}" x1="${x(value.epochs) - 5}" x2="${x(value.epochs) + 5}" y1="${y(high)}" y2="${y(high)}"/><line class="scaling-error" stroke="${SCALING_COLORS[methodId]}" x1="${x(value.epochs) - 5}" x2="${x(value.epochs) + 5}" y1="${y(low)}" y2="${y(low)}"/><circle class="scaling-point" fill="${SCALING_COLORS[methodId]}" cx="${x(value.epochs)}" cy="${y(value.mean)}" r="6"/>`;
+    }).join("");
+    return `<path class="plot-line" stroke="${SCALING_COLORS[methodId]}" d="${path}"/>${marks}`;
+  }).join("");
+  const xLabels = epochs.map((epoch) => `<text class="plot-label" x="${x(epoch)}" y="${height - 54}" text-anchor="middle">${epoch}</text>`).join("");
+  const legendGap = 190;
+  const legend = methodOrder.map((methodId, index) => `<g transform="translate(${margin.left + index * legendGap},${height - 16})"><line x2="22" stroke="${SCALING_COLORS[methodId]}" stroke-width="4"/><text class="plot-label" x="29" y="6">${escapeText(scalingMethod(methodId).label)}</text></g>`).join("");
+  svg.innerHTML = `${grid}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${series}${xLabels}${legend}`;
+}
+
+function renderOptimizationScalingTable() {
+  const rows = state.scalingData.optimization.values;
+  const methodOrder = ["phast_unknown", "phnn_observer", "s5", "transformer"];
+  const epochs = [50, 100, 200];
+  const body = methodOrder.map((methodId) => {
+    const values = epochs.map((epoch) => rows.find((row) => row.method === methodId && row.epochs === epoch));
+    const gain = values[0].mean / values[2].mean;
+    return `<tr><th scope="row"><span class="method-swatch" style="--swatch:${SCALING_COLORS[methodId]}"></span>${escapeText(scalingMethod(methodId).label)}</th>${values.map((value) => `<td>${formatScore(value.mean)} <small>+/- ${formatScore(value.std)}</small></td>`).join("")}<td><strong>${gain.toFixed(1)}x</strong></td></tr>`;
+  }).join("");
+  byId("optimization-scaling-table").innerHTML = `<table class="scaling-table compact-scaling-table"><thead><tr><th scope="col">Model</th>${epochs.map((epoch) => `<th scope="col">${epoch} epochs</th>`).join("")}<th scope="col">50 to 200</th></tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function scalingCell(rows, excitation, nTrain, hiddenDim) {
+  return rows.find((row) => row.excitation === excitation && row.n_train === nTrain && row.hidden_dim === hiddenDim);
+}
+
+function boundedForecast(excitation, nTrain, hiddenDim) {
+  return scalingCell(state.scalingData.forecast, excitation, nTrain, hiddenDim).values
+    .find((value) => value.method === "phast_partial_bounded");
+}
+
+function boundedRecovery(excitation, nTrain, hiddenDim) {
+  return scalingCell(state.scalingData.recovery, excitation, nTrain, hiddenDim).bounded;
+}
+
+function scalingAxisSpecification(axis) {
+  const excitationName = (excitation) => excitation === "narrow"
+    ? "narrow excitation (momentum scale 0.35)"
+    : "broad excitation (momentum scale 4.0)";
+  if (axis === "data") {
+    return {
+      question: "Does adding trajectories improve both long-horizon prediction and recovery of the damping law?",
+      fixed: "Bounded PHAST, width 64, 50 epochs, 160 samples per trajectory; narrow and broad excitation are shown separately.",
+      xLabel: "training trajectories",
+      xValues: [64, 256],
+      series: ["narrow", "broad"].map((excitation, index) => ({
+        label: excitationName(excitation),
+        color: index ? SCALING_COLORS.s5 : SCALING_COLORS.phast_partial_bounded,
+        forecast: [64, 256].map((nTrain) => boundedForecast(excitation, nTrain, 64).mean),
+        recovery: [64, 256].map((nTrain) => boundedRecovery(excitation, nTrain, 64).mean),
+      })),
+      interpretation: "Increasing the number of trajectories lowers narrow-regime forecast error from 0.0949 to 0.0425 and raises damping recovery from -0.190 to +0.097. Under broad excitation, recovery improves from +0.017 to +0.437, but rollout error rises from 0.107 to 0.164. More trajectories do not erase the cost of covering a harder physical regime.",
+      caption: "Changing the number of training trajectories at fixed trajectory length and width. Left: H=100 rollout MSE (lower is better). Right: damping R² (higher is better).",
+    };
+  }
+  if (axis === "excitation") {
+    return {
+      question: "Does observing a wider range of motion make the physical law easier to recover?",
+      fixed: "Bounded PHAST, width 64, 50 epochs; N=64 and N=256 are shown separately.",
+      xLabel: "initial-momentum regime",
+      xValues: ["narrow (0.35)", "broad (4.0)"],
+      series: [64, 256].map((nTrain, index) => ({
+        label: `N=${nTrain}`,
+        color: index ? SCALING_COLORS.phast_partial_bounded : SCALING_COLORS.phnn_observer,
+        forecast: ["narrow", "broad"].map((excitation) => boundedForecast(excitation, nTrain, 64).mean),
+        recovery: ["narrow", "broad"].map((excitation) => boundedRecovery(excitation, nTrain, 64).mean),
+      })),
+      interpretation: "Broad excitation makes the forecasting task harder, yet it makes damping substantially more recoverable. At N=256, rollout error changes from 0.0425 to 0.164 while damping R² rises from +0.097 to +0.437. Forecast accuracy and physical identification therefore move in opposite directions.",
+      caption: "Changing the range of observed initial momenta at fixed width. The same intervention has different effects on prediction and identification.",
+    };
+  }
+  if (axis === "width") {
+    return {
+      question: "Is neural capacity the limiting factor in this study?",
+      fixed: "Bounded PHAST, N=256, 50 epochs; narrow and broad excitation are shown separately.",
+      xLabel: "hidden width",
+      xValues: [32, 64],
+      series: ["narrow", "broad"].map((excitation, index) => ({
+        label: excitationName(excitation),
+        color: index ? SCALING_COLORS.s5 : SCALING_COLORS.phast_partial_bounded,
+        forecast: [32, 64].map((width) => boundedForecast(excitation, 256, width).mean),
+        recovery: [32, 64].map((width) => boundedRecovery(excitation, 256, width).mean),
+      })),
+      interpretation: "Doubling width barely changes rollout error: 0.0429 to 0.0425 under narrow excitation and 0.163 to 0.164 under broad excitation. Recovery improves modestly. In this range, neural capacity is not the primary forecasting bottleneck.",
+      caption: "Changing hidden width at fixed data volume. Forecasting is nearly flat, while damping recovery improves modestly.",
+    };
+  }
+  return {
+    question: "Does PHAST's forecasting advantage disappear when every model trains longer?",
+    fixed: "Separate strict UNKNOWN study, N=1000, five model seeds; no physical components are supplied.",
+    xLabel: "training epochs",
+    xValues: [50, 100, 200],
+    interpretation: "PHAST-UNKNOWN improves from 0.114 at 50 epochs to 0.0181 at 200 epochs, a 6.3x reduction. Longer training strengthens rather than removes its advantage in this study; this is evidence about optimization sensitivity, not a general scaling law.",
+    caption: "H=100 windy-pendulum rollout error under a strict UNKNOWN contract. Lines show means and bars show one standard deviation.",
+  };
+}
+
+function panelMarkup({ x, y, width, height, title, subtitle, xValues, series, format, includeZero = false, logScale = false }) {
+  const allValues = series.flatMap((item) => item.values);
+  let minValue = includeZero ? Math.min(0, ...allValues) : 0;
+  let maxValue = Math.max(...allValues);
+  if (logScale) {
+    minValue = Math.log10(Math.min(...allValues)) - .12;
+    maxValue = Math.log10(maxValue) + .12;
+  } else {
+    const span = Math.max(maxValue - minValue, .001);
+    minValue -= includeZero ? span * .12 : 0;
+    maxValue += span * .18;
+  }
+  const left = x + 58;
+  const right = x + width - 18;
+  const top = y + 54;
+  const bottom = y + height - 56;
+  const px = (index) => xValues.length === 1 ? (left + right) / 2 : left + index / (xValues.length - 1) * (right - left);
+  const transformed = (value) => logScale ? Math.log10(value) : value;
+  const py = (value) => top + (maxValue - transformed(value)) / (maxValue - minValue) * (bottom - top);
+  const tickPositions = Array.from({ length: 4 }, (_, index) => minValue + index * (maxValue - minValue) / 3);
+  const ticks = tickPositions.map((value) => logScale ? 10 ** value : value);
+  const grid = ticks.map((value) => `<line class="axis-grid" x1="${left}" x2="${right}" y1="${py(value)}" y2="${py(value)}"/><text class="axis-tick" x="${left - 10}" y="${py(value) + 4}" text-anchor="end">${format(value)}</text>`).join("");
+  const zero = !logScale && includeZero && minValue < 0 && maxValue > 0 ? `<line class="axis-zero" x1="${left}" x2="${right}" y1="${py(0)}" y2="${py(0)}"/>` : "";
+  const paths = series.map((item, seriesIndex) => {
+    const path = item.values.map((value, index) => `${index ? "L" : "M"}${px(index)},${py(value)}`).join(" ");
+    const points = item.values.map((value, index) => `<circle class="axis-point" cx="${px(index)}" cy="${py(value)}" r="5" fill="${item.color}"/><text class="axis-value" x="${px(index)}" y="${py(value) + (seriesIndex % 2 ? -10 : 18)}" text-anchor="middle">${format(value)}</text>`).join("");
+    return `<path class="axis-series" stroke="${item.color}" d="${path}"/>${points}`;
+  }).join("");
+  const labels = xValues.map((value, index) => `<text class="axis-x-label" x="${px(index)}" y="${bottom + 30}" text-anchor="middle">${escapeText(value)}</text>`).join("");
+  return `<g><text class="axis-panel-title" x="${x}" y="${y + 17}">${escapeText(title)}</text><text class="axis-panel-subtitle" x="${x}" y="${y + 36}">${escapeText(subtitle)}</text>${grid}${zero}<line class="axis-baseline" x1="${left}" x2="${right}" y1="${bottom}" y2="${bottom}"/>${paths}${labels}</g>`;
+}
+
+function renderMatchedAxisPlot(specification) {
+  const leftSeries = specification.series.map((item) => ({ label: item.label, color: item.color, values: item.forecast }));
+  const rightSeries = specification.series.map((item) => ({ label: item.label, color: item.color, values: item.recovery }));
+  const legend = specification.series.map((item, index) => `<g transform="translate(${335 + index * 190},366)"><line x2="24" stroke="${item.color}" stroke-width="3"/><text class="axis-legend" x="32" y="4">${escapeText(item.label)}</text></g>`).join("");
+  byId("scaling-axis-plot").innerHTML = `${panelMarkup({ x: 22, y: 10, width: 440, height: 330, title: "Forecasting", subtitle: "H=100 rollout MSE · lower is better", xValues: specification.xValues, series: leftSeries, format: (value) => value.toFixed(3) })}${panelMarkup({ x: 502, y: 10, width: 436, height: 330, title: "Physical recovery", subtitle: "damping R² · higher is better", xValues: specification.xValues, series: rightSeries, format: (value) => formatSigned(value, 2), includeZero: true })}${legend}`;
+}
+
+function renderOptimizationAxisPlot() {
+  const rows = state.scalingData.optimization.values;
+  const methodOrder = ["phast_unknown", "phnn_observer", "s5", "transformer"];
+  const epochs = [50, 100, 200];
+  const series = methodOrder.map((method) => ({
+    label: scalingMethod(method).label,
+    color: SCALING_COLORS[method],
+    values: epochs.map((epoch) => rows.find((row) => row.method === method && row.epochs === epoch).mean),
+  }));
+  const legend = series.map((item, index) => `<g transform="translate(${90 + index * 205},366)"><line x2="24" stroke="${item.color}" stroke-width="3"/><text class="axis-legend" x="32" y="4">${escapeText(item.label)}</text></g>`).join("");
+  byId("scaling-axis-plot").innerHTML = `${panelMarkup({ x: 45, y: 10, width: 870, height: 330, title: "Optimization sensitivity", subtitle: "H=100 rollout MSE · logarithmic axis · lower is better", xValues: epochs, series, format: (value) => value.toFixed(value < .1 ? 3 : 2), logScale: true })}${legend}`;
+}
+
+function renderScalingAxisTable(specification) {
+  if (state.scalingAxis === "optimization") {
+    const rows = state.scalingData.optimization.values;
+    const epochs = [50, 100, 200];
+    const methods = ["phast_unknown", "phnn_observer", "s5", "transformer"];
+    byId("scaling-axis-table").innerHTML = `<table><thead><tr><th>Method</th>${epochs.map((epoch) => `<th>${epoch} epochs</th>`).join("")}<th>Reduction</th></tr></thead><tbody>${methods.map((method) => {
+      const values = epochs.map((epoch) => rows.find((row) => row.method === method && row.epochs === epoch));
+      return `<tr><th>${escapeText(scalingMethod(method).label)}</th>${values.map((value) => `<td>${formatScore(value.mean)} <small>+/- ${formatScore(value.std)}</small></td>`).join("")}<td>${(values[0].mean / values[2].mean).toFixed(1)}x</td></tr>`;
+    }).join("")}</tbody></table>`;
+    return;
+  }
+  const rows = specification.series.flatMap((item) => specification.xValues.map((xValue, index) => `<tr><th>${escapeText(item.label)}</th><td>${escapeText(xValue)}</td><td>${formatScore(item.forecast[index])}</td><td>${formatSigned(item.recovery[index])}</td></tr>`)).join("");
+  byId("scaling-axis-table").innerHTML = `<table><thead><tr><th>Condition</th><th>${escapeText(specification.xLabel)}</th><th>H=100 MSE</th><th>Damping R²</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderScalingAxisReader() {
+  const specification = scalingAxisSpecification(state.scalingAxis);
+  document.querySelectorAll("[data-scaling-axis]").forEach((button) => button.setAttribute("aria-selected", button.dataset.scalingAxis === state.scalingAxis ? "true" : "false"));
+  byId("scaling-axis-question").textContent = specification.question;
+  byId("scaling-axis-fixed").textContent = specification.fixed;
+  byId("scaling-axis-interpretation").textContent = specification.interpretation;
+  byId("scaling-axis-caption").textContent = specification.caption;
+  if (state.scalingAxis === "optimization") renderOptimizationAxisPlot();
+  else renderMatchedAxisPlot(specification);
+  renderScalingAxisTable(specification);
+}
+
+function renderScalingFindings() {
+  const forecast = state.scalingData.forecast;
+  const recovery = state.scalingData.recovery;
+  const narrowSmall = scalingCell(forecast, "narrow", 64, 64).values.find((value) => value.method === "phast_partial_bounded").mean;
+  const narrowLarge = scalingCell(forecast, "narrow", 256, 64).values.find((value) => value.method === "phast_partial_bounded").mean;
+  const broadRecovery = scalingCell(recovery, "broad", 256, 64).bounded.mean;
+  const narrowRecovery = scalingCell(recovery, "narrow", 256, 64).bounded.mean;
+  const broadWidth32 = scalingCell(forecast, "broad", 256, 32).values.find((value) => value.method === "phast_partial_bounded").mean;
+  const broadWidth64 = scalingCell(forecast, "broad", 256, 64).values.find((value) => value.method === "phast_partial_bounded").mean;
+
+  byId("scaling-findings").innerHTML = `
+    <article><span>Number of trajectories</span><h4>More trajectories improve the familiar regime.</h4><p>At fixed $T_{\\mathrm{traj}}=160$, increasing $N_{\\mathrm{traj}}$ from 64 to 256 lowers bounded-PHAST error from ${formatScore(narrowSmall)} to ${formatScore(narrowLarge)}. Scaling with trajectory length remains unmeasured.</p></article>
+    <article><span>Excitation</span><h4>Recovery needs informative motion.</h4><p>At $N=256$ and width 64, broad excitation raises damping $R_D^2$ from ${formatSigned(narrowRecovery)} to ${formatSigned(broadRecovery)}, although its rollout is harder.</p></article>
+    <article><span>Capacity</span><h4>Width is not the limiting axis here.</h4><p>At broad excitation and $N=256$, width 32 and 64 give nearly identical errors: ${formatScore(broadWidth32)} and ${formatScore(broadWidth64)}.</p></article>
+    <article><span>Boundary</span><h4>Bounds improve attribution, not uniqueness.</h4><p>The best $R_D^2$ is ${formatSigned(broadRecovery)}. The experiment supports conditional recovery, not general identifiability from positions.</p></article>`;
+}
+
+function renderScalingProvenance() {
+  const data = state.scalingData;
+  byId("scaling-provenance").innerHTML = `
+    <p><strong>Matched 50-epoch study.</strong> Windy pendulum, $K=${data.study.history}$, $H=${data.study.horizon}$, data seed ${data.study.data_seed}, and ${data.study.model_seeds} model seeds. Narrow and broad initial-momentum distributions are crossed with $N\\in\\{64,256\\}$ and width $\\in\\{32,64\\}$.</p>
+    <p><strong>Recovery contract.</strong> Potential, mass, chart, damping floor ${data.study.damping_floor}, and damping-variation cap ${data.study.damping_variation_cap} are declared. The position-dependent PSD damping is learned.</p>
+    <pre>conda run -n math python scripts/run_phast_dissipation_scaling.py --profile pilot
+conda run -n math python scripts/run_phast_dissipation_scaling.py --profile bounded_pilot</pre>
+    <p><strong>Artifacts.</strong> <code>${escapeText(data.provenance.forecast_source)}</code> and <code>${escapeText(data.provenance.bounded_source)}</code>. The optimization curves come from <code>${escapeText(data.provenance.optimization_source)}</code>.</p>
+    <p>${escapeText(data.provenance.note)}</p>`;
+}
+
+function renderScalingStudy() {
+  renderFullForecastScaling();
+  renderScalingAxisReader();
+  renderRecoveryScaling();
+  renderOptimizationScalingTable();
+  renderScalingFindings();
+  renderScalingProvenance();
+}
+
 function renderSystem() {
   const system = currentSystem();
   state.step = 0;
-  state.coordinate = 0;
-  applyMechanismMethods();
+  applyComparisonMethods();
+  document.querySelectorAll("[data-system]").forEach((button) => {
+    button.setAttribute("aria-selected", Number(button.dataset.system) === state.systemIndex ? "true" : "false");
+  });
   byId("time-scrubber").value = 0;
   byId("step-output").value = 1;
   byId("system-question").textContent = system.question;
-  byId("selection-note").textContent = `${system.selection}; held-out trajectory index ${system.trajectory_index}.`;
+  byId("findings-system").textContent = `Active system · ${system.label} · ${system.claim}`;
+  const localMeans = system.methods.map((method) => ({
+    method,
+    mean: method.error_by_step.reduce((sum, value) => sum + value, 0) / method.error_by_step.length,
+  })).sort((left, right) => left.mean - right.mean);
+  const localBest = localMeans[0];
+  const phastLocal = localMeans.find(({ method }) => method.id === "phast_unknown_qonly");
+  const localReading = localBest.method.id === "phast_unknown_qonly"
+    ? `PHAST also has the lowest mean step error on this displayed trajectory (${formatScore(phastLocal.mean)}).`
+    : `${shortLabel(localBest.method.id)} is closer on this displayed trajectory (${formatScore(localBest.mean)} versus PHAST ${formatScore(phastLocal.mean)}); the five-seed table below is the benchmark result.`;
+  byId("selection-note").textContent = `${system.selection}; held-out trajectory index ${system.trajectory_index}. ${localReading}`;
   const select = byId("coordinate-select");
-  select.innerHTML = coordinateLabels(system).map((label, index) => `<option value="${index}">${escapeText(label)}</option>`).join("");
+  const labels = coordinateLabels(system);
+  const requestedCoordinate = state.initialCoordinate === null ? 0 : state.initialCoordinate;
+  state.coordinate = Math.min(requestedCoordinate, labels.length - 1);
+  state.initialCoordinate = null;
+  select.innerHTML = labels.map((label, index) => `<option value="${index}">${escapeText(label)}</option>`).join("");
+  select.value = String(state.coordinate);
   renderMethodFilter();
   renderMotionPanels();
   renderScoreTable();
   renderSubmittedScoreTable();
+  renderActiveResult();
   renderInterpretation();
   renderProvenance();
   drawPlots();
@@ -557,13 +1144,21 @@ function restartTimer() {
 }
 
 function wireControls() {
+  const selectSystem = (index) => {
+    document.querySelectorAll("[data-system]").forEach((candidate) => {
+      candidate.setAttribute("aria-selected", Number(candidate.dataset.system) === index ? "true" : "false");
+    });
+    state.systemIndex = index;
+    renderSystem();
+    writeViewState();
+  };
   document.querySelectorAll("[data-system]").forEach((button) => {
     button.addEventListener("click", () => {
-      document.querySelectorAll("[data-system]").forEach((candidate) => candidate.setAttribute("aria-selected", "false"));
-      button.setAttribute("aria-selected", "true");
-      state.systemIndex = Number(button.dataset.system);
-      renderSystem();
+      selectSystem(Number(button.dataset.system));
     });
+  });
+  document.querySelectorAll("[data-summary-system]").forEach((link) => {
+    link.addEventListener("click", () => selectSystem(Number(link.dataset.summarySystem)));
   });
   byId("play-toggle").addEventListener("click", () => {
     state.playing = !state.playing;
@@ -583,6 +1178,31 @@ function wireControls() {
   byId("coordinate-select").addEventListener("change", (event) => {
     state.coordinate = Number(event.target.value);
     drawPlots();
+    writeViewState();
+  });
+  document.querySelectorAll("[data-scaling-axis]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.scalingAxis = button.dataset.scalingAxis;
+      renderScalingAxisReader();
+      writeViewState();
+    });
+  });
+  document.querySelectorAll("[data-view-mechanism]").forEach((link) => {
+    link.addEventListener("click", () => {
+      state.mechanism = link.dataset.viewMechanism;
+      renderMechanismTabs();
+      renderMechanismEvidence();
+      writeViewState();
+    });
+  });
+  byId("copy-view-link").addEventListener("click", async () => {
+    writeViewState();
+    await copyText(window.location.href);
+    byId("copy-view-status").textContent = "Copied";
+  });
+  byId("copy-citation").addEventListener("click", async () => {
+    await copyText(byId("citation-text").textContent.trim());
+    byId("copy-citation-status").textContent = "Copied";
   });
   window.addEventListener("resize", drawScenes);
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -592,11 +1212,20 @@ function wireControls() {
 }
 
 async function init() {
-  const response = await fetch("data/comparison.json?v=6");
+  const [response, scalingResponse] = await Promise.all([
+    fetch("data/comparison.json?v=7"),
+    fetch("data/scaling.json?v=1"),
+  ]);
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
+  if (!scalingResponse.ok) throw new Error(`Could not load scaling data (${scalingResponse.status})`);
   state.data = await response.json();
+  state.scalingData = await scalingResponse.json();
+  readViewState();
+  renderResultSummary();
+  renderSynthesisTable();
   renderCapabilityTable();
   renderMechanismTabs();
+  renderScalingStudy();
   wireControls();
   renderSystem();
   restartTimer();

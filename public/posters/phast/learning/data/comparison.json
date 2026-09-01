@@ -8716,7 +8716,7 @@
       "periodic": [
         0
       ],
-      "question": "Can the learned dynamics reproduce contraction when damping changes with angle?",
+      "question": "Can the learned dynamics reproduce how the pendulum loses energy and settles when damping changes with angle?",
       "scene": "pendulum",
       "selection": "Median PHAST seed-42 trajectory by H=100 wrapped rollout MSE",
       "submitted_results": [
