@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "title": "When does PHAST recover dissipation?",
+  "question": "How do excitation coverage, data volume, model capacity, and physical dimension affect forecasting and damping recovery from position histories?",
+  "profiles": {
+        "smoke": {
+      "systems": ["windy_pendulum"],
+      "excitation_levels": ["narrow", "broad"],
+      "n_train_values": [32],
+      "hidden_dims": [16],
+      "variants": [
+        "phast_partial",
+        "phast_unknown",
+        "phast_no_damping",
+        "phnn_observer",
+        "s5"
+      ],
+      "epochs": 3,
+      "seeds": 1,
+      "seed_offset": 0,
+      "data_seed": 42,
+      "n_val": 8,
+      "n_test": 8,
+      "seq_len": 120,
+      "batch_size": 16,
+      "n_layers": 1,
+      "learning_rate": 0.001,
+      "rollout_horizons": [25, 100],
+      "rollout_context": 10,
+      "rollout_n": 8,
+      "validation_interval": 1,
+      "early_stopping_patience": null,
+      "save_checkpoints": false,
+            "force_cpu": true
+        },
+        "diagnostic_smoke": {
+            "systems": [
+                "windy_pendulum"
+            ],
+            "excitation_levels": [
+                "narrow",
+                "broad"
+            ],
+            "n_train_values": [
+                32
+            ],
+            "seq_len_values": [
+                120,
+                160
+            ],
+            "hidden_dims": [
+                32
+            ],
+            "variants": [
+                "phast_partial_bounded",
+                "phast_partial"
+            ],
+            "epochs": 2,
+            "seeds": 1,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 8,
+            "n_test": 8,
+            "seq_len": 120,
+            "batch_size": 16,
+            "n_layers": 1,
+            "learning_rate": 0.001,
+            "rollout_horizons": [
+                25,
+                100
+            ],
+            "rollout_context": 10,
+            "rollout_n": 8,
+            "validation_interval": 1,
+            "early_stopping_patience": null,
+            "save_checkpoints": false,
+            "force_cpu": true
+        },
+        "diagnostic_surface": {
+            "systems": [
+                "windy_pendulum"
+            ],
+            "excitation_levels": [
+                "narrow",
+                "broad"
+            ],
+            "n_train_values": [
+                32,
+                64,
+                128,
+                256,
+                512
+            ],
+            "seq_len_values": [
+                120,
+                160,
+                240,
+                320
+            ],
+            "hidden_dims": [
+                64
+            ],
+            "variants": [
+                "phast_partial_bounded",
+                "phast_partial"
+            ],
+            "epochs": 100,
+            "seeds": 5,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 128,
+            "n_test": 200,
+            "seq_len": 120,
+            "batch_size": 64,
+            "n_layers": 2,
+            "learning_rate": 0.001,
+            "rollout_horizons": [
+                10,
+                25,
+                50,
+                100
+            ],
+            "rollout_context": 10,
+            "rollout_n": 200,
+            "validation_interval": 5,
+            "early_stopping_patience": 15,
+            "save_checkpoints": true,
+            "nested_split_protocol": true,
+            "protocol_version": 2,
+            "fixed_eval_seq_len": 320,
+            "split_seeds": {"train": 42, "val": 1042, "test": 2042},
+            "force_cpu": true
+        },
+        "diagnostic_forecast_smoke": {
+            "systems": ["windy_pendulum"],
+            "excitation_levels": ["narrow", "broad"],
+            "n_train_values": [32],
+            "seq_len_values": [120],
+            "hidden_dims": [32],
+            "variants": ["phast_unknown", "phnn_observer", "s5"],
+            "epochs": 2,
+            "seeds": 1,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 8,
+            "n_test": 8,
+            "seq_len": 120,
+            "batch_size": 16,
+            "n_layers": 1,
+            "learning_rate": 0.001,
+            "rollout_horizons": [25, 100],
+            "rollout_context": 10,
+            "rollout_n": 8,
+            "validation_interval": 1,
+            "early_stopping_patience": null,
+            "save_checkpoints": false,
+            "force_cpu": true
+        },
+        "diagnostic_forecast_surface": {
+            "systems": ["windy_pendulum"],
+            "excitation_levels": ["narrow", "broad"],
+            "n_train_values": [32, 64, 128, 256, 512],
+            "seq_len_values": [120, 160, 240, 320],
+            "hidden_dims": [64],
+            "variants": ["phast_unknown", "phnn_observer", "s5"],
+            "epochs": 100,
+            "seeds": 5,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 128,
+            "n_test": 200,
+            "seq_len": 120,
+            "batch_size": 64,
+            "n_layers": 2,
+            "learning_rate": 0.001,
+            "rollout_horizons": [10, 25, 50, 100],
+            "rollout_context": 10,
+            "rollout_n": 200,
+            "validation_interval": 5,
+            "early_stopping_patience": 15,
+            "save_checkpoints": true,
+            "nested_split_protocol": true,
+            "protocol_version": 2,
+            "fixed_eval_seq_len": 320,
+            "split_seeds": {"train": 42, "val": 1042, "test": 2042},
+            "force_cpu": true
+        },
+        "pilot": {
+      "systems": ["windy_pendulum"],
+      "excitation_levels": ["narrow", "broad"],
+      "n_train_values": [64, 256],
+      "hidden_dims": [32, 64],
+      "variants": [
+        "phast_partial",
+        "phast_unknown",
+        "phast_no_damping",
+        "phnn_observer",
+        "s5"
+      ],
+      "epochs": 50,
+      "seeds": 3,
+      "seed_offset": 0,
+      "data_seed": 42,
+      "n_val": 64,
+      "n_test": 128,
+      "seq_len": 160,
+      "batch_size": 64,
+      "n_layers": 2,
+      "learning_rate": 0.001,
+      "rollout_horizons": [10, 25, 50, 100],
+      "rollout_context": 10,
+      "rollout_n": 128,
+      "validation_interval": 5,
+      "early_stopping_patience": null,
+      "save_checkpoints": true,
+      "force_cpu": true
+    },
+    "bounded_pilot": {
+      "systems": ["windy_pendulum"],
+      "excitation_levels": ["narrow", "broad"],
+      "n_train_values": [64, 256],
+      "hidden_dims": [32, 64],
+      "variants": ["phast_partial_bounded"],
+      "epochs": 50,
+      "seeds": 3,
+      "seed_offset": 0,
+      "data_seed": 42,
+      "n_val": 64,
+      "n_test": 128,
+      "seq_len": 160,
+      "batch_size": 64,
+      "n_layers": 2,
+      "learning_rate": 0.001,
+      "rollout_horizons": [10, 25, 50, 100],
+      "rollout_context": 10,
+      "rollout_n": 128,
+      "validation_interval": 5,
+      "early_stopping_patience": null,
+      "save_checkpoints": true,
+      "force_cpu": true
+    },
+    "full": {
+      "systems": ["windy_pendulum", "windy_double_pendulum"],
+      "excitation_levels": ["narrow", "broad"],
+      "n_train_values": [32, 128, 512, 1000],
+      "hidden_dims": [32, 64, 128],
+      "variants": [
+        "phast_partial",
+        "phast_unknown",
+        "phast_no_damping",
+        "phnn_observer",
+        "s5"
+      ],
+      "epochs": 100,
+      "seeds": 5,
+      "seed_offset": 0,
+      "data_seed": 42,
+      "n_val": 200,
+      "n_test": 200,
+      "seq_len": 200,
+      "batch_size": 64,
+      "n_layers": 2,
+      "learning_rate": 0.001,
+      "rollout_horizons": [10, 25, 50, 100],
+      "rollout_context": 10,
+      "rollout_n": 200,
+      "validation_interval": 5,
+      "early_stopping_patience": 10,
+      "save_checkpoints": true,
+      "force_cpu": true
+    }
+  },
+  "systems": {
+    "windy_pendulum": {
+      "kind": "pendulum",
+      "base_env": "windy_pendulum_qonly",
+      "plant": {
+        "damping": "windy",
+        "b_base": 0.3,
+        "b_amplitude": 0.5,
+        "dt": 0.05
+      },
+      "excitation": {
+        "narrow": {
+          "p_scale": 0.35,
+          "description": "Initial momentum is concentrated near zero."
+        },
+        "broad": {
+          "p_scale": 4.0,
+          "description": "Initial momentum uses the benchmark's full windy-pendulum range."
+        }
+      }
+    },
+    "windy_double_pendulum": {
+      "kind": "double_pendulum",
+      "base_env": "windy_double_pendulum_qonly",
+      "plant": {
+        "damping_type": "windy",
+        "b1_base": 0.3,
+        "b1_amp": 0.5,
+        "b2_base": 0.2,
+        "b2_amp": 0.3,
+        "dt": 0.01
+      },
+      "excitation": {
+        "narrow": {
+          "omega_range": [-0.35, 0.35],
+          "description": "Both initial angular velocities are concentrated near zero."
+        },
+        "broad": {
+          "omega_range": [-3.0, 3.0],
+          "description": "Initial angular velocities use the benchmark's full windy range."
+        }
+      }
+    }
+  },
+  "variants": {
+    "phast_partial": {
+      "model": "phast_partial_qonly",
+      "contract": "Position history plus the pendulum potential, mass model, coordinate chart, and damping base anchor; position-dependent PSD damping and permitted residual corrections are learned without an upper spectral cap. This is the uncapped ablation.",
+      "model_kwargs": {
+        "mass_mode": "constant",
+        "warmstart": true
+      }
+    },
+    "phast_partial_bounded": {
+      "model": "phast_partial_qonly",
+      "contract": "Position history plus the pendulum potential, mass model, coordinate chart, damping floor, and a declared 0.5 cap on damping variation; the bounded position-dependent PSD damping and permitted residual corrections are learned.",
+      "model_kwargs": {
+        "mass_mode": "constant",
+        "damping_beta_sum_max": 0.5,
+        "damping_beta_sum_policy": "fixed",
+        "damping_d0_policy": "fixed",
+        "warmstart": true
+      }
+    },
+    "phast_unknown": {
+      "model": "phast_unknown_qonly",
+      "contract": "Position history and coordinate chart only; V, constant SPD M, bounded PSD D, and G are learned. The data-driven linear scaffold is initialized from the training split.",
+      "model_kwargs": {
+        "mass_mode": "constant",
+        "warmstart": true
+      }
+    },
+    "phast_no_damping": {
+      "model": "phast_unknown_qonly",
+      "contract": "The PHAST-UNKNOWN architecture and data-driven scaffold, with the damping channel removed. This is a causal ablation, not a competing method.",
+      "model_kwargs": {
+        "mass_mode": "constant",
+        "damping_type": "none",
+        "warmstart": true
+      }
+    },
+    "phnn_observer": {
+      "model": "phnn_observer_qonly",
+      "contract": "Position history and coordinate chart only; a learned observer feeds a Hamiltonian model with learned PSD damping. No physical component is supplied.",
+      "model_kwargs": {}
+    },
+    "s5": {
+      "model": "s5",
+      "contract": "Position history only; no supplied physical components and no explicit energy or damping channel.",
+      "model_kwargs": {}
+    }
+  }
+}

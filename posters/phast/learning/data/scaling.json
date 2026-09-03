@@ -1,0 +1,592 @@
+{
+  "forecast": [
+    {
+      "excitation": "broad",
+      "hidden_dim": 32,
+      "n_train": 64,
+      "values": [
+        {
+          "mean": 0.10941809664169948,
+          "method": "phast_partial_bounded",
+          "std": 0.0049255740277614896
+        },
+        {
+          "mean": 0.35708534717559814,
+          "method": "phast_no_damping",
+          "std": 0.009252371851159652
+        },
+        {
+          "mean": 0.5604846278826395,
+          "method": "phast_unknown",
+          "std": 0.0924435185296842
+        },
+        {
+          "mean": 2.345496892929077,
+          "method": "phnn_observer",
+          "std": 0.021354304419952112
+        },
+        {
+          "mean": 1.083467721939087,
+          "method": "s5",
+          "std": 0.0565631954420867
+        }
+      ]
+    },
+    {
+      "excitation": "broad",
+      "hidden_dim": 64,
+      "n_train": 64,
+      "values": [
+        {
+          "mean": 0.10716624309619267,
+          "method": "phast_partial_bounded",
+          "std": 0.009645842375673551
+        },
+        {
+          "mean": 0.38825179139773053,
+          "method": "phast_no_damping",
+          "std": 0.06477270535050593
+        },
+        {
+          "mean": 0.7364306449890137,
+          "method": "phast_unknown",
+          "std": 0.05193715996497696
+        },
+        {
+          "mean": 2.1973608334859214,
+          "method": "phnn_observer",
+          "std": 0.19109824204039347
+        },
+        {
+          "mean": 1.1040736436843872,
+          "method": "s5",
+          "std": 0.36319189279949776
+        }
+      ]
+    },
+    {
+      "excitation": "broad",
+      "hidden_dim": 32,
+      "n_train": 256,
+      "values": [
+        {
+          "mean": 0.1629030704498291,
+          "method": "phast_partial_bounded",
+          "std": 0.0057318070455427104
+        },
+        {
+          "mean": 0.25809242328008014,
+          "method": "phast_no_damping",
+          "std": 0.009031090784085096
+        },
+        {
+          "mean": 0.2840346892674764,
+          "method": "phast_unknown",
+          "std": 0.008689569725660685
+        },
+        {
+          "mean": 0.6256376902262369,
+          "method": "phnn_observer",
+          "std": 0.16753942968581545
+        },
+        {
+          "mean": 0.773260235786438,
+          "method": "s5",
+          "std": 0.029117030084765214
+        }
+      ]
+    },
+    {
+      "excitation": "broad",
+      "hidden_dim": 64,
+      "n_train": 256,
+      "values": [
+        {
+          "mean": 0.1643241544564565,
+          "method": "phast_partial_bounded",
+          "std": 0.012628689467097387
+        },
+        {
+          "mean": 0.24582385023434958,
+          "method": "phast_no_damping",
+          "std": 0.003237624989818449
+        },
+        {
+          "mean": 0.2782255212465922,
+          "method": "phast_unknown",
+          "std": 0.014025879400666685
+        },
+        {
+          "mean": 0.6188093225161234,
+          "method": "phnn_observer",
+          "std": 0.28398253060858164
+        },
+        {
+          "mean": 0.8309650222460429,
+          "method": "s5",
+          "std": 0.06502476425772526
+        }
+      ]
+    },
+    {
+      "excitation": "narrow",
+      "hidden_dim": 32,
+      "n_train": 64,
+      "values": [
+        {
+          "mean": 0.09030030916134517,
+          "method": "phast_partial_bounded",
+          "std": 0.006930179583636314
+        },
+        {
+          "mean": 0.25788746277491253,
+          "method": "phast_no_damping",
+          "std": 0.005097059752487157
+        },
+        {
+          "mean": 0.3888557354609172,
+          "method": "phast_unknown",
+          "std": 0.061828683569308505
+        },
+        {
+          "mean": 1.9812450011571248,
+          "method": "phnn_observer",
+          "std": 0.011637414097245719
+        },
+        {
+          "mean": 0.4737427632013957,
+          "method": "s5",
+          "std": 0.05424385609973616
+        }
+      ]
+    },
+    {
+      "excitation": "narrow",
+      "hidden_dim": 64,
+      "n_train": 64,
+      "values": [
+        {
+          "mean": 0.09489253908395767,
+          "method": "phast_partial_bounded",
+          "std": 0.005574299965963206
+        },
+        {
+          "mean": 0.28072888652483624,
+          "method": "phast_no_damping",
+          "std": 0.0430530244350184
+        },
+        {
+          "mean": 0.6501256624857584,
+          "method": "phast_unknown",
+          "std": 0.1908487941011706
+        },
+        {
+          "mean": 1.8699392477671306,
+          "method": "phnn_observer",
+          "std": 0.22028803575156453
+        },
+        {
+          "mean": 0.48417521516482037,
+          "method": "s5",
+          "std": 0.07101507280165315
+        }
+      ]
+    },
+    {
+      "excitation": "narrow",
+      "hidden_dim": 32,
+      "n_train": 256,
+      "values": [
+        {
+          "mean": 0.04290479173262914,
+          "method": "phast_partial_bounded",
+          "std": 0.0014744097878309837
+        },
+        {
+          "mean": 0.12749162316322327,
+          "method": "phast_no_damping",
+          "std": 0.005177453457055726
+        },
+        {
+          "mean": 0.13205740849177042,
+          "method": "phast_unknown",
+          "std": 0.013501714469955876
+        },
+        {
+          "mean": 0.35175788899262744,
+          "method": "phnn_observer",
+          "std": 0.16493536470083975
+        },
+        {
+          "mean": 0.3484543561935425,
+          "method": "s5",
+          "std": 0.02366518382440133
+        }
+      ]
+    },
+    {
+      "excitation": "narrow",
+      "hidden_dim": 64,
+      "n_train": 256,
+      "values": [
+        {
+          "mean": 0.042455547799666725,
+          "method": "phast_partial_bounded",
+          "std": 0.0014595580176631736
+        },
+        {
+          "mean": 0.1138005976875623,
+          "method": "phast_no_damping",
+          "std": 0.007033847157090839
+        },
+        {
+          "mean": 0.11710120489199956,
+          "method": "phast_unknown",
+          "std": 0.007488129922055811
+        },
+        {
+          "mean": 0.1689884215593338,
+          "method": "phnn_observer",
+          "std": 0.038306852131184746
+        },
+        {
+          "mean": 0.8494710425535837,
+          "method": "s5",
+          "std": 0.5251359888662637
+        }
+      ]
+    }
+  ],
+  "methods": {
+    "phast_no_damping": {
+      "contract": "The PHAST-UNKNOWN architecture with the damping channel removed.",
+      "family": "PHAST ablation",
+      "label": "PHAST without damping"
+    },
+    "phast_partial_bounded": {
+      "contract": "Position history plus declared potential, mass, chart, damping floor, and damping cap.",
+      "family": "PHAST-PARTIAL",
+      "label": "Bounded PHAST"
+    },
+    "phast_unknown": {
+      "contract": "Position history and coordinate chart; all physical components are learned.",
+      "family": "PHAST",
+      "label": "PHAST-UNKNOWN"
+    },
+    "phnn_observer": {
+      "contract": "Position history and coordinate chart; learned Hamiltonian and PSD damping.",
+      "family": "Structured baseline",
+      "label": "pHNN observer"
+    },
+    "s5": {
+      "contract": "Position history; no supplied physical components.",
+      "family": "Sequence baseline",
+      "label": "S5"
+    },
+    "transformer": {
+      "contract": "Position history; no supplied physical components.",
+      "family": "Sequence baseline",
+      "label": "Transformer"
+    }
+  },
+  "optimization": {
+    "model_seeds": 5,
+    "n_train": 1000,
+    "system": "Windy pendulum",
+    "values": [
+      {
+        "epochs": 50,
+        "mean": 0.113605198264122,
+        "median_best_epoch": 49,
+        "method": "phast_unknown",
+        "n": 5,
+        "std": 0.012232173885121113
+      },
+      {
+        "epochs": 100,
+        "mean": 0.03656220175325871,
+        "median_best_epoch": 99,
+        "method": "phast_unknown",
+        "n": 5,
+        "std": 0.007801167636035243
+      },
+      {
+        "epochs": 200,
+        "mean": 0.018087188713252544,
+        "median_best_epoch": 165,
+        "method": "phast_unknown",
+        "n": 5,
+        "std": 0.0032472461543051746
+      },
+      {
+        "epochs": 50,
+        "mean": 0.1473838433623314,
+        "median_best_epoch": 49,
+        "method": "phnn_observer",
+        "n": 5,
+        "std": 0.021857642567497438
+      },
+      {
+        "epochs": 100,
+        "mean": 0.11363580450415611,
+        "median_best_epoch": 99,
+        "method": "phnn_observer",
+        "n": 5,
+        "std": 0.039232233629207094
+      },
+      {
+        "epochs": 200,
+        "mean": 0.05983108505606651,
+        "median_best_epoch": 175,
+        "method": "phnn_observer",
+        "n": 5,
+        "std": 0.021563745996413308
+      },
+      {
+        "epochs": 50,
+        "mean": 1.1152395844459533,
+        "median_best_epoch": 30,
+        "method": "s5",
+        "n": 5,
+        "std": 0.3177715874278487
+      },
+      {
+        "epochs": 100,
+        "mean": 1.5333043813705445,
+        "median_best_epoch": 50,
+        "method": "s5",
+        "n": 5,
+        "std": 0.5522350738310642
+      },
+      {
+        "epochs": 200,
+        "mean": 1.2497801303863525,
+        "median_best_epoch": 50,
+        "method": "s5",
+        "n": 5,
+        "std": 0.4990256046462438
+      },
+      {
+        "epochs": 50,
+        "mean": 1.6691619157791138,
+        "median_best_epoch": 10,
+        "method": "transformer",
+        "n": 5,
+        "std": 0.6632286530399163
+      },
+      {
+        "epochs": 100,
+        "mean": 2.172621011734009,
+        "median_best_epoch": 15,
+        "method": "transformer",
+        "n": 5,
+        "std": 0.7661033869512409
+      },
+      {
+        "epochs": 200,
+        "mean": 1.3706177353858948,
+        "median_best_epoch": 15,
+        "method": "transformer",
+        "n": 5,
+        "std": 0.3991548463319483
+      }
+    ]
+  },
+  "provenance": {
+    "api": "phast.benchmarks.run_benchmark",
+    "bounded_source": "results/dissipation_scaling/bounded_pilot/summary.json",
+    "forecast_source": "results/dissipation_scaling/pilot/summary.json",
+    "note": "The 50-epoch scaling study and the 50/100/200-epoch optimization study use separate matched protocols and are displayed separately.",
+    "optimization_source": "results/reviewer_studies/full/convergence",
+    "source_sha256": {
+      "results/dissipation_scaling/bounded_pilot/summary.json": "e6f7ac2a2e5e20460c6eb792c024f41f53c5afbeef39ac3dcf8291a290ca274f",
+      "results/dissipation_scaling/pilot/summary.json": "dbb8b1e299ae172ac6ab6e6ca198ae3f360ea38565e629d5a58d13a33a265435"
+    }
+  },
+  "recovery": [
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.1219451626141866,
+          "std": 0.008388839401892747
+        },
+        "mean": -0.004946688810984294,
+        "std": 0.11924881411858029
+      },
+      "excitation": "broad",
+      "hidden_dim": 32,
+      "n_train": 64,
+      "uncapped": {
+        "mae": {
+          "mean": 1.1286015113194783,
+          "std": 0.04130110441314637
+        },
+        "mean": -63.385571797688804,
+        "std": 4.865028426696457
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.12082429478565852,
+          "std": 0.0038757034801671034
+        },
+        "mean": 0.01673293113708496,
+        "std": 0.05639966404372126
+      },
+      "excitation": "broad",
+      "hidden_dim": 64,
+      "n_train": 64,
+      "uncapped": {
+        "mae": {
+          "mean": 1.0132893323898315,
+          "std": 0.07988447511206645
+        },
+        "mean": -51.14462661743164,
+        "std": 7.830798954948291
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.09557463973760605,
+          "std": 0.01010447972819482
+        },
+        "mean": 0.3424097498257955,
+        "std": 0.10662412097252985
+      },
+      "excitation": "broad",
+      "hidden_dim": 32,
+      "n_train": 256,
+      "uncapped": {
+        "mae": {
+          "mean": 1.0251253843307495,
+          "std": 0.02424809011592101
+        },
+        "mean": -50.766815185546875,
+        "std": 2.3306591596984623
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.08826693892478943,
+          "std": 0.004334895679620743
+        },
+        "mean": 0.43651191393534344,
+        "std": 0.0497856940608062
+      },
+      "excitation": "broad",
+      "hidden_dim": 64,
+      "n_train": 256,
+      "uncapped": {
+        "mae": {
+          "mean": 0.9483028650283813,
+          "std": 0.07351042477381158
+        },
+        "mean": -43.964375813802086,
+        "std": 6.738630369943805
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.1306483050187429,
+          "std": 0.00894232796757044
+        },
+        "mean": -0.1949570377667745,
+        "std": 0.1463450613728796
+      },
+      "excitation": "narrow",
+      "hidden_dim": 32,
+      "n_train": 64,
+      "uncapped": {
+        "mae": {
+          "mean": 1.1440701882044475,
+          "std": 0.04374233467952875
+        },
+        "mean": -69.91775004069011,
+        "std": 5.536176848666567
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.130514457821846,
+          "std": 0.004370350541750087
+        },
+        "mean": -0.1897662878036499,
+        "std": 0.07316748964787709
+      },
+      "excitation": "narrow",
+      "hidden_dim": 64,
+      "n_train": 64,
+      "uncapped": {
+        "mae": {
+          "mean": 1.0341166456540425,
+          "std": 0.07478661213271151
+        },
+        "mean": -57.31003443400065,
+        "std": 7.984924010950013
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.11642493307590485,
+          "std": 0.008670304848753162
+        },
+        "mean": 0.010879774888356527,
+        "std": 0.12637019779384595
+      },
+      "excitation": "narrow",
+      "hidden_dim": 32,
+      "n_train": 256,
+      "uncapped": {
+        "mae": {
+          "mean": 1.073911190032959,
+          "std": 0.019594167802562644
+        },
+        "mean": -61.93844985961914,
+        "std": 2.3866530695517034
+      }
+    },
+    {
+      "bounded": {
+        "mae": {
+          "mean": 0.11074874550104141,
+          "std": 0.002440536785415428
+        },
+        "mean": 0.09666401147842407,
+        "std": 0.0312354783996001
+      },
+      "excitation": "narrow",
+      "hidden_dim": 64,
+      "n_train": 256,
+      "uncapped": {
+        "mae": {
+          "mean": 0.9156669576962789,
+          "std": 0.06492593695766045
+        },
+        "mean": -45.12986628214518,
+        "std": 6.429203453891169
+      }
+    }
+  ],
+  "study": {
+    "damping_floor": 0.3,
+    "damping_variation_cap": 0.5,
+    "data_seed": 42,
+    "excitation": {
+      "broad": "Large starting angular momentum; scale 4.0. The pendulum visits a wider range of states.",
+      "narrow": "Small starting angular momentum; scale 0.35."
+    },
+    "history": 10,
+    "horizon": 100,
+    "model_seeds": 3,
+    "pilot_epochs": 50,
+    "system": "Windy pendulum",
+    "title": "When does PHAST recover dissipation?",
+    "trajectory_length": 160
+  }
+}

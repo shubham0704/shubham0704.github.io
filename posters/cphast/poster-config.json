@@ -1,0 +1,14 @@
+{
+  "format": "responsive live poster with A1 landscape print fallback",
+  "columns": [
+    ["cphast-question", "cphast-interface", "cphast-boundary"],
+    ["cphast-live"],
+    ["cphast-objectives", "cphast-transfer", "cphast-composition"],
+    ["cphast-spot", "cphast-executed"]
+  ],
+  "liveAssets": [
+    "../../cphast/videos/cphast_candidate_futures_interpreted_h264.mp4",
+    "../../cphast/videos/anymal_to_go2_source_target_comparison_slow8.mp4"
+  ],
+  "evidenceLabels": ["submitted", "real robot shadow mode", "post-submission simulator experiment"]
+}

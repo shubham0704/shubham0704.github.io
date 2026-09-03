@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Live C-PHAST research poster: compositional port-Hamiltonian world models for choosing robot futures.">
+  <title>C-PHAST Live Poster</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../shared/poster.css">
+</head>
+<body data-poster="cphast">
+  <div class="poster-toolbar" aria-label="Poster controls">
+    <a href="../phast/" title="Open PHAST poster">PHAST</a>
+    <a href="timeline/" title="Open the Summer 2026 C-PHAST progress timeline">Timeline</a>
+    <button type="button" data-action="font-down" title="Decrease text size">A−</button>
+    <button type="button" data-action="font-up" title="Increase text size">A+</button>
+    <button type="button" data-action="pause" aria-pressed="false" title="Pause live media">Pause</button>
+    <button type="button" data-action="static" aria-pressed="false" title="Show printable media">Static</button>
+    <button type="button" data-action="edit" aria-pressed="false" title="Rearrange poster cards">Layout</button>
+    <button type="button" data-action="reset" title="Restore poster layout">Reset</button>
+    <button type="button" data-action="print" title="Print poster">Print</button>
+  </div>
+
+  <main class="poster cphast-theme">
+    <header class="poster-header cphast">
+      <div>
+        <p class="poster-kicker">Compositional world models for action-conditioned futures</p>
+        <h1 class="poster-title">C-PHAST: Compositional Port-Hamiltonian World Models for Choosing Robot Futures</h1>
+        <p class="poster-authors">Shubham Bhardwaj · Chandrajit Bajaj</p>
+        <p class="poster-affiliation">The University of Texas at Austin · Mihawk.ai</p>
+        <div class="overview-entry">
+          <button class="overview-trigger" type="button" data-action="overview-open" aria-haspopup="dialog" aria-controls="cphast-overview">
+            <span class="play-mark" aria-hidden="true"></span>
+            Watch CoRL overview <span class="overview-duration">2:43</span>
+          </button>
+          <div class="overview-static" aria-label="CoRL overview: Spot hardware, cross-robot transfer, and typed decision evidence">
+            <div class="overview-filmstrip" aria-hidden="true">
+              <img src="../../cphast/images/spot_third_person_arm_visible_frame.png" alt="">
+              <img src="../../cphast/images/isaaclab_source_target_transfer_hero.png" alt="">
+              <img src="../../cphast/images/spot_real_query_context.png" alt="">
+            </div>
+            <span><strong>CoRL overview</strong> · Spot hardware, transfer, and typed decisions</span>
+          </div>
+        </div>
+      </div>
+      <div class="poster-header-side">
+        <div class="poster-header-stats" aria-label="C-PHAST headline results">
+          <div class="header-stat"><strong>0.063</strong><span>Go2 rollout MSE after ANYmal-D training</span></div>
+          <div class="header-stat"><strong>2.6×</strong><span>below the larger Shared-GRU baseline</span></div>
+          <div class="header-stat"><strong>9</strong><span>recovery commands in executed selection</span></div>
+          <div class="header-stat"><strong>1,070</strong><span>five-second real Spot windows</span></div>
+        </div>
+        <a href="../../cphast/main_cphast.pdf" aria-label="Open C-PHAST paper">
+          <img class="poster-qr" src="qr.png" alt="QR code for the live C-PHAST poster">
+        </a>
+      </div>
+    </header>
+
+    <div class="poster-grid four-cols">
+      <section class="poster-column" id="cphast-col-1" aria-label="C-PHAST motivation and interface">
+        <article class="poster-card" id="cphast-question" data-tone="orange">
+          <h2>What problem does C-PHAST solve?</h2>
+          <div class="lede-box">
+            <p><strong>C-PHAST models systems whose component count, topology, contacts, or sensing configuration can change.</strong> It reconnects reusable port-Hamiltonian dynamics blocks under a declared deployment and rolls out each candidate future. Every rollout returns named physical and perceptual consequences that a planner can rank or veto under its objective.</p>
+          </div>
+        </article>
+
+        <article class="poster-card" id="cphast-interface" data-tone="green">
+          <h2>What does a candidate query return?</h2>
+          <figure class="poster-figure">
+            <img src="../../cphast/images/signals_to_action_cards_web.png" alt="Pipeline from observations to typed consequences, planner factors, and action cards">
+            <figcaption><strong>One dynamics model, several objectives.</strong> Each candidate is rolled forward before any objective is applied.</figcaption>
+          </figure>
+          <div class="decision-chain detailed" aria-label="C-PHAST observables-to-action-card equations">
+            <div class="decision-step">
+              <span>Observe state</span>
+              <strong><i data-var="phase-state-cphast">x̂</i><sub>t</sub> = <span data-var="observe-op">Observe</span><sub>θ</sub>(<i data-var="history">h</i>, <i data-var="deployment-spec">S</i>)</strong>
+            </div>
+            <div class="decision-step">
+              <span>Configure candidate rollout</span>
+              <strong>
+                <i data-var="spec">S</i><sub>k</sub> = <span data-var="activate-op">Activate</span>(<i data-var="deployment-spec">S</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="phase-state-cphast">x̂</i><sub>t</sub>)
+                <small>Builds hypothetical controls, ports, contacts, and interconnection; no robot command is sent.</small>
+              </strong>
+            </div>
+            <div class="decision-step">
+              <span>Roll out</span>
+              <strong><i data-var="candidate-rollout">x̂</i><sub>t:t+H</sub><sup>(k)</sup> = <span data-var="cphast-model">CPHAST</span><sub>θ</sub>(<i data-var="phase-state-cphast">x̂</i><sub>t</sub>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="spec">S</i><sub>k</sub>)</strong>
+            </div>
+            <div class="decision-step">
+              <span>Read consequences</span>
+              <strong><i data-var="consequences">ρ</i><sup>(k)</sup> = [<i data-var="ph-readout">O</i><sub>pH</sub>(<i data-var="candidate-rollout">x̂</i>), <i data-var="learned-readout">O</i><sub>learned,θ</sub>(<i data-var="candidate-rollout">x̂</i>, <i data-var="spec">S</i><sub>k</sub>)]</strong>
+            </div>
+            <div class="decision-step">
+              <span>Build factors</span>
+              <strong><i data-var="factors">φ</i><sup>(k)</sup> = <span data-var="factor-map">Factors</span>(<i data-var="consequences">ρ</i><sup>(k)</sup>, <i data-var="history">h</i>, <i data-var="candidate">a</i><sub>k</sub>, <i data-var="spec">S</i><sub>k</sub>)</strong>
+            </div>
+            <div class="decision-step">
+              <span>Rank or veto</span>
+              <strong><i data-var="score">s</i><sub>k</sub> = <i data-var="weights">w</i><sup>T</sup><i data-var="factors">φ</i><sup>(k)</sup>, &nbsp; <i data-var="envelope">g</i><sub>j</sub>(<i data-var="factors">φ</i><sup>(k)</sup>) ≤ 0</strong>
+            </div>
+          </div>
+          <p class="parameter-boundary"><strong><span data-var="cphast-model">CPHAST</span><sub>θ</sub> is the dynamics model; <i data-var="ph-readout">O</i><sub>pH</sub> and <i data-var="learned-readout">O</i><sub>learned,θ</sub> are post-rollout readout operators.</strong> The factor map uses declared horizon aggregation and fixed training-split calibration; objectives supply weights and hard envelopes.</p>
+        </article>
+
+        <article class="poster-card" id="cphast-boundary" data-tone="blue">
+          <h2>Why does composition preserve physical accounting?</h2>
+          <div class="math-story compact" aria-label="C-PHAST power-preserving interconnection derivation">
+            <div class="math-step">
+              <span class="math-label">Add local storage</span>
+              <span class="math-expression"><i data-var="total-storage">H</i><sub>total</sub> = Σ<sub>i</sub> <i data-var="local-storage">H</i><sub>i</sub>, &nbsp; <i data-var="coupling-output">ŷ</i><sub>i</sub> = <i data-var="port-matrix">B</i><sub>i</sub><sup>T</sup>∇<i data-var="local-storage">H</i><sub>i</sub></span>
+            </div>
+            <div class="math-step emphasized">
+              <span class="math-label">Connect exposed ports</span>
+              <span class="math-expression"><i data-var="coupling-input">û</i> = −<i data-var="interconnect">Ĉ</i><i data-var="coupling-output">ŷ</i>, &nbsp; <i data-var="interconnect">Ĉ</i> = −<i data-var="interconnect">Ĉ</i><sup>T</sup></span>
+            </div>
+          </div>
+          <div class="math-consequence compact">
+            <span class="math-label">Internal power cancels</span>
+            <span class="math-expression">Σ<sub>i</sub> <i data-var="coupling-output">ŷ</i><sub>i</sub><sup>T</sup><i data-var="coupling-input">û</i><sub>i</sub> = −<i data-var="coupling-output">ŷ</i><sup>T</sup><i data-var="interconnect">Ĉ</i><i data-var="coupling-output">ŷ</i> = 0</span>
+            <span class="math-reason">Changing the deployment graph redirects internal power without adding it. Capacitor, inductor, and mechanical storage remain inside <i>H</i><sub>i</sub>.</span>
+            <strong class="math-result math-result-lines">
+              <span><i data-var="total-storage-rate">Ḣ</i><sub>total</sub> = −Σ<sub>i</sub> <i data-var="port-flow">v</i><sub>i</sub><sup>T</sup><i data-var="local-dissipation">R</i><sub>i</sub><i data-var="port-flow">v</i><sub>i</sub></span>
+              <span>+ Σ<sub>i</sub> <i data-var="port-flow">v</i><sub>i</sub><sup>T</sup><i data-var="local-input">u</i><sub>i</sub><sup>loc</sup> + Σ<sub>i</sub> <i data-var="port-flow">v</i><sub>i</sub><sup>T</sup><i data-var="domain-input">u</i><sub>i</sub><sup>dom</sup>(<i data-var="composed-state">x</i>)</span>
+            </strong>
+            <span class="port-key"><i>u</i><sup>loc</sup>: control or constitutive port · <i>u</i><sup>dom</sup>: explicit benchmark forcing</span>
+          </div>
+          <h3 class="readout-heading">How is each decision quantity produced?</h3>
+          <table class="readout-table">
+            <thead>
+              <tr><th>Quantity</th><th>Construction and examples</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>pH consequence</strong><span class="source-tag exact">Closed-form</span></td>
+                <td>Read directly from the predicted pH rollout: stored energy, dissipation, port work, and internal exchange. No separate readout head.</td>
+              </tr>
+              <tr>
+                <td><strong>Perceptual consequence</strong><span class="source-tag learned">Learned</span></td>
+                <td>Predicted from rollout state and deployment context: sensing quality, map novelty, and perceptual collision proxies.</td>
+              </tr>
+              <tr>
+                <td><strong>Planner factor</strong><span class="source-tag fixed">Deterministic</span></td>
+                <td>Aggregates and calibrates compatible consequences: work cost, support risk, map reward, residual warning, or hard veto.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="readout-note">The pH ledger is exact for every learned parameter setting; prediction accuracy still depends on the learned state and model.</p>
+        </article>
+
+      </section>
+
+      <section class="poster-column" id="cphast-col-2" aria-label="C-PHAST live candidate futures">
+        <article class="poster-card" id="cphast-live" data-tone="green">
+          <h2>Same state. Which future should execute?</h2>
+          <figure class="poster-figure">
+            <div class="video-stage">
+              <video muted loop autoplay playsinline preload="metadata" poster="../../cphast/videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png">
+                <source src="../../cphast/videos/cphast_candidate_futures_interpreted_h264.mp4" type="video/mp4">
+              </video>
+              <img class="video-fallback" src="../../cphast/images/cphast_candidate_futures_px2p25_start82_filmstrip.png" alt="Static candidate-futures filmstrip">
+            </div>
+            <figcaption>Following the same perturbation, widening support survives the rollout, a misaligned brace fails early, and nominal continuation later falls. The live view exposes the predicted physical commitments before selection.</figcaption>
+          </figure>
+          <figure class="poster-figure" style="margin-top:10px">
+            <div class="video-stage">
+              <video muted loop autoplay playsinline preload="metadata">
+                <source src="../../cphast/videos/go2_lateral_push_envelope_3tile.mp4" type="video/mp4">
+              </video>
+              <img class="video-fallback" src="../../cphast/images/go2_push_envelope_filmstrip.png" alt="Static Go2 lateral-push envelope">
+            </div>
+            <figcaption><strong>Failure boundary.</strong> The same frozen locomotion policy recovers, struggles, or fails as lateral perturbation grows; C-PHAST predicts typed consequences before the simulator-level event.</figcaption>
+          </figure>
+        </article>
+
+        <article class="poster-card" id="cphast-count-transfer" data-tone="green">
+          <h2>Can one model change subsystem count?</h2>
+          <span class="evidence-badge">Full-manuscript morphology benchmarks</span>
+          <p>The local subsystem meaning and learned weights stay fixed. Deployment changes how many copies are instantiated and interconnected.</p>
+          <div class="composition-evidence">
+            <figure class="poster-figure composition-demo">
+              <img
+                src="../../cphast/images/cphast_arm_count_transfer.gif"
+                data-live-src="../../cphast/images/cphast_arm_count_transfer.gif"
+                data-static-src="../../cphast/images/cphast_arm_count_transfer_static.png"
+                alt="C-PHAST rollout transfer from a four-joint training arm to arms with two and eight joints">
+              <figcaption><strong>Planar arm.</strong> Train at <i>N</i> = 4 joints; reuse the same joint-level blocks without retraining at <i>N</i> &isin; {2, 3, 4, 5, 6, 8}. The animation displays <i>N</i> = 2, 4, 8; blue is ground truth and green is C-PHAST.</figcaption>
+            </figure>
+            <figure class="poster-figure composition-demo">
+              <img
+                src="../../cphast/images/cphast_leg_count_transfer.gif"
+                data-live-src="../../cphast/images/cphast_leg_count_transfer.gif"
+                data-static-src="../../cphast/images/cphast_leg_count_transfer_static.png"
+                alt="C-PHAST transfer from a quadruped to biped and hexapod leg counts">
+              <figcaption><strong>Legged robots.</strong> Train on the quadruped (<i>N</i> = 4 legs); reuse the same two-joint leg block zero-shot on the biped (<i>N</i> = 2) and hexapod (<i>N</i> = 6).</figcaption>
+            </figure>
+          </div>
+        </article>
+
+      </section>
+
+      <section class="poster-column" id="cphast-col-3" aria-label="C-PHAST objective and transfer evidence">
+        <article class="poster-card" id="cphast-objectives" data-tone="orange">
+          <h2>Can the objective change without retraining?</h2>
+          <div class="mode-tabs" role="tablist" data-switcher data-target="#objective-panel">
+            <button type="button" role="tab" aria-selected="true" data-content='{"objective":"Efficiency","action":"Slow loop","subtitle":"lower predicted work","reason":"The efficient objective penalizes positive work while retaining useful motion."}'>Efficient</button>
+            <button type="button" role="tab" aria-selected="false" data-content='{"objective":"Safety","action":"Slow loop","subtitle":"larger physical margin","reason":"The safety objective emphasizes support, contact, force, and residual envelopes."}'>Safe</button>
+            <button type="button" role="tab" aria-selected="false" data-content='{"objective":"Mapping","action":"Move + scan","subtitle":"greater sensing value","reason":"The mapping objective rewards predicted viewpoint diversity and depth novelty."}'>Mapping</button>
+            <button type="button" role="tab" aria-selected="false" data-content='{"objective":"Balance","action":"Move + scan","subtitle":"progress with margin","reason":"The balanced objective trades energetic cost, motion, sensing value, and safety margins."}'>Balanced</button>
+            <button type="button" role="tab" aria-selected="false" data-content='{"objective":"Inspection","action":"Move + scan","subtitle":"better inspection view","reason":"The inspection objective prioritizes the predicted view while retaining hard safety vetoes."}'>Inspect</button>
+          </div>
+          <div class="objective-result" id="objective-panel" role="tabpanel">
+            <div class="selected-action">
+              <div><span data-field="objective">Efficiency</span><strong data-field="action">Slow loop</strong><span data-field="subtitle">lower predicted work</span></div>
+            </div>
+            <div class="objective-reason">
+              <h3>Why this action?</h3>
+              <p data-field="reason">The efficient objective penalizes positive work while retaining useful motion.</p>
+              <p><strong>The predicted consequences remain fixed; only their use changes.</strong></p>
+            </div>
+          </div>
+        </article>
+
+        <article class="poster-card" id="cphast-transfer" data-tone="green">
+          <h2>Does pH structure transfer across robots?</h2>
+          <span class="evidence-badge">Submitted Isaac Lab result</span>
+          <div class="metric-row">
+            <div class="metric-block"><strong>0.063</strong><span>C-PHAST Go2 H=50 MSE</span></div>
+            <div class="metric-block"><strong>0.163</strong><span>larger Shared-GRU</span></div>
+            <div class="metric-block"><strong>0.087</strong><span>monolithic PHAST</span></div>
+          </div>
+          <figure class="poster-figure">
+            <div class="video-stage">
+              <video muted loop autoplay playsinline preload="metadata">
+                <source src="../../cphast/videos/anymal_to_go2_source_target_comparison_slow8.mp4" type="video/mp4">
+              </video>
+              <img class="video-fallback" src="../../cphast/images/isaaclab_source_target_transfer_hero.png" alt="ANYmal-D to Go2 transfer comparison">
+            </div>
+          </figure>
+          <p>Monolithic pH structure carries most of the transfer-stability gain. C-PHAST then shares one leg-level model across repeated legs in canonical local coordinates, while robot-specific morphology enters through block instantiation and power-preserving interconnection. This parameter sharing and separation of local physics from robot layout further reduce error and permit variable-layout reuse.</p>
+          <div class="loss-strip">
+            <span>Matched Isaac training loss</span>
+            <strong><i data-var="isaac-loss">ℒ</i><sub>data</sub> = <span data-var="batch-count">1/|𝐵|</span> Σ<sub>(i,t)∈𝐵</sub> ‖δ<sub>q</sub>(q̃<sup>(i)</sup><sub>t+1</sub>, q̂<sup>obs,(i)</sup><sub>t+1</sub>)‖<sup>2</sup></strong>
+            <small>The submitted 0.063 comparison uses the same next-step MSE-only objective as the baselines.</small>
+          </div>
+        </article>
+
+        <article class="poster-card" id="cphast-composition" data-tone="orange">
+          <h2>Why compose instead of learning one monolithic model?</h2>
+          <p>A monolithic model learns local component behavior and one system layout as a single object. C-PHAST learns each repeated physical type once, then instantiates the shared blocks under the target component count, topology, contacts, and observation interface.</p>
+          <h3 class="composition-subhead">Changing interconnection topology</h3>
+          <figure class="poster-figure compact-figure">
+            <img src="../../cphast/images/microgrid_redeployment_current.png" alt="C-PHAST microgrid redeployment under topology change">
+            <figcaption><strong>DC microgrid.</strong> The DGU and line block library remains fixed; the deployment specification changes instances, active ports, interconnection, observations, and candidate descriptors.</figcaption>
+          </figure>
+          <div class="spot-contract" aria-label="DC microgrid problem and evaluation contract">
+            <div>
+              <strong>Microgrid problem</strong>
+              <span>Train shared DGU and line blocks on a three-DGU source graph; query added/removed DGUs, feeder rewiring, and voltage-only sensing without retraining the local blocks.</span>
+            </div>
+            <div>
+              <strong>Physical block state</strong>
+              <span><i data-var="dgu-charge">q<sub>i</sub></i> = C<sub>i</sub>V<sub>i</sub>, <i data-var="dgu-flux">p<sub>i</sub></i> = L<sub>t,i</sub>I<sub>t,i</sub>; the supplied incidence matrix <i data-var="grid-incidence">B</i><sub>inc</sub> connects DGU nodes to line edges.</span>
+            </div>
+            <div class="contract-wide">
+              <strong>Model-training objective</strong>
+              <span class="katex-equation" data-katex="\htmlData{var=grid-loss}{\mathcal L_{\mathrm{grid}}}=\frac{1}{\htmlData{var=grid-samples}{|\mathcal I|}}\sum_{(i,t)\in\mathcal I}\left\|\htmlData{var=grid-state}{\hat x}_{t+1}^{(i)}-x_{t+1}^{(i)}\right\|_2^2"></span>
+              <span>The voltage-only tier also trains its observer on hidden-state and next-voltage error. Evaluation reports bus-voltage and line-current rollouts, voltage balancing, current sharing, energy change, and typed mismatch residuals.</span>
+            </div>
+          </div>
+          <p class="parameter-boundary"><strong>Why port-Hamiltonian composition?</strong> Skew port coupling contributes zero net internal power, so rewiring preserves the blocks' local storage, dissipation, and power accounting.</p>
+          <p class="spot-replay-note"><strong>Controller boundary.</strong> Converter voltages and load currents are supplied inputs. The reported study evaluates a reconfigurable forecasting surrogate for regulation and protection; it does not learn the DGU controller.</p>
+        </article>
+      </section>
+
+      <section class="poster-column" id="cphast-col-4" aria-label="C-PHAST real and executed evidence">
+        <article class="poster-card" id="cphast-spot" data-tone="orange">
+          <h2>Do typed energetic forecasts match a real robot?</h2>
+          <span class="evidence-badge">Real Spot · shadow mode</span>
+          <figure class="poster-figure">
+            <img src="../../cphast/images/spot_real_query_context.png" alt="Real Spot telemetry-to-action-card query">
+            <figcaption>Six teleoperated episodes provide 1,070 five-second windows. Joint power is computed from measured torque and velocity; C-PHAST operates in shadow mode and does not command Spot.</figcaption>
+          </figure>
+          <div class="spot-contract" aria-label="Spot model input and output contract">
+            <div>
+              <strong>Observed history <i>h</i></strong>
+              <span>Recent speed/contact, arm and gripper state, image/depth quality, and TF/depth-novelty summaries.</span>
+            </div>
+            <div>
+              <strong>Candidate <i>a</i><sub>k</sub></strong>
+              <span>Numeric intended speed, turn rate, gripper opening, and primitive-prototype descriptors; not a primitive label.</span>
+            </div>
+            <div>
+              <strong>Predicted consequences <i>ρ</i><sup>(k)</sup></strong>
+              <span>Future work, battery draw, support/contact, collision proxy, sensing quality, depth novelty, and residual-like channels.</span>
+            </div>
+            <div>
+              <strong>Not model inputs</strong>
+              <span>Consequence targets, behavior/episode labels, trim markers, and visualization metadata.</span>
+            </div>
+          </div>
+          <p class="spot-replay-note"><strong>Logged-replay qualification.</strong> Realized yaw change and realized hand speed/turn are replay-only candidate descriptors. Live use must obtain intended equivalents from the primitive library or forecast them before execution.</p>
+          <div class="loss-strip">
+            <span>Spot consequence-model loss</span>
+            <strong><i data-var="spot-loss">ℒ</i><sub>Spot</sub> = <span data-var="spot-normalizer">1/(Nd<sub>ρ</sub>)</span> Σ<sub>n,m</sub> α<sub>m</sub>(ρ̂<sub>nm</sub> − ρ<sub>nm</sub>)<sup>2</sup></strong>
+            <small>Weighted MSE is applied to train-scaled typed consequences; safety- and energy-critical channels receive higher weight. Objective scores are not training targets.</small>
+          </div>
+          <div class="loss-strip">
+            <span>Downstream candidate selection</span>
+            <strong>k<sup>★</sup> = arg max<sub>k: <span data-var="envelope">g<sub>j</sub></span>(<i data-var="factors">φ</i><sup>(k)</sup>) ≤ 0</sub> <i data-var="weights">w</i><sup>T</sup><i data-var="factors">φ</i><sup>(k)</sup></strong>
+            <small><strong>Five fixed modes:</strong> efficient, safe, mapping, balanced, and inspection. Each changes the weights and hard envelopes applied after prediction, not the learned consequence model.</small>
+          </div>
+          <div class="metric-row">
+            <div class="metric-block"><strong>0.973</strong><span>positive-work Pearson</span></div>
+            <div class="metric-block"><strong>0.975</strong><span>absolute-work Pearson</span></div>
+            <div class="metric-block"><strong>0.943</strong><span>battery-draw Pearson</span></div>
+          </div>
+        </article>
+
+        <article class="poster-card" id="cphast-executed" data-tone="red">
+          <h2>Do the forecasts affect executed behavior?</h2>
+          <span class="evidence-badge new">Post-submission simulator experiment</span>
+          <p>C-PHAST forecasts nine recovery commands after a held-out lateral push; one selected command is executed by the frozen locomotion policy.</p>
+          <div class="metric-row">
+            <div class="metric-block"><strong>121.8</strong><span>mean survival steps with C-PHAST</span></div>
+            <div class="metric-block"><strong>116.6</strong><span>best fixed command</span></div>
+            <div class="metric-block"><strong>14/20</strong><span>longest-survival selections with pH readouts</span></div>
+          </div>
+          <p>Mean survival improves by 5.3 steps, with seed-clustered 95% CI [2.5, 7.1]. This establishes improved executed command selection in simulation, not autonomous Spot control.</p>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="overview-dialog" id="cphast-overview" aria-labelledby="cphast-overview-title" aria-describedby="cphast-overview-description">
+    <div class="overview-dialog-header">
+      <div>
+        <p class="dialog-kicker">C-PHAST · CoRL 2026</p>
+        <h2 id="cphast-overview-title">From robot telemetry to typed candidate futures</h2>
+        <p id="cphast-overview-description">A 2:43 captioned walkthrough of Spot data collection, the C-PHAST contract, cross-robot transfer, candidate-future safety criticism, and shadow-mode hardware evidence.</p>
+      </div>
+      <button class="dialog-close" type="button" data-action="overview-close" aria-label="Close overview video">Close</button>
+    </div>
+    <video class="overview-video" controls playsinline preload="metadata" poster="../../cphast/images/spot_third_person_arm_visible_frame.png">
+      <source src="media/overview_video.mp4" type="video/mp4">
+      Your browser does not support embedded video.
+    </video>
+    <p class="overview-scope"><strong>Evidence boundary:</strong> Spot is evaluated in shadow mode on logged telemetry; executed command selection is evaluated separately in simulation.</p>
+  </dialog>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="../shared/poster.js"></script>
+</body>
+</html>
