@@ -63,6 +63,12 @@ const state = {
   evidenceSurfaceView: "synthesis",
   evidenceNTrain: null,
   evidenceSeqLen: null,
+  uncertaintyTemperature: 0.1,
+  uncertaintyNoise: 0.05,
+  uncertaintyMethod: "fdt",
+  continualArm: "finetune",
+  closedLoopAxis: "measurement_noise",
+  closedLoopMethod: "casimir_qonly_phast",
   visibleMethods: new Set(),
   initialVisibleMethods: null,
   initialCoordinate: null,
@@ -1566,6 +1572,84 @@ function renderEvidenceSurface(study) {
   showReading(selectedN, selectedT);
 }
 
+function unwrapNear(value, reference) {
+  let unwrapped = value;
+  while (unwrapped - reference > Math.PI) unwrapped -= 2 * Math.PI;
+  while (unwrapped - reference < -Math.PI) unwrapped += 2 * Math.PI;
+  return unwrapped;
+}
+
+function unwrapAngleSeries(values, firstReference = null) {
+  if (!values.length) return [];
+  const first = firstReference === null ? values[0] : unwrapNear(values[0], firstReference);
+  const output = [first];
+  for (let index = 1; index < values.length; index += 1) {
+    output.push(unwrapNear(values[index], output[index - 1]));
+  }
+  return output;
+}
+
+function calibrationFanChart(condition, method, label) {
+  const rows = condition.methods[method].fan;
+  const width = 900;
+  const height = 330;
+  const margin = { left: 70, right: 24, top: 24, bottom: 48 };
+  const truth = unwrapAngleSeries(rows.map((row) => row.truth));
+  const mean = unwrapAngleSeries(rows.map((row) => row.mean), truth[0]);
+  const centers = rows.map((row, index) => unwrapNear(row.band.center, mean[index]));
+  const lower = rows.map((row, index) => centers[index] - row.band.half_width);
+  const upper = rows.map((row, index) => centers[index] + row.band.half_width);
+  const minY = Math.min(...truth, ...mean, ...lower);
+  const maxY = Math.max(...truth, ...mean, ...upper);
+  const pad = Math.max((maxY - minY) * 0.08, 0.05);
+  const low = minY - pad;
+  const high = maxY + pad;
+  const x = (index) => margin.left + index / Math.max(1, rows.length - 1) * (width - margin.left - margin.right);
+  const y = (value) => margin.top + (high - value) / Math.max(high - low, 1e-9) * (height - margin.top - margin.bottom);
+  const path = (values) => values.map((value, index) => `${index ? "L" : "M"}${x(index).toFixed(2)},${y(value).toFixed(2)}`).join(" ");
+  const band = `${path(upper)} ${lower.map((value, index) => `L${x(lower.length - 1 - index).toFixed(2)},${y(lower[lower.length - 1 - index]).toFixed(2)}`).join(" ")} Z`;
+  const grid = [0, .25, .5, .75, 1].map((ratio) => {
+    const value = high - ratio * (high - low);
+    const gy = y(value);
+    return `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"/><text class="plot-label" x="${margin.left - 10}" y="${gy + 5}" text-anchor="end">${value.toFixed(2)}</text>`;
+  }).join("");
+  const xTicks = [1, 50, 100, 150, 200].map((horizon) => {
+    const index = horizon - 1;
+    return `<text class="plot-label" x="${x(index)}" y="${height - 18}" text-anchor="middle">${horizon}</text>`;
+  }).join("");
+  return `<div class="calibration-chart calibration-fan"><header><div><span>One held-out future</span><h4>${escapeText(label)}</h4></div><p>Line: predictive circular mean · band: central 80% predictive mass</p></header><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeText(label)} predictive fan chart"><path class="calibration-band" d="${band}"/>${grid}<path class="plot-line" stroke="#11191d" d="${path(truth)}"/><path class="plot-line" stroke="#167251" d="${path(mean)}"/>${xTicks}<text class="plot-axis-title" x="${(margin.left + width - margin.right) / 2}" y="${height - 2}" text-anchor="middle">forecast horizon H</text></svg><div class="calibration-legend"><span class="is-truth">realized trajectory</span><span class="is-model">predictive mean</span><span class="is-band">80% predictive arc</span></div></div>`;
+}
+
+function calibrationMetricChart(condition, metric) {
+  const methods = ["initial_state", "fdt", "oracle"];
+  const colors = { initial_state: "#a9671b", fdt: "#167251", oracle: "#326fa6" };
+  const labels = { initial_state: "initial state only", fdt: "PHAST + FDT", oracle: "oracle" };
+  const rows = Object.fromEntries(methods.map((method) => [method, condition.methods[method].metrics]));
+  const horizons = rows.fdt.map((row) => row.horizon);
+  const values = Object.fromEntries(methods.map((method) => [method, rows[method].map((row) => (
+    metric === "coverage" ? row.coverage["0.8"].mean : row.energy_score.mean
+  ))]));
+  const width = 440;
+  const height = 270;
+  const margin = { left: 58, right: 18, top: 22, bottom: 48 };
+  const allValues = methods.flatMap((method) => values[method]);
+  const low = metric === "coverage" ? 0 : Math.min(0, ...allValues);
+  const high = metric === "coverage" ? 1 : Math.max(...allValues) * 1.08;
+  const logMin = Math.log10(horizons[0]);
+  const logMax = Math.log10(horizons.at(-1));
+  const x = (horizon) => margin.left + (Math.log10(horizon) - logMin) / (logMax - logMin) * (width - margin.left - margin.right);
+  const y = (value) => margin.top + (high - value) / Math.max(high - low, 1e-9) * (height - margin.top - margin.bottom);
+  const path = (method) => values[method].map((value, index) => `${index ? "L" : "M"}${x(horizons[index]).toFixed(2)},${y(value).toFixed(2)}`).join(" ");
+  const gridValues = metric === "coverage" ? [0, .25, .5, .75, 1] : [0, .25, .5, .75, 1].map((ratio) => low + ratio * (high - low));
+  const grid = gridValues.map((value) => `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${y(value)}" y2="${y(value)}"/><text class="plot-label" x="${margin.left - 8}" y="${y(value) + 5}" text-anchor="end">${value.toFixed(2)}</text>`).join("");
+  const target = metric === "coverage" ? `<rect class="calibration-target-band" x="${margin.left}" y="${y(.85)}" width="${width - margin.left - margin.right}" height="${y(.75) - y(.85)}"/><line class="calibration-target" x1="${margin.left}" x2="${width - margin.right}" y1="${y(.8)}" y2="${y(.8)}"/>` : "";
+  const series = methods.map((method) => `<path class="plot-line" stroke="${colors[method]}" d="${path(method)}"/>${values[method].map((value, index) => `<circle cx="${x(horizons[index])}" cy="${y(value)}" r="3.2" fill="${colors[method]}"/>`).join("")}`).join("");
+  const xTicks = horizons.map((horizon) => `<text class="plot-label" x="${x(horizon)}" y="${height - 20}" text-anchor="middle">${horizon}</text>`).join("");
+  const title = metric === "coverage" ? "Does 80% mean 80%?" : "Is the predictive distribution useful?";
+  const subtitle = metric === "coverage" ? "empirical coverage · target 0.80" : "circular energy score · lower is better";
+  return `<div class="calibration-chart"><header><div><span>Five-seed aggregate</span><h4>${title}</h4></div><p>${subtitle}</p></header><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${title}">${target}${grid}${series}${xTicks}<text class="plot-axis-title" x="${(margin.left + width - margin.right) / 2}" y="${height - 2}" text-anchor="middle">forecast horizon H · log spacing</text></svg><div class="calibration-legend">${methods.map((method) => `<span style="--legend-color:${colors[method]}">${labels[method]}</span>`).join("")}</div></div>`;
+}
+
 function renderUncertaintyDiagnostic(study) {
   const matched = study.matched_law;
   const before = matched.before_intervention;
@@ -1583,8 +1667,9 @@ function renderUncertaintyDiagnostic(study) {
       <td>${Math.max(cell.max_drift_z, cell.max_discrete_energy_z).toFixed(2)}</td>
     </tr>`;
   }).join("");
-  byId("diagnostic-visual").innerHTML = `
-    <div class="attribution-reader">
+  const attribution = `<details class="attribution-secondary">
+      <summary>Why a calibrated stochastic law still does not identify the noise source</summary>
+      <div class="attribution-reader">
       <section class="matched-law">
         <p class="diagnostic-matrix-note">Decisive test</p>
         <div class="attribution-stage">
@@ -1617,10 +1702,106 @@ function renderUncertaintyDiagnostic(study) {
         </table></div>
         <p>Each cell uses ${study.sampling.probe_seed_pairs_per_cell} probe/seed pairs and ${study.sampling.samples_per_probe.toLocaleString()} one-step samples per probe. “Max |z|” is the larger of the drift and discrete-energy deviations measured in standard errors.</p>
       </details>
-    </div>`;
+      </div>
+    </details>`;
+  if (!study.calibration) {
+    byId("diagnostic-visual").innerHTML = attribution;
+    return;
+  }
+  const calibration = study.calibration;
+  const temperatures = [...new Set(calibration.conditions.map((condition) => condition.process_temperature))];
+  const noises = [...new Set(calibration.conditions.map((condition) => condition.observation_noise))];
+  if (!temperatures.includes(state.uncertaintyTemperature)) state.uncertaintyTemperature = temperatures.at(-1);
+  if (!noises.includes(state.uncertaintyNoise)) state.uncertaintyNoise = noises.at(-1);
+  const condition = calibration.conditions.find((candidate) => (
+    candidate.process_temperature === state.uncertaintyTemperature
+    && candidate.observation_noise === state.uncertaintyNoise
+  ));
+  const methods = Object.keys(calibration.method_labels);
+  if (!methods.includes(state.uncertaintyMethod)) state.uncertaintyMethod = "fdt";
+  const h100 = Object.fromEntries(methods.map((method) => [
+    method,
+    condition.methods[method].metrics.find((row) => row.horizon === 100),
+  ]));
+  const metricRows = methods.map((method) => {
+    const row = h100[method];
+    return `<tr><th scope="row">${escapeText(calibration.method_labels[method])}</th><td>${row.coverage["0.8"].mean.toFixed(3)} +/- ${row.coverage["0.8"].std.toFixed(3)}</td><td>${row.width["0.8"].mean.toFixed(3)}</td><td>${row.energy_score.mean.toFixed(3)} +/- ${row.energy_score.std.toFixed(3)}</td></tr>`;
+  }).join("");
+  const temperatureControls = temperatures.map((value) => `<button type="button" data-uncertainty-temperature="${value}" aria-selected="${value === state.uncertaintyTemperature}">${value === 0 ? "none" : value.toFixed(2)}</button>`).join("");
+  const noiseControls = noises.map((value) => `<button type="button" data-uncertainty-noise="${value}" aria-selected="${value === state.uncertaintyNoise}">${value === 0 ? "none" : value.toFixed(2)}</button>`).join("");
+  const methodControls = methods.map((method) => `<button type="button" data-uncertainty-method="${method}" aria-selected="${method === state.uncertaintyMethod}">${escapeText(calibration.method_labels[method])}</button>`).join("");
+  byId("diagnostic-visual").innerHTML = `<div class="calibration-reader">
+      <div class="calibration-controls">
+        <fieldset><legend>Process temperature</legend><div>${temperatureControls}</div></fieldset>
+        <fieldset><legend>Measurement noise sigma</legend><div>${noiseControls}</div></fieldset>
+      </div>
+      <div class="calibration-takeaway"><span>Measured answer</span><p>At long horizons, FDT improves both score and coverage in <strong>${calibration.summary.long_cells}/${calibration.summary.long_cells}</strong> stochastic cells. It does not finish calibration: only <strong>${calibration.summary.nominal_cells}/${calibration.summary.stochastic_cells}</strong> FDT cells lie within 0.80 +/- 0.05 coverage.</p></div>
+      <div class="calibration-methods" role="group" aria-label="Choose predictive fan">${methodControls}</div>
+      ${calibrationFanChart(condition, state.uncertaintyMethod, calibration.method_labels[state.uncertaintyMethod])}
+      <p class="calibration-note">${escapeText(calibration.fan_note)}</p>
+      <div class="calibration-metrics">${calibrationMetricChart(condition, "coverage")}${calibrationMetricChart(condition, "energy")}</div>
+      <div class="calibration-table-wrap"><table><caption>H=100 quantitative reading for the selected noise cell</caption><thead><tr><th>Uncertainty contract</th><th>80% coverage</th><th>Arc width</th><th>Energy score</th></tr></thead><tbody>${metricRows}</tbody></table></div>
+    </div>${attribution}`;
+  document.querySelectorAll("[data-uncertainty-temperature]").forEach((button) => button.addEventListener("click", () => {
+    state.uncertaintyTemperature = Number(button.dataset.uncertaintyTemperature);
+    renderUncertaintyDiagnostic(study);
+  }));
+  document.querySelectorAll("[data-uncertainty-noise]").forEach((button) => button.addEventListener("click", () => {
+    state.uncertaintyNoise = Number(button.dataset.uncertaintyNoise);
+    renderUncertaintyDiagnostic(study);
+  }));
+  document.querySelectorAll("[data-uncertainty-method]").forEach((button) => button.addEventListener("click", () => {
+    state.uncertaintyMethod = button.dataset.uncertaintyMethod;
+    renderUncertaintyDiagnostic(study);
+  }));
 }
 
 function renderContinualDiagnostic(study) {
+  if (study.matrices) {
+    const armLabels = {
+      frozen: "Frozen",
+      finetune: "Fine-tune all",
+      oracle_block: "Named block",
+      replay: "Replay",
+      joint_offline: "Joint offline",
+      separate_experts: "Separate experts",
+    };
+    if (!study.arms.includes(state.continualArm)) state.continualArm = "finetune";
+    const gate = study.competence_gate;
+    const controls = study.arms.map((arm) => `<button type="button" data-continual-arm="${arm}" aria-selected="${arm === state.continualArm}">${escapeText(armLabels[arm] || arm)}</button>`).join("");
+    const matrix = study.matrices[state.continualArm];
+    const finite = Object.values(study.matrices).flat(2).map((cell) => cell?.h100_mean).filter((value) => Number.isFinite(value) && value > 0).map(Math.log10);
+    const heatMin = Math.min(...finite);
+    const heatMax = Math.max(...finite);
+    const headers = `<div class="matrix-label">trained through</div>${study.columns.map((column) => `<div class="matrix-label">test: ${escapeText(column)}</div>`).join("")}`;
+    const rows = study.rows.map((row, rowIndex) => `<div class="matrix-label">${escapeText(row)}</div>${study.columns.map((_, columnIndex) => {
+      const cell = matrix[rowIndex][columnIndex];
+      const fill = diagnosticHeatFill(Math.log10(cell.h100_mean), heatMin, heatMax, false);
+      const randomReference = gate ? ` · ${Math.round(100 * cell.h100_mean / gate.random_phase_mse)}% ref.` : "";
+      return `<div class="matrix-value ${cell.seen ? "" : "is-future"}" style="--heat-fill:${fill};background:var(--heat-fill)"><strong>${formatScore(cell.h100_mean)}</strong><small>H=100${randomReference}${cell.seen ? "" : " · not trained yet"}</small><small>1-step ${formatScore(cell.one_step_mean)}</small></div>`;
+    }).join("")}`).join("");
+    const summaryRows = study.arm_summary.map((item) => `<tr class="${item.arm === state.continualArm ? "is-selected" : ""}"><th>${escapeText(armLabels[item.arm] || item.arm)}</th><td>${formatScore(item.current_h100)}</td><td>${formatScore(item.retained_h100)}</td><td>${formatScore(item.worst_h100)}</td><td>${formatScore(item.one_step)}</td></tr>`).join("");
+    const unsupported = study.unsupported?.length
+      ? `<p class="diagnostic-warning"><strong>Interface limit:</strong> the named-block arm cannot update the changed actuation map because the current model exposes no trainable input-map parameter. It is marked unsupported, not ranked as a successful adaptation method.</p>`
+      : "";
+    const competenceGate = gate
+      ? `<div class="diagnostic-takeaway"><span>Competence gate</span><p><strong>One-step fit did not become a usable long rollout.</strong> Final H=100 errors span ${formatScore(gate.h100_min)}-${formatScore(gate.h100_max)}, compared with ${formatScore(gate.random_phase_mse)} for a uniform random phase error. Only ${gate.positive_forgetting_cells}/${gate.forgetting_cells} forgetting entries are positive, so near-zero forgetting cannot be interpreted as retention here.</p></div>`
+      : "";
+    const actionContract = continualActionContract(study);
+    byId("diagnostic-visual").innerHTML = `<div class="continual-reader">
+      ${competenceGate}
+      <div class="continual-controls" role="group" aria-label="Choose update rule">${controls}</div>
+      <p class="diagnostic-matrix-note">Each cell is a controlled forecast: ten observed positions initialize the state, the held-out future commands are supplied, and the next 100 positions are predicted. “ref.” is the fraction of the uniform random-phase MSE; lower is better. The color scale is shared by every update rule.</p>
+      <div class="diagnostic-matrix-wrap continual-matrix-wrap"><div class="diagnostic-matrix diagnostic-matrix-wide" style="--diagnostic-cols:${study.columns.length}">${headers}${rows}</div></div>
+      <div class="continual-summary"><table><caption>Competence after the final environment; H=100 except the final column</caption><thead><tr><th>Update rule</th><th>Current</th><th>Earlier mean</th><th>Worst</th><th>One-step mean</th></tr></thead><tbody>${summaryRows}</tbody></table></div>
+      ${unsupported}
+    </div>${actionContract}`;
+    document.querySelectorAll("[data-continual-arm]").forEach((button) => button.addEventListener("click", () => {
+      state.continualArm = button.dataset.continualArm;
+      renderContinualDiagnostic(study);
+    }));
+    return;
+  }
   const headers = `<div class="matrix-label">evaluation</div>${study.columns.map((column) => `<div class="matrix-label">${escapeText(column)}</div>`).join("")}`;
   const rows = study.rows.map((row, rowIndex) => `<div class="matrix-label">${escapeText(row)}</div>${study.columns.map((column, columnIndex) => {
     const value = study.matrix?.[rowIndex]?.[columnIndex];
@@ -1631,7 +1812,12 @@ function renderContinualDiagnostic(study) {
   const note = study.matrix
     ? `Smoke integration · ${study.matrix_arm} · ${study.matrix_metric} · not a scientific estimate`
     : "Evaluation contract. No result is implied.";
-  const actionContract = study.action_contract?.length
+  const actionContract = continualActionContract(study);
+  byId("diagnostic-visual").innerHTML = `<div class="diagnostic-matrix-wrap"><p class="diagnostic-matrix-note">${escapeText(note)}</p><div class="diagnostic-matrix">${headers}${rows}</div></div>${actionContract}`;
+}
+
+function continualActionContract(study) {
+  return study.action_contract?.length
     ? `<section class="action-contract-audit">
         <div><span>Required interface</span><h4>A command is not a force.</h4><p><i>a</i><sub>r</sub> &rarr; A<sub>r</sub>(q, q&#775;) &rarr; &tau;<sub>r</sub></p></div>
         <div class="action-contract-table">
@@ -1641,32 +1827,77 @@ function renderContinualDiagnostic(study) {
         <p>Before testing adaptation across robots, the model must use each robot's declared command-to-effort map. Otherwise an apparent dynamics shift can be an actuator-interface error.</p>
       </section>`
     : "";
-  byId("diagnostic-visual").innerHTML = `<div class="diagnostic-matrix-wrap"><p class="diagnostic-matrix-note">${escapeText(note)}</p><div class="diagnostic-matrix">${headers}${rows}</div></div>${actionContract}`;
+}
+
+const CLOSED_LOOP_METHODS = {
+  casimir_true: { label: "Oracle state", color: "#17252c" },
+  casimir_qonly_fd: { label: "Finite difference", color: "#bd4d4d" },
+  casimir_qonly_map: { label: "MAP smoother", color: "#326fa6" },
+  casimir_qonly_fdtcn: { label: "FD-TCN observer", color: "#b7791f" },
+  casimir_qonly_phast: { label: "Current q-only PHAST", color: "#167251" },
+};
+
+function closedLoopThresholdChart(study, axis) {
+  const width = 820;
+  const height = 330;
+  const margin = { left: 54, right: 18, top: 22, bottom: 58 };
+  const cells = study.threshold_cells.filter((cell) => cell.axis === axis);
+  const levels = [...new Map(cells.map((cell) => [cell.severity_index, cell.level])).entries()].sort((a, b) => a[0] - b[0]);
+  const x = (index) => margin.left + index * (width - margin.left - margin.right) / Math.max(1, levels.length - 1);
+  const y = (value) => margin.top + (1 - value) * (height - margin.top - margin.bottom);
+  const grid = [0, .5, .8, 1].map((value) => `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${y(value)}" y2="${y(value)}"/><text class="plot-tick" x="${margin.left - 10}" y="${y(value) + 4}" text-anchor="end">${Math.round(value * 100)}%</text>`).join("");
+  const series = study.methods.map((method) => {
+    const rows = cells.filter((cell) => cell.method === method).sort((a, b) => a.severity_index - b.severity_index);
+    const color = CLOSED_LOOP_METHODS[method]?.color || "#59666d";
+    const path = rows.map((cell, index) => `${index ? "L" : "M"}${x(index).toFixed(1)},${y(cell.success_rate).toFixed(1)}`).join(" ");
+    const intervals = rows.map((cell, index) => `<line class="threshold-interval" stroke="${color}" x1="${x(index)}" x2="${x(index)}" y1="${y(cell.wilson_95[1])}" y2="${y(cell.wilson_95[0])}"/><circle cx="${x(index)}" cy="${y(cell.success_rate)}" r="${method === state.closedLoopMethod ? 4 : 2.5}" fill="${color}"/>`).join("");
+    return `<path class="plot-line" stroke="${color}" d="${path}"/>${intervals}`;
+  }).join("");
+  const labels = levels.map(([index, level]) => `<text class="plot-tick" x="${x(index)}" y="${height - 30}" text-anchor="middle">${formatCompact(level)}</text>`).join("");
+  return `<div class="threshold-chart"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Success with 95 percent intervals as stress increases">${grid}<line class="threshold-target" x1="${margin.left}" x2="${width - margin.right}" y1="${y(study.reliability_target)}" y2="${y(study.reliability_target)}"/>${series}${labels}<text class="plot-axis-title" x="${(margin.left + width - margin.right) / 2}" y="${height - 3}" text-anchor="middle">${escapeText(axis.replaceAll("_", " "))}</text></svg></div>`;
 }
 
 function renderClosedLoopDiagnostic(study) {
+  if (study.threshold_cells) {
+    if (!study.threshold_axes.includes(state.closedLoopAxis)) state.closedLoopAxis = study.threshold_axes[0];
+    if (!study.methods.includes(state.closedLoopMethod)) state.closedLoopMethod = "casimir_qonly_phast";
+    const axisLabels = { measurement_noise: "Noise", measurement_delay: "Delay", measurement_dropout: "Dropout", actuator_gain: "Actuator gain" };
+    const axisControls = study.threshold_axes.map((axis) => `<button type="button" data-threshold-axis="${axis}" aria-selected="${axis === state.closedLoopAxis}">${escapeText(axisLabels[axis] || axis)}</button>`).join("");
+    const methodControls = study.methods.map((method) => `<button type="button" data-threshold-method="${method}" aria-selected="${method === state.closedLoopMethod}">${escapeText(CLOSED_LOOP_METHODS[method]?.label || method)}</button>`).join("");
+    const selected = study.threshold_cells.filter((cell) => cell.axis === state.closedLoopAxis && cell.method === state.closedLoopMethod).sort((a, b) => a.severity_index - b.severity_index);
+    const selectedRows = selected.map((cell) => `<tr><th>${formatCompact(cell.level)}</th><td>${Math.round(100 * cell.success_rate)}% <small>[${Math.round(100 * cell.wilson_95[0])}, ${Math.round(100 * cell.wilson_95[1])}]</small></td><td>${escapeText(cell.conclusion)}</td><td>${formatSigned(cell.final_error_regret_mean, 3)}</td><td>${formatCompact(cell.velocity_error_mean)}</td></tr>`).join("");
+    const boundary = study.threshold_boundaries.find((item) => item.axis === state.closedLoopAxis && item.method === state.closedLoopMethod);
+    const boundaryText = boundary?.first_resolved_failure_level === null
+      ? "No statistically resolved failure was reached on this sweep."
+      : `First resolved failure at ${formatCompact(boundary.first_resolved_failure_level)}.`;
+    const diagnostic = study.decision_diagnostics?.find((item) => item.method === state.closedLoopMethod);
+    let diagnosticText = "";
+    if (diagnostic) {
+      if (Number.isFinite(diagnostic.velocity_failure_correlation)) {
+        diagnosticText = `Mean velocity error is ${formatCompact(diagnostic.velocity_error_success)} on successful trials and ${formatCompact(diagnostic.velocity_error_failure)} on failed trials; its correlation with the failure indicator is ${formatSigned(diagnostic.velocity_failure_correlation)}.`;
+      } else if (diagnostic.success_rate === 0) {
+        diagnosticText = "Every trial fails for this interface, so there is no within-method success-to-failure transition to correlate with velocity error.";
+      } else if (diagnostic.success_rate === 1) {
+        diagnosticText = "Every trial succeeds for this interface, so there is no within-method transition to attribute to velocity error.";
+      } else {
+        diagnosticText = "Velocity error does not vary enough here to estimate a within-method association with failure.";
+      }
+    }
+    byId("diagnostic-visual").innerHTML = `<div class="threshold-reader">
+      <div class="threshold-axis-controls" role="group" aria-label="Choose feedback stress">${axisControls}</div>
+      <div class="threshold-takeaway"><span>Fixed decision rule</span><p>Reliable means the lower 95% Wilson bound is at least ${Math.round(100 * study.reliability_target)}%. Unreliable means the upper bound is below it. ${escapeText(boundaryText)}</p></div>
+      ${closedLoopThresholdChart(study, state.closedLoopAxis)}
+      <div class="threshold-method-controls" role="group" aria-label="Inspect one state or port interface">${methodControls}</div>
+      ${diagnosticText ? `<div class="diagnostic-takeaway"><span>Failure attribution</span><p>${escapeText(diagnosticText)}</p></div>` : ""}
+      <div class="threshold-table"><table><caption>${escapeText(CLOSED_LOOP_METHODS[state.closedLoopMethod]?.label || state.closedLoopMethod)}: outcome and interface error</caption><thead><tr><th>Stress</th><th>Success [95%]</th><th>Decision</th><th>Terminal-error regret</th><th>Velocity error</th></tr></thead><tbody>${selectedRows}</tbody></table></div>
+      <details class="attribution-secondary"><summary>View the categorical failure overview</summary>${closedLoopMatrix(study)}</details>
+    </div>`;
+    document.querySelectorAll("[data-threshold-axis]").forEach((button) => button.addEventListener("click", () => { state.closedLoopAxis = button.dataset.thresholdAxis; renderClosedLoopDiagnostic(study); }));
+    document.querySelectorAll("[data-threshold-method]").forEach((button) => button.addEventListener("click", () => { state.closedLoopMethod = button.dataset.thresholdMethod; renderClosedLoopDiagnostic(study); }));
+    return;
+  }
   if (study.success_matrix) {
-    const methodLabels = {
-      casimir_true: "Oracle state",
-      casimir_qonly_fd: "Finite difference",
-      casimir_qonly_map: "MAP residual",
-      casimir_qonly_fdtcn: "FD-TCN observer",
-      casimir_qonly_phast: "Current q-only PHAST",
-    };
-    const stressorLabels = {
-      nominal: "nominal",
-      noise: "noise",
-      delay: "delay",
-      dropout: "dropout",
-      actuator_loss: "actuator loss",
-      combined: "combined",
-    };
-    const headers = `<div class="matrix-label">success rate</div>${study.stressors.map((item) => `<div class="matrix-label">${escapeText(stressorLabels[item] || item)}</div>`).join("")}`;
-    const rows = study.methods.map((method, rowIndex) => `<div class="matrix-label">${escapeText(methodLabels[method] || method)}</div>${study.stressors.map((_, columnIndex) => {
-      const value = study.success_matrix[rowIndex][columnIndex];
-      return `<div class="matrix-value" style="--heat-fill:${diagnosticHeatFill(value, 0, 1, true)};background:var(--heat-fill)"><strong>${Math.round(value * 100)}%</strong><small>100 trials</small></div>`;
-    }).join("")}`).join("");
-    byId("diagnostic-visual").innerHTML = `<div class="diagnostic-matrix-wrap closed-loop-wrap"><p class="diagnostic-matrix-note">Success aggregated over four initial-condition regimes. Each cell is an observed result, not an architectural capability mark.</p><div class="diagnostic-matrix diagnostic-matrix-wide" style="--diagnostic-cols:${study.stressors.length}">${headers}${rows}</div></div>`;
+    byId("diagnostic-visual").innerHTML = closedLoopMatrix(study);
     return;
   }
   const series = [
@@ -1677,6 +1908,16 @@ function renderClosedLoopDiagnostic(study) {
   const legend = series.map((item) => `<span style="--bar-color:${item.color}">${item.label}</span>`).join("");
   const groups = study.noise_results.map((row) => `<div class="diagnostic-bar-group">${series.map((item) => `<div class="diagnostic-bar" style="--bar-value:${row[item.key]};--bar-color:${item.color}"><strong>${Math.round(row[item.key] * 100)}%</strong></div>`).join("")}<span>noise sigma ${row.sigma}</span></div>`).join("");
   byId("diagnostic-visual").innerHTML = `<div class="diagnostic-bars"><div class="diagnostic-bar-legend">${legend}</div><div class="diagnostic-bar-groups">${groups}</div></div>`;
+}
+
+function closedLoopMatrix(study) {
+  const stressorLabels = { nominal: "nominal", noise: "noise", delay: "delay", dropout: "dropout", actuator_loss: "actuator loss", combined: "combined" };
+  const headers = `<div class="matrix-label">success rate</div>${study.stressors.map((item) => `<div class="matrix-label">${escapeText(stressorLabels[item] || item)}</div>`).join("")}`;
+  const rows = study.methods.map((method, rowIndex) => `<div class="matrix-label">${escapeText(CLOSED_LOOP_METHODS[method]?.label || method)}</div>${study.stressors.map((_, columnIndex) => {
+    const value = study.success_matrix[rowIndex][columnIndex];
+    return `<div class="matrix-value" style="--heat-fill:${diagnosticHeatFill(value, 0, 1, true)};background:var(--heat-fill)"><strong>${Math.round(value * 100)}%</strong><small>100 trials</small></div>`;
+  }).join("")}`).join("");
+  return `<div class="diagnostic-matrix-wrap closed-loop-wrap"><p class="diagnostic-matrix-note">Success aggregated over four initial-condition regimes. Each cell is an observed result.</p><div class="diagnostic-matrix diagnostic-matrix-wide" style="--diagnostic-cols:${study.stressors.length}">${headers}${rows}</div></div>`;
 }
 
 function renderDiagnosticStudy() {
@@ -1863,7 +2104,7 @@ async function init() {
   const [response, scalingResponse, diagnosticResponse] = await Promise.all([
     fetch("data/comparison.json?v=8"),
     fetch("data/scaling.json?v=1"),
-    fetch("data/diagnostic-program.json?v=4"),
+    fetch("data/diagnostic-program.json?v=7"),
   ]);
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   if (!scalingResponse.ok) throw new Error(`Could not load scaling data (${scalingResponse.status})`);

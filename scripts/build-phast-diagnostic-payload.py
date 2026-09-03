@@ -409,25 +409,97 @@ def manifest_status(path: Path, expected: int) -> dict[str, Any]:
     return {"complete": complete, "expected": expected, "status": str(manifest.get("status", "unknown"))}
 
 
-def sequential_matrix(root: Path, profile: str):
+def sequential_study(root: Path, profile: str):
     path = root / f"results/sequential_diagnostic/{profile}/summary.json"
     if not path.is_file():
         return None
     payload = read_json(path)
+    runner_path = root / "scripts/run_phast_sequential_diagnostic.py"
+    if (
+        not runner_path.is_file()
+        or payload.get("provenance", {}).get("script_hash") != sha256(runner_path)
+    ):
+        return None
     environments = [item["id"] for item in payload["environments"]]
-    cells = [item for item in payload["summary"]["cells"] if item["arm"] == "finetune" and item["seen"]]
+    cells = payload["summary"]["cells"]
+    arms = list(payload["arms"])
     stages = sorted({int(item["stage"]) for item in cells})
-    matrix = []
-    for stage in stages:
-        row = []
-        for env_index, environment in enumerate(environments):
-            if env_index > stage:
-                row.append(None)
-                continue
-            cell = next(item for item in cells if int(item["stage"]) == stage and item["evaluation_environment"] == environment)
-            row.append(float(cell["forecast_error"]["mean"]))
-        matrix.append(row)
-    return environments, [f"after {environments[stage]}" for stage in stages], matrix
+    matrices = {}
+    final_stage = max(stages)
+    arm_summary = []
+    random_phase_mse = math.pi**2 / 3.0
+    for arm in arms:
+        arm_cells = [item for item in cells if item["arm"] == arm]
+        matrix = []
+        for stage in stages:
+            row = []
+            for env_index, environment in enumerate(environments):
+                cell = next(
+                    item for item in arm_cells
+                    if int(item["stage"]) == stage and item["evaluation_environment"] == environment
+                )
+                row.append({
+                    "seen": env_index <= stage,
+                    "h100_mean": cell["forecast_error"]["mean"],
+                    "h100_std": cell["forecast_error"]["std"],
+                    "one_step_mean": cell["next_step_mse"]["mean"],
+                    "n": cell["forecast_error"]["n"],
+                })
+            matrix.append(row)
+        matrices[arm] = matrix
+        final_cells = [item for item in arm_cells if int(item["stage"]) == final_stage]
+        prior = [item for item in final_cells if item["evaluation_environment"] != environments[-1]]
+        current = next(item for item in final_cells if item["evaluation_environment"] == environments[-1])
+        final_values = [float(item["forecast_error"]["mean"]) for item in final_cells]
+        prior_values = [float(item["forecast_error"]["mean"]) for item in prior]
+        arm_summary.append({
+            "arm": arm,
+            "current_h100": float(current["forecast_error"]["mean"]),
+            "retained_h100": statistics.fmean(prior_values),
+            "worst_h100": max(final_values),
+            "mean_h100": statistics.fmean(final_values),
+            "one_step": statistics.fmean(float(item["next_step_mse"]["mean"]) for item in final_cells),
+        })
+
+    unsupported = []
+    for seed in payload.get("model_seeds", []):
+        seed_path = path.parent / f"seed_{seed}.json"
+        if not seed_path.is_file():
+            continue
+        for item in read_json(seed_path).get("training", []):
+            if item.get("supported") is False:
+                key = (str(item["arm"]), int(item["stage"]), str(item["environment"]), str(item.get("policy", "")))
+                if key not in unsupported:
+                    unsupported.append(key)
+    final_cells = [item for item in cells if int(item["stage"]) == final_stage]
+    h100_values = [float(item["forecast_error"]["mean"]) for item in final_cells]
+    one_step_values = [float(item["next_step_mse"]["mean"]) for item in final_cells]
+    forgetting = [
+        float(item["absolute_forgetting"])
+        for item in payload["summary"].get("forgetting", [])
+        if item.get("absolute_forgetting") is not None
+    ]
+    return {
+        "environments": environments,
+        "rows": [f"after {environments[stage]}" for stage in stages],
+        "arms": arms,
+        "matrices": matrices,
+        "arm_summary": arm_summary,
+        "competence_gate": {
+            "random_phase_mse": random_phase_mse,
+            "h100_min": min(h100_values),
+            "h100_max": max(h100_values),
+            "one_step_min": min(one_step_values),
+            "one_step_max": max(one_step_values),
+            "max_absolute_forgetting": max(forgetting) if forgetting else None,
+            "positive_forgetting_cells": sum(value > 0 for value in forgetting),
+            "forgetting_cells": len(forgetting),
+        },
+        "unsupported": [
+            {"arm": arm, "stage": stage, "environment": environment, "policy": policy}
+            for arm, stage, environment, policy in unsupported
+        ],
+    }
 
 
 def action_contract_audit(root: Path):
@@ -474,6 +546,72 @@ def closed_loop_matrix(root: Path):
     }
 
 
+def closed_loop_thresholds(root: Path):
+    path = root / "results/closed_loop_diagnostic/thresholds/summary.json"
+    manifest_path = path.parent / "manifest.json"
+    runner_path = root / "scripts/run_phast_closed_loop_diagnostic.py"
+    if not path.is_file() or not manifest_path.is_file() or not runner_path.is_file():
+        return None
+    manifest = read_json(manifest_path)
+    if (
+        manifest.get("status") != "complete"
+        or manifest.get("script_sha256") != sha256(runner_path)
+    ):
+        return None
+    payload = read_json(path)
+    threshold = payload.get("thresholds")
+    if not threshold:
+        return None
+    diagnostics = []
+    for method in payload["settings"]["methods"]:
+        rows = [row for row in payload["rows"] if row["method"] == method]
+        successes = [bool(row["success"]) for row in rows]
+        failures = [0.0 if success else 1.0 for success in successes]
+        velocity_errors = [float(row["velocity_error_mean"]) for row in rows]
+        final_regrets = [float(row["final_error_regret"]) for row in rows]
+
+        def selected_mean(values: list[float], keep_success: bool) -> float | None:
+            selected = [value for value, success in zip(values, successes) if success is keep_success]
+            return statistics.fmean(selected) if selected else None
+
+        failure_rate = statistics.fmean(failures)
+        velocity_mean = statistics.fmean(velocity_errors)
+        covariance = statistics.fmean(
+            (velocity - velocity_mean) * (failure - failure_rate)
+            for velocity, failure in zip(velocity_errors, failures)
+        )
+        velocity_variance = statistics.fmean(
+            (velocity - velocity_mean) ** 2 for velocity in velocity_errors
+        )
+        failure_variance = statistics.fmean(
+            (failure - failure_rate) ** 2 for failure in failures
+        )
+        correlation = (
+            covariance / math.sqrt(velocity_variance * failure_variance)
+            if velocity_variance > 0 and failure_variance > 0
+            else None
+        )
+        diagnostics.append({
+            "method": method,
+            "n": len(rows),
+            "success_rate": statistics.fmean(float(success) for success in successes),
+            "velocity_error_success": selected_mean(velocity_errors, True),
+            "velocity_error_failure": selected_mean(velocity_errors, False),
+            "velocity_failure_correlation": correlation,
+            "final_regret_success": selected_mean(final_regrets, True),
+            "final_regret_failure": selected_mean(final_regrets, False),
+        })
+    return {
+        "threshold_source": "results/closed_loop_diagnostic/thresholds/summary.json",
+        "threshold_axes": list(payload["settings"]["sweeps"]),
+        "reliability_target": float(payload["settings"]["reliability_target"]),
+        "threshold_cells": threshold["cells"],
+        "threshold_boundaries": threshold["boundaries"],
+        "threshold_trial_runs": len(payload["rows"]),
+        "decision_diagnostics": diagnostics,
+    }
+
+
 def stochastic_attribution_study(root: Path):
     path = root / "results/stochastic_attribution/full/web.json"
     if not path.is_file():
@@ -489,7 +627,7 @@ def stochastic_attribution_study(root: Path):
         for cell in cells.values()
     )
     reference_cell = next(iter(cells.values()))
-    return {
+    study = {
         "id": "uncertainty",
         "label": "Uncertainty",
         "status": "Mechanistic result",
@@ -538,6 +676,159 @@ def stochastic_attribution_study(root: Path):
             "covariance_drop": float(intervention["external_source_relative_covariance_drop"]),
         },
     }
+
+    calibration_path = root / "results/stochastic_calibration/full/summary.json"
+    if not calibration_path.is_file():
+        return study
+    calibration = read_json(calibration_path)
+    if calibration.get("status") != "complete":
+        return study
+
+    method_ids = ("initial_state", "fdt", "oracle")
+    calibration_cells = []
+    energy_wins = 0
+    coverage_wins = 0
+    long_energy_wins = 0
+    long_coverage_wins = 0
+    stochastic_cells = 0
+    long_cells = 0
+    nominal_cells = 0
+    for condition in calibration["conditions"]:
+        methods = {
+            method: {
+                "metrics": [
+                    {
+                        "horizon": int(row["horizon"]),
+                        "energy_score": row["energy_score"],
+                        "coverage": {"0.8": row["coverage"]["0.8"]},
+                        "width": {"0.8": row["width"]["0.8"]},
+                    }
+                    for row in condition["methods"][method]["metrics"]
+                ],
+                "fan": [
+                    {
+                        "horizon": int(row["horizon"]),
+                        "truth": float(row["truth"]),
+                        "mean": float(row["mean"]),
+                        "band": row["bands"]["0.8"],
+                    }
+                    for row in condition["methods"][method]["fan"]
+                ],
+            }
+            for method in method_ids
+        }
+        calibration_cells.append({
+            "id": condition["id"],
+            "process_temperature": float(condition["process_temperature"]),
+            "observation_noise": float(condition["observation_noise"]),
+            "methods": methods,
+        })
+        if float(condition["process_temperature"]) <= 0:
+            continue
+        initial_metrics = {
+            int(row["horizon"]): row
+            for row in condition["methods"]["initial_state"]["metrics"]
+        }
+        fdt_metrics = {
+            int(row["horizon"]): row
+            for row in condition["methods"]["fdt"]["metrics"]
+        }
+        for horizon, initial_row in initial_metrics.items():
+            fdt_row = fdt_metrics[horizon]
+            stochastic_cells += 1
+            energy_better = (
+                float(fdt_row["energy_score"]["mean"])
+                < float(initial_row["energy_score"]["mean"])
+            )
+            coverage_better = abs(
+                float(fdt_row["coverage"]["0.8"]["mean"]) - 0.8
+            ) < abs(float(initial_row["coverage"]["0.8"]["mean"]) - 0.8)
+            energy_wins += int(energy_better)
+            coverage_wins += int(coverage_better)
+            nominal_cells += int(
+                0.75 <= float(fdt_row["coverage"]["0.8"]["mean"]) <= 0.85
+            )
+            if horizon >= 25:
+                long_cells += 1
+                long_energy_wins += int(energy_better)
+                long_coverage_wins += int(coverage_better)
+
+    study.update({
+        "status": "Five-seed calibration diagnostic",
+        "source": "results/stochastic_calibration/full/summary.json + stochastic attribution",
+        "question": "When process and observation noise increase, does stochastic PHAST produce useful calibrated futures?",
+        "answer": (
+            f"Adding the FDT process channel improves the circular energy score in "
+            f"{long_energy_wins}/{long_cells} stochastic cells at H>=25 and moves 80% "
+            f"coverage closer to nominal in {long_coverage_wins}/{long_cells}. It is still "
+            f"calibrated within +/-0.05 in only {nominal_cells}/{stochastic_cells} tested "
+            "stochastic horizon cells, so the current model remains overconfident."
+        ),
+        "not_established": (
+            "Temperature is supplied rather than learned, the observer ensemble is empirical, "
+            "and the study uses one passive pendulum plant and one data seed. The matched-law "
+            "experiment also shows that observational transitions alone do not identify whether "
+            "noise is thermal or externally injected."
+        ),
+        "motivates": (
+            "Joint state-and-parameter filtering, structured covariance transport, and "
+            "interventions that distinguish physical noise sources before stochastic PHAST is "
+            "used for reliable long-range decisions."
+        ),
+        "protocol": {
+            "input": "Noisy position-only histories evaluated with frozen bounded PHAST-PARTIAL checkpoints",
+            "change": "Process temperature, observation-noise standard deviation, and uncertainty propagation contract",
+            "fixed": "Plant, q-only context, five model seeds, 128 test trajectories, 64 particles, and horizons through H=200",
+            "readout": "Circular energy score, shortest-arc 80% coverage and width, plus an oracle stochastic simulator",
+        },
+        "evidence": (
+            "Five frozen checkpoints x nine noise cells x 128 held-out trajectories x 64 "
+            "particles, evaluated at seven horizons. Fan charts use one declared representative "
+            "checkpoint; score and coverage curves aggregate all five."
+        ),
+        "execution": {
+            "summary": (
+                "The full calibration grid and the source-attribution intervention are complete. "
+                "The oracle stochastic simulator provides the calibration sanity check."
+            ),
+            "runs": [
+                {
+                    "complete": int(calibration["completed_model_seeds"]),
+                    "expected": int(calibration["expected_model_seeds"]),
+                    "status": calibration["status"],
+                },
+                {"complete": 4, "expected": 4, "status": "complete"},
+            ],
+        },
+        "calibration": {
+            "coverage_level": 0.8,
+            "coverage_tolerance": 0.05,
+            "model_seeds": int(calibration["completed_model_seeds"]),
+            "test_trajectories": 128,
+            "particles": 64,
+            "horizons": [1, 5, 10, 25, 50, 100, 200],
+            "method_labels": {
+                "initial_state": "Initial-state ensemble",
+                "fdt": "PHAST + FDT",
+                "oracle": "Oracle stochastic plant",
+            },
+            "summary": {
+                "energy_wins": energy_wins,
+                "coverage_wins": coverage_wins,
+                "stochastic_cells": stochastic_cells,
+                "long_energy_wins": long_energy_wins,
+                "long_coverage_wins": long_coverage_wins,
+                "long_cells": long_cells,
+                "nominal_cells": nominal_cells,
+            },
+            "conditions": calibration_cells,
+            "fan_note": (
+                "Representative held-out trajectory from model seed 0; bands are shortest "
+                "circular predictive arcs, not across-seed error bars."
+            ),
+        },
+    })
+    return study
 
 
 def main() -> None:
@@ -686,16 +977,29 @@ def main() -> None:
         })
 
     continual = studies["continual"]
+    for stale_key in ("matrix", "matrices", "arm_summary", "competence_gate", "unsupported"):
+        continual.pop(stale_key, None)
     full_sequential = root / "results/sequential_diagnostic/full/summary.json"
     sequential_profile = "full" if full_sequential.is_file() else "smoke"
-    sequential = sequential_matrix(root, sequential_profile)
-    if sequential_profile == "full":
+    sequential = sequential_study(root, sequential_profile)
+    if sequential_profile == "full" and sequential is not None:
         sequential_summary = read_json(full_sequential)
         completed = int(sequential_summary.get("completed_seeds", 0))
         expected = int(sequential_summary.get("expected_seeds", 5))
         continual["execution"] = {
-            "summary": f"One full sequential seed is complete ({completed}/{expected}). It does not expose a retention-adaptation conflict; four seeds remain before a scientific conclusion.",
-            "runs": [{"complete": completed, "expected": expected, "status": "partial"}],
+            "summary": f"The controlled-rollout sequential study has {completed}/{expected} current five-seed results.",
+            "runs": [{
+                "complete": completed,
+                "expected": expected,
+                "status": "complete" if completed == expected else "partial",
+            }],
+        }
+    elif sequential_profile == "full":
+        continual["status"] = "Five-seed run in progress"
+        continual["source"] = "PHAST package · controlled-rollout contract"
+        continual["execution"] = {
+            "summary": "The previous one-step fallback was invalidated. Five corrected seeds are running with held-out future commands and H=100 state forecasts.",
+            "runs": [{"complete": 0, "expected": 5, "status": "running"}],
         }
     else:
         continual["execution"] = {
@@ -703,20 +1007,65 @@ def main() -> None:
             "runs": [manifest_status(root / "results/sequential_diagnostic/smoke/manifest.json", 1)],
         }
     if sequential is not None:
-        columns, rows, matrix = sequential
+        completed = int(read_json(full_sequential).get("completed_seeds", 0)) if sequential_profile == "full" else 1
+        expected = int(read_json(full_sequential).get("expected_seeds", 5)) if sequential_profile == "full" else 1
         continual.update({
-            "status": "One full seed" if sequential_profile == "full" else "Smoke validated",
-            "columns": columns,
-            "rows": rows,
-            "matrix": matrix,
+            "status": "Five-seed diagnostic" if completed == expected and sequential_profile == "full" else (
+                f"{completed}/{expected} seeds" if sequential_profile == "full" else "Smoke validated"
+            ),
+            "columns": sequential["environments"],
+            "rows": sequential["rows"],
+            "arms": sequential["arms"],
+            "matrices": sequential["matrices"],
+            "arm_summary": sequential["arm_summary"],
+            "competence_gate": sequential["competence_gate"],
+            "unsupported": sequential["unsupported"],
             "matrix_arm": "unrestricted fine-tuning",
-            "matrix_metric": "forecast MSE",
+            "matrix_metric": "controlled H=100 wrapped-angle MSE",
         })
+        if completed == expected and sequential_profile == "full":
+            gate = sequential["competence_gate"]
+            continual.update({
+                "answer": (
+                    "Not yet: the experiment fails the long-horizon competence prerequisite before it "
+                    "reveals a retention-adaptation tradeoff. Final H=100 wrapped MSE spans "
+                    f"{gate['h100_min']:.2f}-{gate['h100_max']:.2f}, or "
+                    f"{100 * gate['h100_min'] / gate['random_phase_mse']:.0f}-"
+                    f"{100 * gate['h100_max'] / gate['random_phase_mse']:.0f}% of the uniform "
+                    "random-phase reference, despite one-step MSE near 1e-4."
+                ),
+                "not_established": (
+                    "Near-zero measured forgetting is not evidence of successful continual learning when "
+                    "the separate experts and every ordinary update rule already lose phase over H=100. "
+                    "The current PHAST class also exposes no trainable input-map parameter, so the named-block "
+                    "actuation update is unsupported rather than a failed plasticity method."
+                ),
+                "motivates": (
+                    "First establish controlled-rollout competence, persist a learnable declared input map, "
+                    "and rerun channel recovery. Only then use the same matrix to decide whether selective "
+                    "plasticity, replay, or model growth is required."
+                ),
+                "evidence": (
+                    "Five model seeds, four sequential physical environments, six update rules, and "
+                    "controlled H=100 forecasts with the held-out future command sequence."
+                ),
+                "protocol": {
+                    "input": "Position histories plus the held-out future command sequence",
+                    "change": "Damping, then inertia, then the actuation map",
+                    "fixed": "Architecture, data and update budget, evaluation sets, environment order, and five model seeds",
+                    "readout": "After-each-environment H=100 wrapped error, one-step MSE, forgetting, and interface support",
+                },
+            })
     interface_audit = action_contract_audit(root)
     if interface_audit is not None:
         continual["action_contract"] = interface_audit
 
     closed_loop = studies["closed-loop"]
+    for stale_key in (
+        "threshold_source", "threshold_axes", "reliability_target",
+        "threshold_cells", "threshold_boundaries", "threshold_trial_runs", "decision_diagnostics",
+    ):
+        closed_loop.pop(stale_key, None)
     full_closed_loop = closed_loop_matrix(root)
     if full_closed_loop is not None:
         closed_loop.update(full_closed_loop)
@@ -731,6 +1080,45 @@ def main() -> None:
                 "runs": [manifest_status(root / "results/closed_loop_diagnostic/full/manifest.json", 3000)],
             },
         })
+        thresholds = closed_loop_thresholds(root)
+        if thresholds is not None:
+            closed_loop.update(thresholds)
+            closed_loop.update({
+                "status": "Failure boundaries",
+                "source": thresholds["threshold_source"],
+                "answer": (
+                    "The present q-only PHAST interface is already unreliable under nominal feedback, "
+                    "so it has no positive robustness margin in this controller. The MAP smoother remains "
+                    "resolved reliable through noise sigma=0.01 and delay 5, becomes resolved unreliable "
+                    "at noise sigma=0.03 and delay 8, and remains reliable through 50% sample-hold dropout. "
+                    "Failure at actuator gain 0.6 is shared by the oracle and therefore reflects control "
+                    "authority, not only state estimation."
+                ),
+                "not_established": (
+                    "Because every q-only PHAST trial fails, this sweep cannot estimate a within-PHAST "
+                    "port-error-to-failure transition. It does not test a redesigned observer, calibrated "
+                    "uncertainty, constraint violations, an energy-ledger residual, or the combined-stressor "
+                    "grid around the measured one-factor boundaries."
+                ),
+                "motivates": (
+                    "Pass nominal closed-loop control with a corrected state/port interface before testing "
+                    "noise robustness or controller co-design; keep actuator authority separate from observer failure."
+                ),
+                "evidence": (
+                    f"{thresholds['threshold_trial_runs']:,} repeated feedback trials across four "
+                    "one-factor sweeps, five state/port estimators, and four initial-condition regimes."
+                ),
+                "protocol": {
+                    "input": "The same pendulum and Energy-Casimir controller across matched trial seeds",
+                    "change": "One of measurement noise, delay, dropout probability, or realized actuator gain",
+                    "fixed": "Plant parameters, controller gains, action budget, target, horizon, and success rule",
+                    "readout": "Success with Wilson intervals, paired terminal-error regret, velocity error, and Casimir drift",
+                },
+                "execution": {
+                    "summary": "The categorical diagnosis and continuous one-factor reliability sweeps are complete.",
+                    "runs": [manifest_status(root / "results/closed_loop_diagnostic/thresholds/manifest.json", thresholds["threshold_trial_runs"])],
+                },
+            })
     else:
         closed_loop["execution"] = {
             "summary": "The 60-path stress smoke completed across five estimators and six feedback conditions.",
@@ -759,6 +1147,7 @@ def main() -> None:
         root / "results/closed_loop_diagnostic/full/summary.json",
         root / "results/action_interface/isaac_action_contract.json",
         root / "results/stochastic_attribution/full/web.json",
+        root / "results/stochastic_calibration/full/summary.json",
     ]
     payload["generated"] = {
         "utc": datetime.now(timezone.utc).isoformat(),
