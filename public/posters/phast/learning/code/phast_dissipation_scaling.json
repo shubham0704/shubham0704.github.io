@@ -3,7 +3,7 @@
   "title": "When does PHAST recover dissipation?",
   "question": "How do excitation coverage, data volume, model capacity, and physical dimension affect forecasting and damping recovery from position histories?",
   "profiles": {
-    "smoke": {
+        "smoke": {
       "systems": ["windy_pendulum"],
       "excitation_levels": ["narrow", "broad"],
       "n_train_values": [32],
@@ -31,9 +31,161 @@
       "validation_interval": 1,
       "early_stopping_patience": null,
       "save_checkpoints": false,
-      "force_cpu": true
-    },
-    "pilot": {
+            "force_cpu": true
+        },
+        "diagnostic_smoke": {
+            "systems": [
+                "windy_pendulum"
+            ],
+            "excitation_levels": [
+                "narrow",
+                "broad"
+            ],
+            "n_train_values": [
+                32
+            ],
+            "seq_len_values": [
+                120,
+                160
+            ],
+            "hidden_dims": [
+                32
+            ],
+            "variants": [
+                "phast_partial_bounded",
+                "phast_partial"
+            ],
+            "epochs": 2,
+            "seeds": 1,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 8,
+            "n_test": 8,
+            "seq_len": 120,
+            "batch_size": 16,
+            "n_layers": 1,
+            "learning_rate": 0.001,
+            "rollout_horizons": [
+                25,
+                100
+            ],
+            "rollout_context": 10,
+            "rollout_n": 8,
+            "validation_interval": 1,
+            "early_stopping_patience": null,
+            "save_checkpoints": false,
+            "force_cpu": true
+        },
+        "diagnostic_surface": {
+            "systems": [
+                "windy_pendulum"
+            ],
+            "excitation_levels": [
+                "narrow",
+                "broad"
+            ],
+            "n_train_values": [
+                32,
+                64,
+                128,
+                256,
+                512
+            ],
+            "seq_len_values": [
+                120,
+                160,
+                240,
+                320
+            ],
+            "hidden_dims": [
+                64
+            ],
+            "variants": [
+                "phast_partial_bounded",
+                "phast_partial"
+            ],
+            "epochs": 100,
+            "seeds": 5,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 128,
+            "n_test": 200,
+            "seq_len": 120,
+            "batch_size": 64,
+            "n_layers": 2,
+            "learning_rate": 0.001,
+            "rollout_horizons": [
+                10,
+                25,
+                50,
+                100
+            ],
+            "rollout_context": 10,
+            "rollout_n": 200,
+            "validation_interval": 5,
+            "early_stopping_patience": 15,
+            "save_checkpoints": true,
+            "nested_split_protocol": true,
+            "protocol_version": 2,
+            "fixed_eval_seq_len": 320,
+            "split_seeds": {"train": 42, "val": 1042, "test": 2042},
+            "force_cpu": true
+        },
+        "diagnostic_forecast_smoke": {
+            "systems": ["windy_pendulum"],
+            "excitation_levels": ["narrow", "broad"],
+            "n_train_values": [32],
+            "seq_len_values": [120],
+            "hidden_dims": [32],
+            "variants": ["phast_unknown", "phnn_observer", "s5"],
+            "epochs": 2,
+            "seeds": 1,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 8,
+            "n_test": 8,
+            "seq_len": 120,
+            "batch_size": 16,
+            "n_layers": 1,
+            "learning_rate": 0.001,
+            "rollout_horizons": [25, 100],
+            "rollout_context": 10,
+            "rollout_n": 8,
+            "validation_interval": 1,
+            "early_stopping_patience": null,
+            "save_checkpoints": false,
+            "force_cpu": true
+        },
+        "diagnostic_forecast_surface": {
+            "systems": ["windy_pendulum"],
+            "excitation_levels": ["narrow", "broad"],
+            "n_train_values": [32, 64, 128, 256, 512],
+            "seq_len_values": [120, 160, 240, 320],
+            "hidden_dims": [64],
+            "variants": ["phast_unknown", "phnn_observer", "s5"],
+            "epochs": 100,
+            "seeds": 5,
+            "seed_offset": 0,
+            "data_seed": 42,
+            "n_val": 128,
+            "n_test": 200,
+            "seq_len": 120,
+            "batch_size": 64,
+            "n_layers": 2,
+            "learning_rate": 0.001,
+            "rollout_horizons": [10, 25, 50, 100],
+            "rollout_context": 10,
+            "rollout_n": 200,
+            "validation_interval": 5,
+            "early_stopping_patience": 15,
+            "save_checkpoints": true,
+            "nested_split_protocol": true,
+            "protocol_version": 2,
+            "fixed_eval_seq_len": 320,
+            "split_seeds": {"train": 42, "val": 1042, "test": 2042},
+            "force_cpu": true
+        },
+        "pilot": {
       "systems": ["windy_pendulum"],
       "excitation_levels": ["narrow", "broad"],
       "n_train_values": [64, 256],

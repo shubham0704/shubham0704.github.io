@@ -28,6 +28,7 @@ DEFAULT_SEQUENCE_ROOT = REPO_ROOT / "results" / "reviewer_studies" / "full" / "c
 DEFAULT_OUTPUT = REPO_ROOT / "results" / "phast_learning_gallery" / "comparison.json"
 HORIZON = 100
 CONTEXT = 10
+MODEL_SEEDS = (42, 43, 44, 45, 46)
 MODEL_NAMES = (
     "phast_unknown_qonly",
     "hnn_observer_qonly",
@@ -388,6 +389,20 @@ def _wrapped_error(pred: torch.Tensor, truth: torch.Tensor, periodic: tuple[int,
     return error
 
 
+def _trajectory_summary(
+    predictions: torch.Tensor,
+    truth: torch.Tensor,
+    periodic: tuple[int, ...],
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Summarize seed predictions after placing angles on the truth's branch."""
+    aligned = predictions.clone()
+    if periodic:
+        indices = list(periodic)
+        delta = predictions[..., indices] - truth[..., indices]
+        aligned[..., indices] = truth[..., indices] + torch.atan2(torch.sin(delta), torch.cos(delta))
+    return aligned.mean(dim=0), aligned.std(dim=0, unbiased=False)
+
+
 def _aggregate(run_dir: Path, model_name: str, metric: str) -> dict[str, Any]:
     payload = json.loads((run_dir / "results.json").read_text(encoding="utf-8"))
     rows = payload[model_name]
@@ -526,41 +541,67 @@ def export(run_root: Path, sequence_root: Path, *, seed: int) -> dict[str, Any]:
         test = _test_split(phast_dir, env_name=env_name)
         states = test["states"].detach().cpu()
         state_dim = int(states.shape[-1])
-        loaded: dict[str, tuple[torch.nn.Module, Path, str]] = {
-            name: _load_model(_run_dir(run_root, env_name, name), name, env_name=env_name, state_dim=state_dim, seed=seed)
+        run_specs: dict[str, tuple[Path, str]] = {
+            name: (_run_dir(run_root, env_name, name), "matched structured, 100 epochs")
             for name in MODEL_NAMES
-        }
-        loaded = {
-            name: (model, _run_dir(run_root, env_name, name), "matched structured, 100 epochs")
-            for name, model in loaded.items()
         }
         for name in SEQUENCE_MODELS:
             sequence_dir = _run_dir(sequence_root, env_name, name)
-            loaded[name] = (
-                _load_model(sequence_dir, name, env_name=env_name, state_dim=state_dim, seed=seed),
-                sequence_dir,
-                "matched sequence, 100 epochs",
-            )
-        trajectory_index = _median_index(loaded[MODEL_NAMES[0]][0], states, tuple(spec["periodic"]))
+            run_specs[name] = (sequence_dir, "matched sequence, 100 epochs")
+        loaded = {
+            name: {
+                model_seed: _load_model(
+                    run_dir,
+                    name,
+                    env_name=env_name,
+                    state_dim=state_dim,
+                    seed=model_seed,
+                )
+                for model_seed in MODEL_SEEDS
+            }
+            for name, (run_dir, _) in run_specs.items()
+        }
+        if seed not in MODEL_SEEDS:
+            raise ValueError(f"Illustrative seed {seed} is not in exported model seeds {MODEL_SEEDS}")
+        trajectory_index = _median_index(loaded[MODEL_NAMES[0]][seed], states, tuple(spec["periodic"]))
         context = states[trajectory_index : trajectory_index + 1, :CONTEXT]
         truth = states[trajectory_index, CONTEXT : CONTEXT + HORIZON]
         methods = []
-        for model_name, (model, run_dir, study_label) in loaded.items():
+        for model_name, seed_models in loaded.items():
+            run_dir, study_label = run_specs[model_name]
+            predictions = []
             with torch.no_grad():
-                prediction = autoregressive_rollout(model, context, n_steps=HORIZON)
+                for model_seed in MODEL_SEEDS:
+                    predictions.append(autoregressive_rollout(seed_models[model_seed], context, n_steps=HORIZON)[0])
+            prediction_stack = torch.stack(predictions)
+            prediction_mean, prediction_std = _trajectory_summary(
+                prediction_stack,
+                truth,
+                tuple(spec["periodic"]),
+            )
+            prediction = prediction_stack[MODEL_SEEDS.index(seed)]
+            model = seed_models[seed]
             native_state = _native_rollout(model, context, HORIZON)
             mechanism_diagnostics = _native_mechanism_diagnostics(model, native_state)
-            error_by_step = _wrapped_error(prediction[0], truth, tuple(spec["periodic"])).square().mean(dim=-1)
+            error_by_step_stack = _wrapped_error(
+                prediction_stack,
+                truth,
+                tuple(spec["periodic"]),
+            ).square().mean(dim=-1)
             methods.append({
                 "id": model_name,
                 "label": MODEL_LABELS[model_name],
-                "prediction": prediction[0].cpu().tolist(),
+                "prediction": prediction.cpu().tolist(),
+                "prediction_mean": prediction_mean.cpu().tolist(),
+                "prediction_std": prediction_std.cpu().tolist(),
                 "latent_state": None if native_state is None else native_state[0].cpu().tolist(),
                 "native_energy_change_normalized": _native_energy(model, native_state),
                 "native_dissipation_power": mechanism_diagnostics["dissipation_power"],
                 "native_damping_lambda_max": mechanism_diagnostics["damping_lambda_max"],
                 "native_energy_increase_steps": mechanism_diagnostics["energy_increase_steps"],
-                "error_by_step": error_by_step.cpu().tolist(),
+                "error_by_step": error_by_step_stack[MODEL_SEEDS.index(seed)].cpu().tolist(),
+                "error_by_step_mean": error_by_step_stack.mean(dim=0).cpu().tolist(),
+                "error_by_step_std": error_by_step_stack.std(dim=0, unbiased=False).cpu().tolist(),
                 "aggregate": _aggregate(run_dir, model_name, str(spec["metric"])),
                 "study": study_label,
                 "native_channels": {
@@ -598,13 +639,16 @@ def export(run_root: Path, sequence_root: Path, *, seed: int) -> dict[str, Any]:
             ],
         })
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "title": "How PHAST learns dissipative dynamics from position history",
         "information_contract": (
             "Every model receives the same K=10 position history and coordinate-domain chart. "
             "No model receives velocity, momentum, simulator phase state, or supplied V/M/D/G components."
         ),
-        "evaluation": "H=100 open-loop rollout; dataset seed 42; five model seeds; illustrative trajectory uses model seed 42.",
+        "evaluation": (
+            "H=100 open-loop rollout; dataset seed 42; model seeds 42-46. Forecast lines and bands summarize "
+            "all five models on one shared held-out trajectory; animations use model seed 42."
+        ),
         "models": [{"id": name, "label": MODEL_LABELS[name]} for name in (*MODEL_NAMES, *SEQUENCE_MODELS)],
         "table2_methods": list(TABLE2_METHODS),
         "mechanism_evidence": list(MECHANISM_EVIDENCE),

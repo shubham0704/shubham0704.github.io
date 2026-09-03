@@ -1,0 +1,5481 @@
+{
+  "generated": {
+    "sources": [
+      {
+        "path": "results/dissipation_scaling/diagnostic_smoke/summary.json",
+        "sha256": "701f95d736e2f0d66984136fcf10fa9fb6b88331b3871ae534e3e287def1ee85"
+      },
+      {
+        "path": "results/dissipation_scaling/diagnostic_forecast_smoke/summary.json",
+        "sha256": "303cf87eecaed5d4c6f57faa6989dcc4e9b284a4a4c244eb14e6edd70ec21f9e"
+      },
+      {
+        "path": "results/dissipation_scaling/diagnostic_surface/summary.json",
+        "sha256": "abd460b74a312d350c43ec7f8380086611cd4bcd81f06d0077ad34a4208422a6"
+      },
+      {
+        "path": "results/dissipation_scaling/diagnostic_forecast_surface/summary.json",
+        "sha256": "02e5bf99db6a894ed8f5c9f5034b942363ae222d6330acb2b8aa17dae89f8b12"
+      },
+      {
+        "path": "results/sequential_diagnostic/smoke/summary.json",
+        "sha256": "025d2571ad371d8392c9ebd2f73b1c2e8de61c116cd8d633d344c21ee5697153"
+      },
+      {
+        "path": "results/sequential_diagnostic/full/summary.json",
+        "sha256": "5bfbac58a6da9de8877f710bb5426af26d6ce4c419a8eae947466a3b22749864"
+      },
+      {
+        "path": "results/closed_loop_diagnostic/smoke/summary.json",
+        "sha256": "29cbacc5174170d5d0446f69a8e73882b5373cc06ef93a6ba1bc004ed2bed87b"
+      },
+      {
+        "path": "results/closed_loop_diagnostic/full/summary.json",
+        "sha256": "0919f819be09e09e5de245661a67f901cc669b7497b80d2c07fb5d8bb9f16b55"
+      },
+      {
+        "path": "results/action_interface/isaac_action_contract.json",
+        "sha256": "8d0440b1fd2ac6ee08f75bfbbf741ae879a8a96103868361c3614b8ddf69d866"
+      },
+      {
+        "path": "results/stochastic_attribution/full/web.json",
+        "sha256": "7d50706c9c78a0425e326fd79c8c24cd5d2a52e683ca00d24c83c1aebaccb1f3"
+      }
+    ],
+    "utc": "2026-09-03T03:34:38.373693+00:00"
+  },
+  "schema_version": 1,
+  "studies": [
+    {
+      "answer": "PHAST-UNKNOWN has the lowest mean forecast error in 40/40 matched cells, but its paired 95% seed interval resolves the advantage in 16/40. Bounded PHAST recovers more than a constant mean-damping law in 14/40 cells, while the spectral bound improves over the uncapped model in 40/40. Increasing N from 32 to 512 improves forecast in 8/8 and recovery in 8/8 fixed-T comparisons; increasing T from 120 to 320 degrades recovery in 10/10. At equal NT, more, shorter trajectories improve forecast in 12/16 and recovery in 16/16 comparisons.",
+      "evidence": "40 matched data cells across two motion ranges, five trajectory counts, and four trajectory lengths; five model seeds per method, fixed data seed 42, and the same full 320-sample validation and test trajectories in every cell.",
+      "execution": {
+        "runs": [
+          {
+            "complete": 8,
+            "expected": 8,
+            "profile": "diagnostic_smoke"
+          },
+          {
+            "complete": 6,
+            "expected": 6,
+            "profile": "diagnostic_forecast_smoke"
+          },
+          {
+            "complete": 80,
+            "expected": 80,
+            "profile": "diagnostic_surface"
+          },
+          {
+            "complete": 120,
+            "expected": 120,
+            "profile": "diagnostic_forecast_surface"
+          }
+        ],
+        "summary": "Both five-seed N by T surfaces are complete."
+      },
+      "id": "evidence",
+      "label": "Evidence",
+      "motivates": "Experiments that acquire information about the ambiguous physical direction rather than merely collecting more similar samples.",
+      "not_established": "A positive damping R-squared shows recovery relative to a constant mean law; it does not prove unique identification of potential, mass, and damping from positions. The study uses one passive plant and one data seed. Because epochs are fixed, the N effect is not isolated from optimizer updates or wall time; sampling-rate, forced-motion, dimensional, and general-identifiability claims remain open.",
+      "protocol": {
+        "change": "N training trajectories, T samples per trajectory, and starting-motion coverage",
+        "fixed": "Plant, data seed, full 320-sample validation/test trajectories, hidden width 64, 100 epochs, observer history, and H=100 evaluation",
+        "input": "Position histories from one fixed windy-pendulum plant",
+        "readout": "Strict UNKNOWN forecast winner and separate bounded-PHAST damping R-squared"
+      },
+      "question": "How do trajectory count, trajectory length, and motion coverage change forecast accuracy and damping recovery?",
+      "source": "PHAST package \u00b7 verified surface summaries",
+      "status": "Five-seed surface",
+      "surface": {
+        "cells": [
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.4915321707725525,
+                "std": 0.012744832195331872,
+                "training_seconds": {
+                  "mean": 21.71635099160485,
+                  "std": 0.4954882722246852
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8929873585700989,
+                "std": 0.2823162769984836,
+                "training_seconds": {
+                  "mean": 19.101039674598724,
+                  "std": 0.6123679282989337
+                }
+              },
+              "s5": {
+                "mean": 0.8724217534065246,
+                "std": 0.008562232351780734,
+                "training_seconds": {
+                  "mean": 13.02661684176419,
+                  "std": 0.24304491726907804
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.3541723258856525,
+                0.4076068393822918
+              ],
+              "classification": "improves",
+              "mean_gain": 0.38088958263397216,
+              "seed_differences": [
+                0.4143831133842468,
+                0.36037760972976685,
+                0.37093469500541687,
+                0.38951870799064636,
+                0.36923378705978394
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.774902651916596,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 4.103389263153076,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  44.18956656939677,
+                  65.06353263371298
+                ],
+                "classification": "improves",
+                "mean_gain": 54.62654960155487,
+                "seed_differences": [
+                  65.6433892250061,
+                  46.04973578453064,
+                  58.17869448661804,
+                  46.28649616241455,
+                  56.97443234920502
+                ]
+              },
+              "bounded": {
+                "mean": -0.36106483936309813,
+                "std": 0.15106400821400065,
+                "training_seconds": {
+                  "mean": 19.537765258247966,
+                  "std": 0.44047040021661016
+                }
+              },
+              "uncapped": {
+                "mean": -54.987614440917966,
+                "std": 7.5931184931845745,
+                "training_seconds": {
+                  "mean": 20.204948091786356,
+                  "std": 0.31840085487140235
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 3840,
+            "seq_len": 120
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.4944343328475952,
+                "std": 0.01363724882228946,
+                "training_seconds": {
+                  "mean": 38.305407466809264,
+                  "std": 2.6348925266959267
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8476649165153504,
+                "std": 0.21080099702605212,
+                "training_seconds": {
+                  "mean": 39.272058808617295,
+                  "std": 2.396142340932966
+                }
+              },
+              "s5": {
+                "mean": 0.7988845467567444,
+                "std": 0.02828172993368344,
+                "training_seconds": {
+                  "mean": 25.80678336659912,
+                  "std": 1.199262378772955
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.24921990832661234,
+                0.359680519491686
+              ],
+              "classification": "improves",
+              "mean_gain": 0.30445021390914917,
+              "seed_differences": [
+                0.3741414248943329,
+                0.2961612641811371,
+                0.28360944986343384,
+                0.3135945200920105,
+                0.25474441051483154
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.6157545980994672,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.272745132446289,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  42.26168630193138,
+                  64.51297013689614
+                ],
+                "classification": "improves",
+                "mean_gain": 53.38732821941376,
+                "seed_differences": [
+                  64.09461092948914,
+                  43.98720359802246,
+                  56.560919761657715,
+                  44.14598536491394,
+                  58.147921442985535
+                ]
+              },
+              "bounded": {
+                "mean": -0.32452709674835206,
+                "std": 0.17924985688908435,
+                "training_seconds": {
+                  "mean": 39.03386120018549,
+                  "std": 3.9081965391643414
+                }
+              },
+              "uncapped": {
+                "mean": -53.71185531616211,
+                "std": 8.128768531040159,
+                "training_seconds": {
+                  "mean": 38.34476355840452,
+                  "std": 3.2518989078661447
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 7680,
+            "seq_len": 120
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.40999542474746703,
+                "std": 0.013460491911113774,
+                "training_seconds": {
+                  "mean": 87.79733882502187,
+                  "std": 13.520876068948406
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7684414327144623,
+                "std": 0.3984766061271553,
+                "training_seconds": {
+                  "mean": 67.74376642501447,
+                  "std": 3.854268923681483
+                }
+              },
+              "s5": {
+                "mean": 0.8480207681655884,
+                "std": 0.08993220153422814,
+                "training_seconds": {
+                  "mean": 47.600307866605,
+                  "std": 2.482766443960413
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.20954998543629022,
+                0.9264420013702807
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.3584460079669952,
+              "seed_differences": [
+                0.07844039797782898,
+                0.5996012389659882,
+                0.07797554135322571,
+                -0.01613461971282959,
+                1.052347481250763
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.8742683121104995,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.066184043884277,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  34.65950303589567,
+                  58.02638565982119
+                ],
+                "classification": "improves",
+                "mean_gain": 46.34294434785843,
+                "seed_differences": [
+                  55.667168498039246,
+                  39.38635569810867,
+                  54.85757690668106,
+                  34.30223190784454,
+                  47.50138872861862
+                ]
+              },
+              "bounded": {
+                "mean": 0.21918336153030396,
+                "std": 0.13229321497376617,
+                "training_seconds": {
+                  "mean": 76.50751399984583,
+                  "std": 12.286430620336962
+                }
+              },
+              "uncapped": {
+                "mean": -46.12376098632812,
+                "std": 8.50872519224419,
+                "training_seconds": {
+                  "mean": 77.91384028338362,
+                  "std": 9.32423797457692
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 15360,
+            "seq_len": 120
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.3053968667984009,
+                "std": 0.01723222245736779,
+                "training_seconds": {
+                  "mean": 136.88859180861618,
+                  "std": 8.209373106417434
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.523188191652298,
+                "std": 0.23206716578108885,
+                "training_seconds": {
+                  "mean": 129.02491104979998,
+                  "std": 14.519737254901912
+                }
+              },
+              "s5": {
+                "mean": 0.8989781379699707,
+                "std": 0.2618209527510287,
+                "training_seconds": {
+                  "mean": 83.73776271657553,
+                  "std": 9.463560309148662
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.09754466564921202,
+                0.5331273153570062
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.2177913248538971,
+              "seed_differences": [
+                0.17887195944786072,
+                0.6104843616485596,
+                -0.020912766456604004,
+                0.02121526002883911,
+                0.2992978096008301
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.71314197534864,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.205751895904541,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  37.02367863795355,
+                  61.912103127030576
+                ],
+                "classification": "improves",
+                "mean_gain": 49.467890882492064,
+                "seed_differences": [
+                  55.32515823841095,
+                  42.21545106172562,
+                  59.00379532575607,
+                  35.630136609077454,
+                  55.164913177490234
+                ]
+              },
+              "bounded": {
+                "mean": 0.7739875316619873,
+                "std": 0.03168801979008858,
+                "training_seconds": {
+                  "mean": 138.5535678749904,
+                  "std": 9.083498174471892
+                }
+              },
+              "uncapped": {
+                "mean": -48.69390335083008,
+                "std": 8.976341728644053,
+                "training_seconds": {
+                  "mean": 140.60972383318003,
+                  "std": 11.809230493616765
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 30720,
+            "seq_len": 120
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.1539913535118103,
+                "std": 0.025909811398187845,
+                "training_seconds": {
+                  "mean": 247.31238016677088,
+                  "std": 9.213708384153499
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.29522178173065183,
+                "std": 0.15377062491993432,
+                "training_seconds": {
+                  "mean": 223.5393060997827,
+                  "std": 6.83470750308552
+                }
+              },
+              "s5": {
+                "mean": 0.8267144322395324,
+                "std": 0.11181785872778788,
+                "training_seconds": {
+                  "mean": 157.1934126918204,
+                  "std": 7.192113478177484
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.08438530895795635,
+                0.3668461653956394
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.14123042821884155,
+              "seed_differences": [
+                0.18375882506370544,
+                0.007665693759918213,
+                0.04320012032985687,
+                0.02968776226043701,
+                0.4418397396802902
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.9171321960489807,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.14832878112793,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.387043169763835,
+                  72.9463311159341
+                ],
+                "classification": "improves",
+                "mean_gain": 58.16668714284897,
+                "seed_differences": [
+                  60.917084753513336,
+                  50.053758442401886,
+                  72.50291711091995,
+                  42.55420929193497,
+                  64.8054661154747
+                ]
+              },
+              "bounded": {
+                "mean": 0.8950013518333435,
+                "std": 0.011241216699376484,
+                "training_seconds": {
+                  "mean": 230.77617844182532,
+                  "std": 9.353477747295546
+                }
+              },
+              "uncapped": {
+                "mean": -57.27168579101563,
+                "std": 10.637628294727604,
+                "training_seconds": {
+                  "mean": 234.83748499997893,
+                  "std": 9.610740601238602
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 61440,
+            "seq_len": 120
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.4790293872356415,
+                "std": 0.010977418833918656,
+                "training_seconds": {
+                  "mean": 26.071461616829037,
+                  "std": 0.5107036817936997
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8226165533065796,
+                "std": 0.1872463407241741,
+                "training_seconds": {
+                  "mean": 22.647004041215403,
+                  "std": 0.27333887903186904
+                }
+              },
+              "s5": {
+                "mean": 0.8531775832176208,
+                "std": 0.06890795539273693,
+                "training_seconds": {
+                  "mean": 17.195552758174017,
+                  "std": 1.4280037348220789
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                0.07220950916517155,
+                0.6149648229767046
+              ],
+              "classification": "improves",
+              "mean_gain": 0.3435871660709381,
+              "seed_differences": [
+                0.7313109934329987,
+                0.21819785237312317,
+                0.23367831110954285,
+                0.2416420578956604,
+                0.2931066155433655
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.7172569684162666,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 4.103389263153076,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.471023564932025,
+                  64.21833643377097
+                ],
+                "classification": "improves",
+                "mean_gain": 53.8446799993515,
+                "seed_differences": [
+                  65.15981590747833,
+                  45.217870593070984,
+                  56.07647478580475,
+                  45.92287826538086,
+                  56.84636044502258
+                ]
+              },
+              "bounded": {
+                "mean": -0.3794952630996704,
+                "std": 0.14934623804579675,
+                "training_seconds": {
+                  "mean": 23.604888583440335,
+                  "std": 0.8465129667278108
+                }
+              },
+              "uncapped": {
+                "mean": -54.22417526245117,
+                "std": 7.545066495689202,
+                "training_seconds": {
+                  "mean": 24.457524908403865,
+                  "std": 0.44033055298102636
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 5120,
+            "seq_len": 160
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.4857967376708984,
+                "std": 0.015155969838743935,
+                "training_seconds": {
+                  "mean": 49.39815386640839,
+                  "std": 3.1059713263710194
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7964558362960815,
+                "std": 0.13600710843646235,
+                "training_seconds": {
+                  "mean": 41.36345493362751,
+                  "std": 0.35420420392976015
+                }
+              },
+              "s5": {
+                "mean": 0.8115529417991638,
+                "std": 0.048696335508994826,
+                "training_seconds": {
+                  "mean": 46.46508430838585,
+                  "std": 4.720272529427203
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                0.11208684833916663,
+                0.5092313489111996
+              ],
+              "classification": "improves",
+              "mean_gain": 0.3106590986251831,
+              "seed_differences": [
+                0.5927336513996124,
+                0.22954881191253662,
+                0.22507590055465698,
+                0.21997371315956116,
+                0.28596341609954834
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.6394837069400787,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.272745132446289,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  41.75228782553482,
+                  63.876556721736904
+                ],
+                "classification": "improves",
+                "mean_gain": 52.81442227363586,
+                "seed_differences": [
+                  63.81065392494202,
+                  43.482009291648865,
+                  54.61895394325256,
+                  44.0018424987793,
+                  58.15865170955658
+                ]
+              },
+              "bounded": {
+                "mean": -0.3486316204071045,
+                "std": 0.17562149953744063,
+                "training_seconds": {
+                  "mean": 43.35258974162862,
+                  "std": 1.1224288781242513
+                }
+              },
+              "uncapped": {
+                "mean": -53.16305389404297,
+                "std": 8.077135845083161,
+                "training_seconds": {
+                  "mean": 45.356328483414835,
+                  "std": 3.6641965167547332
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 10240,
+            "seq_len": 160
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.40304200649261473,
+                "std": 0.013042536171099194,
+                "training_seconds": {
+                  "mean": 91.94177780020982,
+                  "std": 5.888728785006126
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7474579453468323,
+                "std": 0.33381776201580465,
+                "training_seconds": {
+                  "mean": 97.6086548165651,
+                  "std": 12.999380025362024
+                }
+              },
+              "s5": {
+                "mean": 0.8101640224456788,
+                "std": 0.0634616384317144,
+                "training_seconds": {
+                  "mean": 89.3750257415697,
+                  "std": 12.127749084146366
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.13666624157982687,
+                0.8254981192882619
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.3444159388542175,
+              "seed_differences": [
+                0.12881115078926086,
+                0.7895798683166504,
+                0.06593337655067444,
+                -0.0033205747604370117,
+                0.741075873374939
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.8545410485904987,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.066184043884277,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  34.67705153696042,
+                  56.248521215992156
+                ],
+                "classification": "improves",
+                "mean_gain": 45.46278637647629,
+                "seed_differences": [
+                  54.28288924694061,
+                  39.01035714149475,
+                  52.585583329200745,
+                  34.136310040950775,
+                  47.298792123794556
+                ]
+              },
+              "bounded": {
+                "mean": 0.1701617121696472,
+                "std": 0.1339361947792248,
+                "training_seconds": {
+                  "mean": 98.38597940041218,
+                  "std": 9.970522076769198
+                }
+              },
+              "uncapped": {
+                "mean": -45.29262466430664,
+                "std": 7.867039161084509,
+                "training_seconds": {
+                  "mean": 95.24576293358113,
+                  "std": 13.263752789990178
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 20480,
+            "seq_len": 160
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.3112243592739105,
+                "std": 0.014506906634986334,
+                "training_seconds": {
+                  "mean": 175.0467319166055,
+                  "std": 8.99829512092691
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.6031228840351105,
+                "std": 0.259119727047887,
+                "training_seconds": {
+                  "mean": 164.51628674997482,
+                  "std": 12.662565570664484
+                }
+              },
+              "s5": {
+                "mean": 0.804444420337677,
+                "std": 0.05455942005983312,
+                "training_seconds": {
+                  "mean": 167.59184047500602,
+                  "std": 22.83733456646967
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.07235172709970894,
+                0.6561487766221088
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.29189852476119993,
+              "seed_differences": [
+                0.2403966784477234,
+                0.5175797641277313,
+                0.00729525089263916,
+                0.028086930513381958,
+                0.6661339998245239
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.9379038499499273,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.205751895904541,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  37.098920610971774,
+                  61.146629020147
+                ],
+                "classification": "improves",
+                "mean_gain": 49.12277481555939,
+                "seed_differences": [
+                  56.01829767227173,
+                  42.3256653547287,
+                  57.27291405200958,
+                  35.48797249794006,
+                  54.50902450084686
+                ]
+              },
+              "bounded": {
+                "mean": 0.7206004381179809,
+                "std": 0.04724395656912584,
+                "training_seconds": {
+                  "mean": 162.53559643318877,
+                  "std": 8.27248717651705
+                }
+              },
+              "uncapped": {
+                "mean": -48.402174377441405,
+                "std": 8.688450438897421,
+                "training_seconds": {
+                  "mean": 162.02157320003025,
+                  "std": 7.198109398727309
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 40960,
+            "seq_len": 160
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.16691647171974183,
+                "std": 0.02430076568734251,
+                "training_seconds": {
+                  "mean": 325.34989508322906,
+                  "std": 3.4657566226817362
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.2695952743291855,
+                "std": 0.11791746870588667,
+                "training_seconds": {
+                  "mean": 297.5166864246363,
+                  "std": 12.608295864461306
+                }
+              },
+              "s5": {
+                "mean": 1.0898370385169982,
+                "std": 0.6309724856134342,
+                "training_seconds": {
+                  "mean": 261.1358797582099,
+                  "std": 36.790646771415155
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.07347470559059978,
+                0.2788323108094871
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.10267880260944366,
+              "seed_differences": [
+                0.1598452627658844,
+                0.02792564034461975,
+                -0.011457249522209167,
+                0.010507553815841675,
+                0.32657280564308167
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.6151508089737525,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.14832878112793,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.54483761795642,
+                  71.96352467528699
+                ],
+                "classification": "improves",
+                "mean_gain": 57.754181146621704,
+                "seed_differences": [
+                  61.61573386192322,
+                  49.98317790031433,
+                  70.83476543426514,
+                  42.32000112533569,
+                  64.01722741127014
+                ]
+              },
+              "bounded": {
+                "mean": 0.8810816287994385,
+                "std": 0.012720521716412138,
+                "training_seconds": {
+                  "mean": 297.2355869000545,
+                  "std": 4.165399491265643
+                }
+              },
+              "uncapped": {
+                "mean": -56.87309951782227,
+                "std": 10.226869450699013,
+                "training_seconds": {
+                  "mean": 301.2799885251792,
+                  "std": 5.378557399891698
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 81920,
+            "seq_len": 160
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.4709240972995758,
+                "std": 0.013642090117142177,
+                "training_seconds": {
+                  "mean": 37.068466158187945,
+                  "std": 1.6668137686401896
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8099099159240722,
+                "std": 0.1494852269821613,
+                "training_seconds": {
+                  "mean": 32.75163110836875,
+                  "std": 1.2439954037913548
+                }
+              },
+              "s5": {
+                "mean": 0.868165922164917,
+                "std": 0.09289349870968577,
+                "training_seconds": {
+                  "mean": 40.792128124786544,
+                  "std": 3.828474544818403
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                0.12418179819613609,
+                0.5537898390528568
+              ],
+              "classification": "improves",
+              "mean_gain": 0.33898581862449645,
+              "seed_differences": [
+                0.6395213901996613,
+                0.2696073055267334,
+                0.2366780936717987,
+                0.22066888213157654,
+                0.3284534215927124
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.7198311162421838,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.103389263153076,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.27962296561752,
+                  64.14594966812577
+                ],
+                "classification": "improves",
+                "mean_gain": 53.71278631687164,
+                "seed_differences": [
+                  65.18044817447662,
+                  45.01728677749634,
+                  55.163620352745056,
+                  45.93243932723999,
+                  57.27013695240021
+                ]
+              },
+              "bounded": {
+                "mean": -0.42493951320648193,
+                "std": 0.14806412203957903,
+                "training_seconds": {
+                  "mean": 33.45817452503834,
+                  "std": 1.648745639123462
+                }
+              },
+              "uncapped": {
+                "mean": -54.137725830078125,
+                "std": 7.5881553545241545,
+                "training_seconds": {
+                  "mean": 35.13049513315782,
+                  "std": 1.2118007751087918
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 7680,
+            "seq_len": 240
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.47902376651763917,
+                "std": 0.016311463222557013,
+                "training_seconds": {
+                  "mean": 60.81051985002123,
+                  "std": 3.500745308979694
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8032176971435547,
+                "std": 0.11924174797849552,
+                "training_seconds": {
+                  "mean": 57.46306456679012,
+                  "std": 4.194394061509638
+                }
+              },
+              "s5": {
+                "mean": 1.1938976049423218,
+                "std": 0.31688912187555274,
+                "training_seconds": {
+                  "mean": 76.08392054981087,
+                  "std": 9.652973386432434
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                0.15261374681053022,
+                0.4957741144413008
+              ],
+              "classification": "improves",
+              "mean_gain": 0.3241939306259155,
+              "seed_differences": [
+                0.5531933307647705,
+                0.2723466157913208,
+                0.23142454028129578,
+                0.21460124850273132,
+                0.34940391778945923
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.6767804716302688,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.272745132446289,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  41.75924023706764,
+                  63.929615172554556
+                ],
+                "classification": "improves",
+                "mean_gain": 52.844427704811096,
+                "seed_differences": [
+                  63.96887993812561,
+                  43.595553278923035,
+                  53.88361716270447,
+                  44.16930854320526,
+                  58.60477960109711
+                ]
+              },
+              "bounded": {
+                "mean": -0.39981133937835694,
+                "std": 0.17198920488806368,
+                "training_seconds": {
+                  "mean": 58.05479502519593,
+                  "std": 3.2109905197102333
+                }
+              },
+              "uncapped": {
+                "mean": -53.244239044189456,
+                "std": 8.091406940747635,
+                "training_seconds": {
+                  "mean": 57.37092269200366,
+                  "std": 1.8192289551466874
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 15360,
+            "seq_len": 240
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.3991726040840149,
+                "std": 0.012157219839452367,
+                "training_seconds": {
+                  "mean": 122.31620778338984,
+                  "std": 7.396328132645299
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7606402099132538,
+                "std": 0.3292906983355655,
+                "training_seconds": {
+                  "mean": 105.51500007498544,
+                  "std": 5.7165342990524834
+                }
+              },
+              "s5": {
+                "mean": 1.1737972378730774,
+                "std": 0.34866699866165474,
+                "training_seconds": {
+                  "mean": 169.99986580840778,
+                  "std": 15.468994146037671
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.11141742166270757,
+                0.8343526333211853
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.36146760582923887,
+              "seed_differences": [
+                0.169867604970932,
+                0.9202390015125275,
+                0.08773848414421082,
+                0.03911006450653076,
+                0.5903828740119934
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.9055421192010458,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.066184043884277,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  34.729489841243506,
+                  56.53355365774941
+                ],
+                "classification": "improves",
+                "mean_gain": 45.63152174949646,
+                "seed_differences": [
+                  55.813451528549194,
+                  39.160044491291046,
+                  51.222113609313965,
+                  34.336264193058014,
+                  47.62573492527008
+                ]
+              },
+              "bounded": {
+                "mean": 0.06844878196716309,
+                "std": 0.14007309957618624,
+                "training_seconds": {
+                  "mean": 109.17859850020614,
+                  "std": 6.2303097110118015
+                }
+              },
+              "uncapped": {
+                "mean": -45.563072967529294,
+                "std": 7.952030739853749,
+                "training_seconds": {
+                  "mean": 112.36465137500781,
+                  "std": 8.167904347830815
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 30720,
+            "seq_len": 240
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.31440085768699644,
+                "std": 0.01385156195962903,
+                "training_seconds": {
+                  "mean": 231.6086661916226,
+                  "std": 12.78076555472895
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7330960512161255,
+                "std": 0.3389896615677447,
+                "training_seconds": {
+                  "mean": 212.1043555833632,
+                  "std": 8.1376359112636
+                }
+              },
+              "s5": {
+                "mean": 0.7907523393630982,
+                "std": 0.02531561973636606,
+                "training_seconds": {
+                  "mean": 301.49542947518637,
+                  "std": 17.89703681932731
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.06392246258608048,
+                0.9013128496443386
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.41869519352912904,
+              "seed_differences": [
+                0.3550630807876587,
+                0.44351789355278015,
+                0.03937196731567383,
+                0.19861173629760742,
+                1.056911289691925
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 2.33172408182793,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.205751895904541,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  36.91344101835244,
+                  60.43709606718071
+                ],
+                "classification": "improves",
+                "mean_gain": 48.675268542766574,
+                "seed_differences": [
+                  55.84723150730133,
+                  42.22215676307678,
+                  55.88074392080307,
+                  35.159910559654236,
+                  54.26629996299744
+                ]
+              },
+              "bounded": {
+                "mean": 0.6106277346611023,
+                "std": 0.07841334161270871,
+                "training_seconds": {
+                  "mean": 221.79026658339427,
+                  "std": 4.266270741370793
+                }
+              },
+              "uncapped": {
+                "mean": -48.064640808105466,
+                "std": 8.527346230913079,
+                "training_seconds": {
+                  "mean": 222.42958965837025,
+                  "std": 9.054201917879238
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 61440,
+            "seq_len": 240
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.17394881546497346,
+                "std": 0.024388039619154974,
+                "training_seconds": {
+                  "mean": 442.38589474181646,
+                  "std": 21.006836779656176
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.28202255368232726,
+                "std": 0.1260216445907578,
+                "training_seconds": {
+                  "mean": 393.6690639917739,
+                  "std": 4.962471087338129
+                }
+              },
+              "s5": {
+                "mean": 0.8609427094459534,
+                "std": 0.08219682284052103,
+                "training_seconds": {
+                  "mean": 537.4829682252137,
+                  "std": 54.568055106274244
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.08205107009017991,
+                0.29819854652488753
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.10807373821735382,
+              "seed_differences": [
+                0.15376637876033783,
+                0.013898268342018127,
+                -0.0004296153783798218,
+                0.015201732516288757,
+                0.3579319268465042
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.621296201002965,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 4.14832878112793,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.238268819107006,
+                  70.80424831842046
+                ],
+                "classification": "improves",
+                "mean_gain": 57.021258568763734,
+                "seed_differences": [
+                  61.67191928625107,
+                  49.56097948551178,
+                  69.34087264537811,
+                  41.811600625514984,
+                  62.72092080116272
+                ]
+              },
+              "bounded": {
+                "mean": 0.8403213739395141,
+                "std": 0.02485386226921007,
+                "training_seconds": {
+                  "mean": 401.26018182502594,
+                  "std": 7.399529878244465
+                }
+              },
+              "uncapped": {
+                "mean": -56.18093719482422,
+                "std": 9.924938848482547,
+                "training_seconds": {
+                  "mean": 416.38580945844296,
+                  "std": 23.930115014257836
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 122880,
+            "seq_len": 240
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.46863303780555726,
+                "std": 0.014625401093099837,
+                "training_seconds": {
+                  "mean": 55.02198081659153,
+                  "std": 4.741648618369102
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8418291330337524,
+                "std": 0.17889501441606898,
+                "training_seconds": {
+                  "mean": 46.285278574982655,
+                  "std": 4.820656492765652
+                }
+              },
+              "s5": {
+                "mean": 1.169857668876648,
+                "std": 0.46328874485986155,
+                "training_seconds": {
+                  "mean": 65.15698814159259,
+                  "std": 6.759066539878922
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                0.11976281114264636,
+                0.6266293793137441
+              ],
+              "classification": "improves",
+              "mean_gain": 0.3731960952281952,
+              "seed_differences": [
+                0.7161861062049866,
+                0.28187406063079834,
+                0.23433879017829895,
+                0.23014894127845764,
+                0.40343257784843445
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.7963503746465261,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.103389263153076,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.59333262991805,
+                  64.60155553269486
+                ],
+                "classification": "improves",
+                "mean_gain": 54.097444081306456,
+                "seed_differences": [
+                  65.55385947227478,
+                  45.345054626464844,
+                  55.43529236316681,
+                  46.22610247135162,
+                  57.92691147327423
+                ]
+              },
+              "bounded": {
+                "mean": -0.46829383373260497,
+                "std": 0.14816779761873317,
+                "training_seconds": {
+                  "mean": 47.26951436663512,
+                  "std": 4.3405993903278395
+                }
+              },
+              "uncapped": {
+                "mean": -54.565737915039065,
+                "std": 7.640645504072908,
+                "training_seconds": {
+                  "mean": 49.23057363356929,
+                  "std": 4.294264401863076
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 10240,
+            "seq_len": 320
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.47755237221717833,
+                "std": 0.016705407411521225,
+                "training_seconds": {
+                  "mean": 84.52703504154924,
+                  "std": 6.9687865102809
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.8380584120750427,
+                "std": 0.15227739619828884,
+                "training_seconds": {
+                  "mean": 73.6660491165705,
+                  "std": 9.625368193002885
+                }
+              },
+              "s5": {
+                "mean": 1.0775310158729554,
+                "std": 0.36442550935324297,
+                "training_seconds": {
+                  "mean": 119.41451102518477,
+                  "std": 9.013517466731747
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                0.14526093142322619,
+                0.5757511482925026
+              ],
+              "classification": "improves",
+              "mean_gain": 0.3605060398578644,
+              "seed_differences": [
+                0.6414454281330109,
+                0.28193536400794983,
+                0.23779639601707458,
+                0.22882574796676636,
+                0.41252726316452026
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.7549036730445047,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.272745132446289,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  42.15982127478645,
+                  64.47234511086418
+                ],
+                "classification": "improves",
+                "mean_gain": 53.31608319282532,
+                "seed_differences": [
+                  64.44506275653839,
+                  44.06388735771179,
+                  54.2730073928833,
+                  44.5328266620636,
+                  59.265631794929504
+                ]
+              },
+              "bounded": {
+                "mean": -0.44682955741882324,
+                "std": 0.1704474004485952,
+                "training_seconds": {
+                  "mean": 80.74108447500039,
+                  "std": 10.168278479242712
+                }
+              },
+              "uncapped": {
+                "mean": -53.76291275024414,
+                "std": 8.143053367707612,
+                "training_seconds": {
+                  "mean": 83.86907556680963,
+                  "std": 9.065759101837521
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 20480,
+            "seq_len": 320
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.3987232863903046,
+                "std": 0.012041144142153124,
+                "training_seconds": {
+                  "mean": 156.29795508345123,
+                  "std": 18.072057895149715
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7594432234764099,
+                "std": 0.3289740183149584,
+                "training_seconds": {
+                  "mean": 139.58845866639166,
+                  "std": 10.143922604031339
+                }
+              },
+              "s5": {
+                "mean": 1.129754364490509,
+                "std": 0.4037663304674229,
+                "training_seconds": {
+                  "mean": 246.9441109332256,
+                  "std": 4.071319329700119
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.11137337205457942,
+                0.8328132462267901
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.36071993708610534,
+              "seed_differences": [
+                0.175395667552948,
+                0.9336529672145844,
+                0.06374251842498779,
+                0.0670706033706665,
+                0.5637379288673401
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.90468740953595,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.066184043884277,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  35.03640456455263,
+                  56.85163204414335
+                ],
+                "classification": "improves",
+                "mean_gain": 45.94401830434799,
+                "seed_differences": [
+                  56.40643239021301,
+                  39.51729756593704,
+                  51.01930642127991,
+                  34.65600883960724,
+                  48.12104630470276
+                ]
+              },
+              "bounded": {
+                "mean": -0.020930731296539308,
+                "std": 0.14564082901914197,
+                "training_seconds": {
+                  "mean": 136.1009955666028,
+                  "std": 4.579320322016332
+                }
+              },
+              "uncapped": {
+                "mean": -45.96494903564453,
+                "std": 7.959525199243647,
+                "training_seconds": {
+                  "mean": 139.55328034157864,
+                  "std": 7.5828552898857025
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 40960,
+            "seq_len": 320
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.316287499666214,
+                "std": 0.012985315187680022,
+                "training_seconds": {
+                  "mean": 271.6552948168246,
+                  "std": 3.437052669976123
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.7582481145858765,
+                "std": 0.3459790807537326,
+                "training_seconds": {
+                  "mean": 266.48338197502306,
+                  "std": 18.023919977186004
+                }
+              },
+              "s5": {
+                "mean": 0.9835848450660706,
+                "std": 0.2381532567680693,
+                "training_seconds": {
+                  "mean": 474.284707266395,
+                  "std": 50.9028224795317
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.04998489434702824,
+                0.9339061241863532
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.4419606149196625,
+              "seed_differences": [
+                0.35509905219078064,
+                0.47085434198379517,
+                0.043844372034072876,
+                0.24750378727912903,
+                1.0925015211105347
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 2.3973382298891814,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 4.205751895904541,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  36.56718474403679,
+                  60.21137231811226
+                ],
+                "classification": "improves",
+                "mean_gain": 48.389278531074524,
+                "seed_differences": [
+                  55.78356629610062,
+                  41.95734477043152,
+                  55.23245084285736,
+                  34.75837814807892,
+                  54.214652597904205
+                ]
+              },
+              "bounded": {
+                "mean": 0.5066743135452271,
+                "std": 0.1030754191564723,
+                "training_seconds": {
+                  "mean": 259.48483818317766,
+                  "std": 13.59617618180294
+                }
+              },
+              "uncapped": {
+                "mean": -47.8826042175293,
+                "std": 8.592653977078683,
+                "training_seconds": {
+                  "mean": 259.9077461665962,
+                  "std": 5.623647161621237
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 81920,
+            "seq_len": 320
+          },
+          {
+            "excitation": "broad",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.1765836000442505,
+                "std": 0.02550318789600142,
+                "training_seconds": {
+                  "mean": 457.50406089138704,
+                  "std": 89.62216836152297
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.32231038212776186,
+                "std": 0.21601218683040996,
+                "training_seconds": {
+                  "mean": 529.1550162167987,
+                  "std": 22.937536488306012
+                }
+              },
+              "s5": {
+                "mean": 0.8472746968269348,
+                "std": 0.01798630515334936,
+                "training_seconds": {
+                  "mean": 782.4907222999493,
+                  "std": 130.71773918453735
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.16728805669686891,
+                0.45874162086389164
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.14572678208351136,
+              "seed_differences": [
+                0.14396625757217407,
+                0.012306123971939087,
+                -0.010794848203659058,
+                0.0005840957164764404,
+                0.5825722813606262
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.8252566039371343,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 4.14832878112793,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  42.821717895721136,
+                  70.30633388593323
+                ],
+                "classification": "improves",
+                "mean_gain": 56.56402589082718,
+                "seed_differences": [
+                  61.59018439054489,
+                  49.1722007393837,
+                  68.5480523109436,
+                  41.262057185173035,
+                  62.24763482809067
+                ]
+              },
+              "bounded": {
+                "mean": 0.7877967953681946,
+                "std": 0.04294211303751777,
+                "training_seconds": {
+                  "mean": 516.01711007501,
+                  "std": 33.410643808586485
+                }
+              },
+              "uncapped": {
+                "mean": -55.77622909545899,
+                "std": 9.90413551072449,
+                "training_seconds": {
+                  "mean": 500.92103346658405,
+                  "std": 38.67205696250506
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 163840,
+            "seq_len": 320
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.1789271354675293,
+                "std": 0.010810176239377777,
+                "training_seconds": {
+                  "mean": 22.36061001662165,
+                  "std": 0.7071973896045234
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.5494103550910949,
+                "std": 0.06658352294824472,
+                "training_seconds": {
+                  "mean": 19.64037736679893,
+                  "std": 0.7368183333836641
+                }
+              },
+              "s5": {
+                "mean": 0.3617656707763672,
+                "std": 0.0987107458082318,
+                "training_seconds": {
+                  "mean": 11.398642891598865,
+                  "std": 0.33203907267846056
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.051753513622176534,
+                0.31392355699549923
+              ],
+              "classification": "improves",
+              "mean_gain": 0.1828385353088379,
+              "seed_differences": [
+                0.08168356120586395,
+                0.14277054369449615,
+                0.18957382440567017,
+                0.14132753014564514,
+                0.35883721709251404
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 2.021860294309682,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 0.3590465784072876,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  50.17072593089233,
+                  77.4617762434851
+                ],
+                "classification": "improves",
+                "mean_gain": 63.81625108718872,
+                "seed_differences": [
+                  79.95269548892975,
+                  56.064263224601746,
+                  63.622769832611084,
+                  51.68854308128357,
+                  67.75298380851746
+                ]
+              },
+              "bounded": {
+                "mean": -0.9647463798522949,
+                "std": 0.20097513833395503,
+                "training_seconds": {
+                  "mean": 20.0593827663688,
+                  "std": 0.41566039984402897
+                }
+              },
+              "uncapped": {
+                "mean": -64.78099746704102,
+                "std": 9.934424367961894,
+                "training_seconds": {
+                  "mean": 20.04358447501436,
+                  "std": 0.3237198039338939
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 3840,
+            "seq_len": 120
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.17967080771923066,
+                "std": 0.011404009360876833,
+                "training_seconds": {
+                  "mean": 38.553297699801625,
+                  "std": 2.5037573184662576
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.5711185038089752,
+                "std": 0.07548641834369105,
+                "training_seconds": {
+                  "mean": 40.413938133209015,
+                  "std": 3.1539488270691223
+                }
+              },
+              "s5": {
+                "mean": 0.30325281620025635,
+                "std": 0.027442988866193032,
+                "training_seconds": {
+                  "mean": 23.813161825435238,
+                  "std": 0.6897454477833329
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.0925761886599325,
+                0.1545878283021189
+              ],
+              "classification": "improves",
+              "mean_gain": 0.1235820084810257,
+              "seed_differences": [
+                0.09396766126155853,
+                0.11467283964157104,
+                0.1514560431241989,
+                0.1476709395647049,
+                0.11014255881309509
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.6878246391263836,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3738652169704437,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  50.16597910658305,
+                  77.58450698121602
+                ],
+                "classification": "improves",
+                "mean_gain": 63.87524304389954,
+                "seed_differences": [
+                  80.12210214138031,
+                  55.70754301548004,
+                  63.14505457878113,
+                  52.15682244300842,
+                  68.24469304084778
+                ]
+              },
+              "bounded": {
+                "mean": -0.9814120769500733,
+                "std": 0.20666726415249106,
+                "training_seconds": {
+                  "mean": 39.0425321666291,
+                  "std": 4.539256812768096
+                }
+              },
+              "uncapped": {
+                "mean": -64.85665512084961,
+                "std": 9.979081403425825,
+                "training_seconds": {
+                  "mean": 38.93081384981051,
+                  "std": 4.081115883833127
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 7680,
+            "seq_len": 120
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.1203668475151062,
+                "std": 0.011478986232981313,
+                "training_seconds": {
+                  "mean": 87.68883426662069,
+                  "std": 12.206653473715702
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.14271439760923385,
+                "std": 0.04083551111090547,
+                "training_seconds": {
+                  "mean": 76.44615672503133,
+                  "std": 11.372642453268124
+                }
+              },
+              "s5": {
+                "mean": 0.5913677930831909,
+                "std": 0.2908357771500478,
+                "training_seconds": {
+                  "mean": 39.99396622502245,
+                  "std": 1.4814746093215914
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.049328492618081435,
+                0.09402359280633675
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.022347550094127654,
+              "seed_differences": [
+                0.0028892606496810913,
+                0.06662927567958832,
+                -0.009763121604919434,
+                -0.04447842389345169,
+                0.09646075963973999
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.1856620037450345,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3557910919189453,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  48.09675703074236,
+                  69.72727189038496
+                ],
+                "classification": "improves",
+                "mean_gain": 58.91201446056366,
+                "seed_differences": [
+                  71.89575481414795,
+                  54.120367646217346,
+                  60.393922090530396,
+                  48.46474492549896,
+                  59.685282826423645
+                ]
+              },
+              "bounded": {
+                "mean": -0.6553012132644653,
+                "std": 0.16597404198937246,
+                "training_seconds": {
+                  "mean": 79.30829949160106,
+                  "std": 12.857248515897854
+                }
+              },
+              "uncapped": {
+                "mean": -59.567315673828126,
+                "std": 7.876784625937242,
+                "training_seconds": {
+                  "mean": 79.13412554999813,
+                  "std": 12.003754329790205
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 15360,
+            "seq_len": 120
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.060386618971824645,
+                "std": 0.010158439829032917,
+                "training_seconds": {
+                  "mean": 134.4313630582066,
+                  "std": 7.620294491967662
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.29077070355415346,
+                "std": 0.260733844038611,
+                "training_seconds": {
+                  "mean": 137.06115403338336,
+                  "std": 14.740375267628215
+                }
+              },
+              "s5": {
+                "mean": 0.4313454210758209,
+                "std": 0.16266477267731713,
+                "training_seconds": {
+                  "mean": 76.13923537521623,
+                  "std": 6.364862760037919
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.1431366633518431,
+                0.6039048325165006
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.23038408458232879,
+              "seed_differences": [
+                0.07067040726542473,
+                0.1691753827035427,
+                0.039106860756874084,
+                0.11153692752122879,
+                0.7614308446645737
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 4.815151245507255,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3680032789707184,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  47.867631861615735,
+                  66.79062428767625
+                ],
+                "classification": "improves",
+                "mean_gain": 57.32912807464599,
+                "seed_differences": [
+                  69.2747813463211,
+                  51.2234320640564,
+                  60.10594189167023,
+                  51.09133982658386,
+                  54.95014524459839
+                ]
+              },
+              "bounded": {
+                "mean": -0.23527088165283203,
+                "std": 0.11878534732502201,
+                "training_seconds": {
+                  "mean": 140.50451689159962,
+                  "std": 14.21162120609158
+                }
+              },
+              "uncapped": {
+                "mean": -57.56439895629883,
+                "std": 6.882325307869241,
+                "training_seconds": {
+                  "mean": 139.5033633082174,
+                  "std": 13.559534626134987
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 30720,
+            "seq_len": 120
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.02713501378893852,
+                "std": 0.0032897524465808747,
+                "training_seconds": {
+                  "mean": 246.04234447497873,
+                  "std": 9.979609545011671
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.17423000782728196,
+                "std": 0.17886197373603355,
+                "training_seconds": {
+                  "mean": 227.03364482498728,
+                  "std": 6.839485425134471
+                }
+              },
+              "s5": {
+                "mean": 1.338212502002716,
+                "std": 0.924215795006587,
+                "training_seconds": {
+                  "mean": 177.6247569500003,
+                  "std": 4.831708911916137
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.10064579489876202,
+                0.39483578297544886
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.14709499403834342,
+              "seed_differences": [
+                0.015563234686851501,
+                0.27663041837513447,
+                0.0011159051209688187,
+                0.005560362711548805,
+                0.43660504929721355
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 6.420855695245901,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3629787862300873,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  42.98246973625776,
+                  60.00150674708727
+                ],
+                "classification": "improves",
+                "mean_gain": 51.491988241672516,
+                "seed_differences": [
+                  62.91801381111145,
+                  46.259863793849945,
+                  52.79163980484009,
+                  47.447776198387146,
+                  48.04264760017395
+                ]
+              },
+              "bounded": {
+                "mean": 0.4683722138404846,
+                "std": 0.07983217645781814,
+                "training_seconds": {
+                  "mean": 233.18444404175972,
+                  "std": 12.637215266674389
+                }
+              },
+              "uncapped": {
+                "mean": -51.023616027832034,
+                "std": 6.196780432764948,
+                "training_seconds": {
+                  "mean": 232.82078991699964,
+                  "std": 14.566639389623838
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 61440,
+            "seq_len": 120
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.17547016739845275,
+                "std": 0.01191281488993399,
+                "training_seconds": {
+                  "mean": 25.791290350002235,
+                  "std": 0.49642583852944105
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.5696287751197815,
+                "std": 0.07573404966814822,
+                "training_seconds": {
+                  "mean": 22.94638974161353,
+                  "std": 0.607925339791735
+                }
+              },
+              "s5": {
+                "mean": 0.336747545003891,
+                "std": 0.027871707493966974,
+                "training_seconds": {
+                  "mean": 16.006338392198085,
+                  "std": 0.6448081473895817
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.1300137058030904,
+                0.19254104940778605
+              ],
+              "classification": "improves",
+              "mean_gain": 0.16127737760543823,
+              "seed_differences": [
+                0.12354613840579987,
+                0.15784259140491486,
+                0.16518381237983704,
+                0.1659240573644638,
+                0.1938902884721756
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.919115653655325,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 0.3590465784072876,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  50.03377161194005,
+                  77.26366891692957
+                ],
+                "classification": "improves",
+                "mean_gain": 63.648720264434814,
+                "seed_differences": [
+                  79.6797844171524,
+                  55.579814195632935,
+                  62.86279296875,
+                  51.92232859134674,
+                  68.19888114929199
+                ]
+              },
+              "bounded": {
+                "mean": -0.9974093437194824,
+                "std": 0.20419832672109586,
+                "training_seconds": {
+                  "mean": 23.968271250184625,
+                  "std": 0.48975988195276504
+                }
+              },
+              "uncapped": {
+                "mean": -64.6461296081543,
+                "std": 9.914927798612684,
+                "training_seconds": {
+                  "mean": 24.270992650231346,
+                  "std": 0.6816593286050217
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 5120,
+            "seq_len": 160
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.18093347251415254,
+                "std": 0.014303596222273727,
+                "training_seconds": {
+                  "mean": 49.20845984180924,
+                  "std": 2.8113761912428736
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.5922290563583374,
+                "std": 0.08544632093533794,
+                "training_seconds": {
+                  "mean": 41.32712869159877,
+                  "std": 1.750450750701826
+                }
+              },
+              "s5": {
+                "mean": 0.32779148817062376,
+                "std": 0.03600172904205206,
+                "training_seconds": {
+                  "mean": 42.69765604981221,
+                  "std": 3.6585178929829887
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.1080235217477343,
+                0.1856925095652082
+              ],
+              "classification": "improves",
+              "mean_gain": 0.14685801565647125,
+              "seed_differences": [
+                0.15388353168964386,
+                0.12189474701881409,
+                0.1436958909034729,
+                0.11862863600254059,
+                0.19618727266788483
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.811668585230873,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3738652169704437,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  50.1904759473012,
+                  77.45512451465865
+                ],
+                "classification": "improves",
+                "mean_gain": 63.82280023097992,
+                "seed_differences": [
+                  79.83365797996521,
+                  55.38165104389191,
+                  62.635701417922974,
+                  52.483431816101074,
+                  68.77955889701843
+                ]
+              },
+              "bounded": {
+                "mean": -1.0239534616470336,
+                "std": 0.2195212544851761,
+                "training_seconds": {
+                  "mean": 45.34561906682793,
+                  "std": 3.097795727555063
+                }
+              },
+              "uncapped": {
+                "mean": -64.84675369262695,
+                "std": 9.929479965402903,
+                "training_seconds": {
+                  "mean": 45.61965666704346,
+                  "std": 3.7417251507218983
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 10240,
+            "seq_len": 160
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.11989459246397019,
+                "std": 0.011710948871882235,
+                "training_seconds": {
+                  "mean": 92.73015188341961,
+                  "std": 4.745932918798707
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.16013629287481307,
+                "std": 0.04855911941982223,
+                "training_seconds": {
+                  "mean": 97.58893899982795,
+                  "std": 14.418977486197623
+                }
+              },
+              "s5": {
+                "mean": 0.5483092904090882,
+                "std": 0.2176416169957087,
+                "training_seconds": {
+                  "mean": 81.54618271659129,
+                  "std": 10.277436528666579
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.04213334845552197,
+                0.12261674927720775
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.04024170041084289,
+              "seed_differences": [
+                0.019157037138938904,
+                0.10491029918193817,
+                -0.0072719380259513855,
+                -0.030983038246631622,
+                0.11539614200592041
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.3356423303489355,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3557910919189453,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  47.544566750311105,
+                  69.13318345568254
+                ],
+                "classification": "improves",
+                "mean_gain": 58.33887510299682,
+                "seed_differences": [
+                  71.49137806892395,
+                  53.45249330997467,
+                  58.8744843006134,
+                  48.17540919780731,
+                  59.700610637664795
+                ]
+              },
+              "bounded": {
+                "mean": -0.7018582344055175,
+                "std": 0.16650241551001138,
+                "training_seconds": {
+                  "mean": 96.82930488320999,
+                  "std": 12.215165978499604
+                }
+              },
+              "uncapped": {
+                "mean": -59.040733337402344,
+                "std": 7.862028084439297,
+                "training_seconds": {
+                  "mean": 97.69690107479691,
+                  "std": 14.935785269650642
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 20480,
+            "seq_len": 160
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.06265503838658333,
+                "std": 0.01043204680841714,
+                "training_seconds": {
+                  "mean": 174.7769129750086,
+                  "std": 8.335647369217986
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.2712316080927849,
+                "std": 0.24807096337981008,
+                "training_seconds": {
+                  "mean": 157.52203639179933,
+                  "std": 9.17983028134573
+                }
+              },
+              "s5": {
+                "mean": 0.895067322254181,
+                "std": 0.6956472994185567,
+                "training_seconds": {
+                  "mean": 133.33921321679372,
+                  "std": 11.919871492557435
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.1477921869483876,
+                0.5649453263607908
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.20857656970620156,
+              "seed_differences": [
+                0.05890084058046341,
+                0.1403549239039421,
+                0.0961500033736229,
+                0.030778639018535614,
+                0.7166984416544437
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 4.328967231961113,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3680032789707184,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  47.8572405425682,
+                  66.87192386706926
+                ],
+                "classification": "improves",
+                "mean_gain": 57.364582204818724,
+                "seed_differences": [
+                  69.57188379764557,
+                  51.3189537525177,
+                  59.391183853149414,
+                  50.89181089401245,
+                  55.649078726768494
+                ]
+              },
+              "bounded": {
+                "mean": -0.3160231113433838,
+                "std": 0.12843913866749923,
+                "training_seconds": {
+                  "mean": 162.07251796680504,
+                  "std": 7.678027110959499
+                }
+              },
+              "uncapped": {
+                "mean": -57.68060531616211,
+                "std": 6.921290645115326,
+                "training_seconds": {
+                  "mean": 159.87848670000676,
+                  "std": 9.468721303045001
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 40960,
+            "seq_len": 160
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.028002195805311204,
+                "std": 0.0035415597401517243,
+                "training_seconds": {
+                  "mean": 323.72545907481106,
+                  "std": 3.440866170243614
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.18769705072045326,
+                "std": 0.2033891100426711,
+                "training_seconds": {
+                  "mean": 299.75908387475647,
+                  "std": 8.434007998648893
+                }
+              },
+              "s5": {
+                "mean": 2.294174075126648,
+                "std": 1.1806652267448299,
+                "training_seconds": {
+                  "mean": 287.9558394251857,
+                  "std": 15.157730409027677
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.1224024756369973,
+                0.44179218546728144
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.15969485491514207,
+              "seed_differences": [
+                0.01635325327515602,
+                0.3595382049679756,
+                -0.008175674825906754,
+                -0.02084139734506607,
+                0.4515998885035515
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 6.7029404417225225,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3629787862300873,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  43.918012727434395,
+                  60.88448401576782
+                ],
+                "classification": "improves",
+                "mean_gain": 52.401248371601106,
+                "seed_differences": [
+                  64.03336185216904,
+                  47.37481564283371,
+                  52.90737807750702,
+                  48.29901200532913,
+                  49.391674280166626
+                ]
+              },
+              "bounded": {
+                "mean": 0.36212865114212034,
+                "std": 0.09672614972148388,
+                "training_seconds": {
+                  "mean": 300.55091080861166,
+                  "std": 4.572375677214176
+                }
+              },
+              "uncapped": {
+                "mean": -52.039119720458984,
+                "std": 6.189278666291941,
+                "training_seconds": {
+                  "mean": 303.78203377479224,
+                  "std": 4.584808481007882
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 81920,
+            "seq_len": 160
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.1763417750597,
+                "std": 0.013544302460633262,
+                "training_seconds": {
+                  "mean": 37.33498149160296,
+                  "std": 1.654337202302184
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.6097745418548584,
+                "std": 0.09144380398579764,
+                "training_seconds": {
+                  "mean": 33.33442420021165,
+                  "std": 1.294664369070574
+                }
+              },
+              "s5": {
+                "mean": 0.38739901781082153,
+                "std": 0.026824828302598358,
+                "training_seconds": {
+                  "mean": 39.12921970819589,
+                  "std": 0.6496398691969923
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.18306987843448158,
+                0.23904460706776148
+              ],
+              "classification": "improves",
+              "mean_gain": 0.21105724275112153,
+              "seed_differences": [
+                0.2346440553665161,
+                0.20204083621501923,
+                0.204390287399292,
+                0.23278556764125824,
+                0.18142546713352203
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 2.1968646832531245,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3590465784072876,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  50.71472681822752,
+                  77.92395225701358
+                ],
+                "classification": "improves",
+                "mean_gain": 64.31933953762055,
+                "seed_differences": [
+                  80.0247688293457,
+                  55.90578484535217,
+                  63.35769724845886,
+                  52.7342129945755,
+                  69.57423377037048
+                ]
+              },
+              "bounded": {
+                "mean": -1.0609461069107056,
+                "std": 0.20956043345951478,
+                "training_seconds": {
+                  "mean": 34.54045597517397,
+                  "std": 1.2703255445910548
+                }
+              },
+              "uncapped": {
+                "mean": -65.38028564453126,
+                "std": 9.91585706299208,
+                "training_seconds": {
+                  "mean": 34.526315358188,
+                  "std": 1.1002860564887011
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 7680,
+            "seq_len": 240
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.18302964866161348,
+                "std": 0.01652167766696786,
+                "training_seconds": {
+                  "mean": 61.494647616799924,
+                  "std": 4.395674915115069
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.6282867550849914,
+                "std": 0.09180374187779512,
+                "training_seconds": {
+                  "mean": 55.429441449814476,
+                  "std": 3.683285370036962
+                }
+              },
+              "s5": {
+                "mean": 0.35070804357528684,
+                "std": 0.01831178120882545,
+                "training_seconds": {
+                  "mean": 79.8155979333911,
+                  "std": 10.056279419962703
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.15896736690113433,
+                0.17638942292621246
+              ],
+              "classification": "improves",
+              "mean_gain": 0.1676783949136734,
+              "seed_differences": [
+                0.16791905462741852,
+                0.16777542233467102,
+                0.17170816659927368,
+                0.17474213242530823,
+                0.15624719858169556
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.9161269561505763,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3738652169704437,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  51.00996894509478,
+                  78.20551505415753
+                ],
+                "classification": "improves",
+                "mean_gain": 64.60774199962616,
+                "seed_differences": [
+                  80.19788312911987,
+                  55.84554409980774,
+                  63.388981103897095,
+                  53.357025504112244,
+                  70.24927616119385
+                ]
+              },
+              "bounded": {
+                "mean": -1.086866307258606,
+                "std": 0.22335166265387135,
+                "training_seconds": {
+                  "mean": 57.20581548318732,
+                  "std": 3.6792151174769634
+                }
+              },
+              "uncapped": {
+                "mean": -65.69460830688476,
+                "std": 9.914005022743762,
+                "training_seconds": {
+                  "mean": 57.01967427479103,
+                  "std": 2.0898243455426275
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 15360,
+            "seq_len": 240
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.12000942379236221,
+                "std": 0.012080539671588042,
+                "training_seconds": {
+                  "mean": 122.6727956584422,
+                  "std": 5.608910480656107
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.16432733386754989,
+                "std": 0.04379990704816806,
+                "training_seconds": {
+                  "mean": 104.92125468298327,
+                  "std": 3.104628368438108
+                }
+              },
+              "s5": {
+                "mean": 0.5021075785160065,
+                "std": 0.31270017980117176,
+                "training_seconds": {
+                  "mean": 166.92484447504393,
+                  "std": 35.00518335847971
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.030813958504405888,
+                0.11944977865478126
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.044317910075187684,
+              "seed_differences": [
+                0.03420804440975189,
+                0.08567249029874802,
+                -0.006347388029098511,
+                -0.016955606639385223,
+                0.12501201033592224
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.3692869165996964,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3557910919189453,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  47.578365258883984,
+                  69.38931433706327
+                ],
+                "classification": "improves",
+                "mean_gain": 58.48383979797363,
+                "seed_differences": [
+                  71.79357993602753,
+                  53.443586587905884,
+                  58.29367136955261,
+                  48.38886272907257,
+                  60.49949836730957
+                ]
+              },
+              "bounded": {
+                "mean": -0.7961376190185547,
+                "std": 0.17717527134815278,
+                "training_seconds": {
+                  "mean": 112.88206124179996,
+                  "std": 9.449537934456341
+                }
+              },
+              "uncapped": {
+                "mean": -59.27997741699219,
+                "std": 7.950543410992169,
+                "training_seconds": {
+                  "mean": 111.91002824162133,
+                  "std": 7.967531667787833
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 30720,
+            "seq_len": 240
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.06565102189779282,
+                "std": 0.010897483110995169,
+                "training_seconds": {
+                  "mean": 231.07737990820314,
+                  "std": 12.455990616292723
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.3436732113361359,
+                "std": 0.3134864501645021,
+                "training_seconds": {
+                  "mean": 216.53826928320342,
+                  "std": 4.702115741793518
+                }
+              },
+              "s5": {
+                "mean": 0.726906594634056,
+                "std": 0.38134753606226646,
+                "training_seconds": {
+                  "mean": 299.7162319252035,
+                  "std": 18.884303810015574
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.17090240884860214,
+                0.7269467877252882
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.27802218943834306,
+              "seed_differences": [
+                0.0550244003534317,
+                0.20792166888713837,
+                0.0983242392539978,
+                0.11181984096765518,
+                0.9170207977294922
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 5.234849380885115,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3680032789707184,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  48.372004878724155,
+                  67.58232761601157
+                ],
+                "classification": "improves",
+                "mean_gain": 57.97716624736786,
+                "seed_differences": [
+                  70.3298259973526,
+                  51.98014938831329,
+                  59.58687615394592,
+                  51.12235903739929,
+                  56.866620659828186
+                ]
+              },
+              "bounded": {
+                "mean": -0.46608021259307864,
+                "std": 0.14391263435766968,
+                "training_seconds": {
+                  "mean": 225.43253003342542,
+                  "std": 6.306661821917109
+                }
+              },
+              "uncapped": {
+                "mean": -58.44324645996094,
+                "std": 6.997700972901748,
+                "training_seconds": {
+                  "mean": 223.53847854980268,
+                  "std": 6.3800363104459015
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 61440,
+            "seq_len": 240
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.029108406230807304,
+                "std": 0.0035863028809589637,
+                "training_seconds": {
+                  "mean": 442.77090252500494,
+                  "std": 21.980271667272255
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.16533914301544428,
+                "std": 0.18910027389914957,
+                "training_seconds": {
+                  "mean": 397.87421774179677,
+                  "std": 2.558985136352457
+                }
+              },
+              "s5": {
+                "mean": 0.6238557666540145,
+                "std": 0.41252995892231675,
+                "training_seconds": {
+                  "mean": 569.6631421498023,
+                  "std": 40.63711191322898
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.12736586075201306,
+                0.39982733432128703
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.13623073678463699,
+              "seed_differences": [
+                0.01390952616930008,
+                0.21242006495594978,
+                -0.00014317408204078674,
+                -0.021769233979284763,
+                0.47673650085926056
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 5.680116654427311,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 0.3629787862300873,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  45.22972694589743,
+                  62.33322798059336
+                ],
+                "classification": "improves",
+                "mean_gain": 53.781477463245395,
+                "seed_differences": [
+                  65.62224686145782,
+                  49.022620141506195,
+                  53.89000850915909,
+                  49.4694100022316,
+                  50.90310180187225
+                ]
+              },
+              "bounded": {
+                "mean": 0.15876094102859498,
+                "std": 0.12315111876936831,
+                "training_seconds": {
+                  "mean": 414.0257909583859,
+                  "std": 21.811765673810946
+                }
+              },
+              "uncapped": {
+                "mean": -53.6227165222168,
+                "std": 6.251302158602892,
+                "training_seconds": {
+                  "mean": 414.65914411684497,
+                  "std": 20.849039869017773
+                }
+              }
+            },
+            "region": "A",
+            "sample_budget": 122880,
+            "seq_len": 240
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.17727550566196443,
+                "std": 0.014210111726560597,
+                "training_seconds": {
+                  "mean": 54.53582523341756,
+                  "std": 4.682965785075366
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.6403808355331421,
+                "std": 0.10676897716895524,
+                "training_seconds": {
+                  "mean": 45.67490434977226,
+                  "std": 4.07573043117308
+                }
+              },
+              "s5": {
+                "mean": 0.3988242864608765,
+                "std": 0.0567784282939488,
+                "training_seconds": {
+                  "mean": 66.09774175020866,
+                  "std": 2.9695059602381257
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.1420595693164697,
+                0.3010379922813544
+              ],
+              "classification": "improves",
+              "mean_gain": 0.22154878079891205,
+              "seed_differences": [
+                0.2122209668159485,
+                0.24143347144126892,
+                0.3186804950237274,
+                0.14929290115833282,
+                0.1861160695552826
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 2.2497427660500913,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3590465784072876,
+            "n_train": 32,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  51.725325235212125,
+                  78.93451086631987
+                ],
+                "classification": "improves",
+                "mean_gain": 65.329918050766,
+                "seed_differences": [
+                  80.77653121948242,
+                  56.70992815494537,
+                  64.59854078292847,
+                  53.67451298236847,
+                  70.89007711410522
+                ]
+              },
+              "bounded": {
+                "mean": -1.1151136875152587,
+                "std": 0.21430833970625518,
+                "training_seconds": {
+                  "mean": 48.52229248338845,
+                  "std": 3.790339886603776
+                }
+              },
+              "uncapped": {
+                "mean": -66.44503173828124,
+                "std": 9.922817440747199,
+                "training_seconds": {
+                  "mean": 49.01293886681087,
+                  "std": 4.227629338996864
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 10240,
+            "seq_len": 320
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.18445154130458832,
+                "std": 0.017425195487133976,
+                "training_seconds": {
+                  "mean": 84.66591315059922,
+                  "std": 7.414271364470622
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.6569223880767823,
+                "std": 0.10095712886689422,
+                "training_seconds": {
+                  "mean": 77.71775315837003,
+                  "std": 12.170444253882991
+                }
+              },
+              "s5": {
+                "mean": 0.35233665108680723,
+                "std": 0.023839485697021268,
+                "training_seconds": {
+                  "mean": 122.09174215816893,
+                  "std": 8.551021358338073
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "s5",
+              "ci95": [
+                0.1310388533898842,
+                0.20473136617455368
+              ],
+              "classification": "improves",
+              "mean_gain": 0.16788510978221893,
+              "seed_differences": [
+                0.1670423150062561,
+                0.1882549226284027,
+                0.1921825259923935,
+                0.1180793046951294,
+                0.17386648058891296
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.9101854535603313,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3738652169704437,
+            "n_train": 64,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  52.07925334731204,
+                  79.26647509774108
+                ],
+                "classification": "improves",
+                "mean_gain": 65.67286422252656,
+                "seed_differences": [
+                  80.95594048500061,
+                  56.70045363903046,
+                  64.76312494277954,
+                  54.31397485733032,
+                  71.63082718849182
+                ]
+              },
+              "bounded": {
+                "mean": -1.1397647142410279,
+                "std": 0.22687217710693397,
+                "training_seconds": {
+                  "mean": 83.12568954182788,
+                  "std": 7.865867347233311
+                }
+              },
+              "uncapped": {
+                "mean": -66.81262893676758,
+                "std": 9.918548693667411,
+                "training_seconds": {
+                  "mean": 83.52269109138288,
+                  "std": 9.22419539546109
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 20480,
+            "seq_len": 320
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.12040544301271439,
+                "std": 0.012302353608570437,
+                "training_seconds": {
+                  "mean": 156.5417428336106,
+                  "std": 15.390725786869812
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.17465265095233917,
+                "std": 0.0503721428391215,
+                "training_seconds": {
+                  "mean": 138.95189385800623,
+                  "std": 6.394510082645552
+                }
+              },
+              "s5": {
+                "mean": 0.5053638756275177,
+                "std": 0.19522646721341963,
+                "training_seconds": {
+                  "mean": 243.2583136087982,
+                  "std": 15.508797874099836
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.03087517686091218,
+                0.13936959274016175
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.054247207939624786,
+              "seed_differences": [
+                0.03636281192302704,
+                0.12437066435813904,
+                -0.005764029920101166,
+                -0.012331224977970123,
+                0.12859781831502914
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 1.4505378376781228,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3557910919189453,
+            "n_train": 128,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  48.1393314915325,
+                  70.14129141992075
+                ],
+                "classification": "improves",
+                "mean_gain": 59.140311455726625,
+                "seed_differences": [
+                  72.51434373855591,
+                  53.939144015312195,
+                  58.867250084877014,
+                  48.99387037754059,
+                  61.38694906234741
+                ]
+              },
+              "bounded": {
+                "mean": -0.8791389226913452,
+                "std": 0.18631335804420976,
+                "training_seconds": {
+                  "mean": 139.57020267494954,
+                  "std": 7.860822785393826
+                }
+              },
+              "uncapped": {
+                "mean": -60.01945037841797,
+                "std": 8.024414817782791,
+                "training_seconds": {
+                  "mean": 138.73871645838955,
+                  "std": 8.313548604733505
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 40960,
+            "seq_len": 320
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.06647231876850128,
+                "std": 0.010816439639479621,
+                "training_seconds": {
+                  "mean": 268.8543361915974,
+                  "std": 4.6011286813832415
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.31994777023792265,
+                "std": 0.3045332494767421,
+                "training_seconds": {
+                  "mean": 262.0398677417776,
+                  "std": 17.885800872130353
+                }
+              },
+              "s5": {
+                "mean": 0.5457785546779632,
+                "std": 0.3839453786421953,
+                "training_seconds": {
+                  "mean": 475.2294222415891,
+                  "std": 52.84214985283195
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.181916213970564,
+                0.6888671169094068
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.2534754514694214,
+              "seed_differences": [
+                0.06558467447757721,
+                0.09347285330295563,
+                0.10193853080272675,
+                0.12686354666948318,
+                0.8795176520943642
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 4.813248223703215,
+            "has_fixed_budget_peer": true,
+            "initial_momentum_rms": 0.3680032789707184,
+            "n_train": 256,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  49.06041778831561,
+                  68.46964064330976
+                ],
+                "classification": "improves",
+                "mean_gain": 58.76502921581268,
+                "seed_differences": [
+                  71.13494884967804,
+                  52.74131381511688,
+                  60.40500855445862,
+                  51.57283866405487,
+                  57.971036195755005
+                ]
+              },
+              "bounded": {
+                "mean": -0.5888564348220825,
+                "std": 0.1571566051043082,
+                "training_seconds": {
+                  "mean": 257.9995979502099,
+                  "std": 7.802374750530799
+                }
+              },
+              "uncapped": {
+                "mean": -59.353885650634766,
+                "std": 7.073480787796523,
+                "training_seconds": {
+                  "mean": 257.55044274181125,
+                  "std": 8.064678040027339
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 81920,
+            "seq_len": 320
+          },
+          {
+            "excitation": "narrow",
+            "forecast": {
+              "phast_unknown": {
+                "mean": 0.02968520037829876,
+                "std": 0.0037256920575054735,
+                "training_seconds": {
+                  "mean": 458.93182740020563,
+                  "std": 89.05211827528437
+                }
+              },
+              "phnn_observer": {
+                "mean": 0.15548971761018038,
+                "std": 0.19343479371287303,
+                "training_seconds": {
+                  "mean": 530.1241777581629,
+                  "std": 21.070657682902215
+                }
+              },
+              "s5": {
+                "mean": 0.454542863368988,
+                "std": 0.22799937928751562,
+                "training_seconds": {
+                  "mean": 837.6316295666154,
+                  "std": 157.21745299109543
+                }
+              }
+            },
+            "forecast_phast_effect": {
+              "baseline": "phnn_observer",
+              "ci95": [
+                -0.1445394075782494,
+                0.39614844204201266
+              ],
+              "classification": "not_resolved",
+              "mean_gain": 0.12580451723188163,
+              "seed_differences": [
+                0.014295006170868874,
+                0.14492348581552505,
+                -0.0031411033123731613,
+                -0.02400644589215517,
+                0.4969516433775425
+              ]
+            },
+            "forecast_winner": "phast_unknown",
+            "forecast_winner_margin": 5.23795411951642,
+            "has_fixed_budget_peer": false,
+            "initial_momentum_rms": 0.3629787862300873,
+            "n_train": 512,
+            "recovery": {
+              "bound_effect": {
+                "ci95": [
+                  46.23935657048181,
+                  63.55169901347205
+                ],
+                "classification": "improves",
+                "mean_gain": 54.89552779197693,
+                "seed_differences": [
+                  66.86267971992493,
+                  50.2131627202034,
+                  55.05597227811813,
+                  50.299845457077026,
+                  52.04597878456116
+                ]
+              },
+              "bounded": {
+                "mean": -0.017272806167602538,
+                "std": 0.13990770073272957,
+                "training_seconds": {
+                  "mean": 502.72320758362764,
+                  "std": 35.47959609794007
+                }
+              },
+              "uncapped": {
+                "mean": -54.91280059814453,
+                "std": 6.3307465735765245,
+                "training_seconds": {
+                  "mean": 502.83688387477304,
+                  "std": 35.956734199504524
+                }
+              }
+            },
+            "region": "B",
+            "sample_budget": 163840,
+            "seq_len": 320
+          }
+        ],
+        "data_seed": 42,
+        "decision_rule": {
+          "A": "PHAST is the forecast winner and bounded damping R-squared is positive.",
+          "B": "PHAST is the forecast winner, but bounded damping R-squared is not positive.",
+          "C": "Bounded damping R-squared is positive, but PHAST is not the forecast winner.",
+          "D": "Neither criterion is met."
+        },
+        "effect_interval": "paired seed difference, 95% t interval with 4 degrees of freedom",
+        "endpoint_effects": [
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.31357800337428243,
+              0.36150363114720196
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 120,
+            "from": 32,
+            "mean_gain": 0.3375408172607422,
+            "metric": "forecast",
+            "seed_differences": [
+              0.35262423753738403,
+              0.3133826106786728,
+              0.35586680471897125,
+              0.3206670433282852,
+              0.34516339004039764
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              1.0333647509873176,
+              1.4787676314055658
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 120,
+            "from": 32,
+            "mean_gain": 1.2560661911964417,
+            "metric": "recovery",
+            "seed_differences": [
+              1.200571596622467,
+              1.1239224076271057,
+              1.3917160630226135,
+              1.071843683719635,
+              1.492277204990387
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.27827468169349356,
+              0.34595114933830573
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 160,
+            "from": 32,
+            "mean_gain": 0.31211291551589965,
+            "metric": "forecast",
+            "seed_differences": [
+              0.32612043619155884,
+              0.2755514234304428,
+              0.33788521587848663,
+              0.2909025549888611,
+              0.3301049470901489
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              1.0387523049170078,
+              1.48240147888121
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 160,
+            "from": 32,
+            "mean_gain": 1.260576891899109,
+            "metric": "recovery",
+            "seed_differences": [
+              1.1945463418960571,
+              1.1349934339523315,
+              1.4008535146713257,
+              1.078233242034912,
+              1.494257926940918
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.25382024625825433,
+              0.3401303174109504
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 240,
+            "from": 32,
+            "mean_gain": 0.29697528183460237,
+            "metric": "forecast",
+            "seed_differences": [
+              0.310905322432518,
+              0.2472650408744812,
+              0.32841815054416656,
+              0.2749711275100708,
+              0.3233167678117752
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              1.0473070696801066,
+              1.4832147046118855
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 240,
+            "from": 32,
+            "mean_gain": 1.265260887145996,
+            "metric": "recovery",
+            "seed_differences": [
+              1.1748397946357727,
+              1.15888512134552,
+              1.4110398292541504,
+              1.0892710089683533,
+              1.492268681526184
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.24487485124671424,
+              0.33922402427589926
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 320,
+            "from": 32,
+            "mean_gain": 0.29204943776130676,
+            "metric": "forecast",
+            "seed_differences": [
+              0.30994680523872375,
+              0.23572319746017456,
+              0.3258519917726517,
+              0.2706180363893509,
+              0.31810715794563293
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              1.0434267799171169,
+              1.4687544782844824
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_seq_len": 320,
+            "from": 32,
+            "mean_gain": 1.2560906291007996,
+            "metric": "recovery",
+            "seed_differences": [
+              1.1383795142173767,
+              1.1702399849891663,
+              1.4099324941635132,
+              1.0922596454620361,
+              1.4696415066719055
+            ],
+            "to": 512
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.00196844024685015,
+              0.047766706180840626
+            ],
+            "classification": "not_resolved",
+            "excitation": "broad",
+            "fixed_n_train": 32,
+            "from": 120,
+            "mean_gain": 0.02289913296699524,
+            "metric": "forecast",
+            "seed_differences": [
+              0.00742030143737793,
+              0.05802208185195923,
+              0.015569984912872314,
+              0.01765286922454834,
+              0.015830427408218384
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.1351411778415439,
+              -0.0793168108974698
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 32,
+            "from": 120,
+            "mean_gain": -0.10722899436950684,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.11996340751647949,
+              -0.13309073448181152,
+              -0.07733690738677979,
+              -0.0914987325668335,
+              -0.11425518989562988
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              0.00180103817221435,
+              0.03196288308861939
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_n_train": 64,
+            "from": 120,
+            "mean_gain": 0.01688196063041687,
+            "metric": "forecast",
+            "seed_differences": [
+              0.008912205696105957,
+              0.03594321012496948,
+              0.019990772008895874,
+              0.004646718502044678,
+              0.01491689682006836
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.1554771825309449,
+              -0.0891277388099975
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 64,
+            "from": 120,
+            "mean_gain": -0.1223024606704712,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.13473188877105713,
+              -0.15639805793762207,
+              -0.08446693420410156,
+              -0.11207914352416992,
+              -0.12383627891540527
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              0.007271685294902235,
+              0.015272591419422717
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fixed_n_train": 128,
+            "from": 120,
+            "mean_gain": 0.011272138357162476,
+            "metric": "forecast",
+            "seed_differences": [
+              0.007431775331497192,
+              0.008264780044555664,
+              0.014735877513885498,
+              0.013016462326049805,
+              0.012911796569824219
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.28544823298964156,
+              -0.19477995266404496
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 128,
+            "from": 120,
+            "mean_gain": -0.24011409282684326,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.26379549503326416,
+              -0.2721114158630371,
+              -0.20819693803787231,
+              -0.19325828552246094,
+              -0.2632083296775818
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.017667885331758226,
+              -0.0041133804038679935
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 256,
+            "from": 120,
+            "mean_gain": -0.01089063286781311,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.01796501874923706,
+              -0.004961073398590088,
+              -0.007408946752548218,
+              -0.008968055248260498,
+              -0.015150070190429688
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.3730506590909926,
+              -0.16157577714252785
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 256,
+            "from": 120,
+            "mean_gain": -0.26731321811676023,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.3336947560310364,
+              -0.2294502854347229,
+              -0.24383670091629028,
+              -0.15848255157470703,
+              -0.3711017966270447
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.035919523284107344,
+              -0.00926496978077303
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 512,
+            "from": 120,
+            "mean_gain": -0.022592246532440186,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.03525713086128235,
+              -0.019637331366539,
+              -0.014444828033447266,
+              -0.032396137714385986,
+              -0.011225804686546326
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.1709214763074495,
+              -0.04348763662284835
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fixed_n_train": 512,
+            "from": 120,
+            "mean_gain": -0.10720455646514893,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.18215548992156982,
+              -0.08677315711975098,
+              -0.05912047624588013,
+              -0.07108277082443237,
+              -0.13689088821411133
+            ],
+            "to": 320
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.13340204503541242,
+              0.17018219832176912
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 120,
+            "from": 32,
+            "mean_gain": 0.15179212167859077,
+            "metric": "forecast",
+            "seed_differences": [
+              0.16350822150707245,
+              0.12746340222656727,
+              0.1580150630325079,
+              0.1483104955404997,
+              0.16166342608630657
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              1.1516525043472503,
+              1.7145846830383087
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 120,
+            "from": 32,
+            "mean_gain": 1.4331185936927795,
+            "metric": "recovery",
+            "seed_differences": [
+              1.258905053138733,
+              1.2927303910255432,
+              1.647141456604004,
+              1.254693627357483,
+              1.7121224403381348
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.12837231939886157,
+              0.16656362378742157
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 160,
+            "from": 32,
+            "mean_gain": 0.14746797159314157,
+            "metric": "forecast",
+            "seed_differences": [
+              0.1552009992301464,
+              0.12051840871572495,
+              0.15503661893308163,
+              0.14911669678986073,
+              0.15746713429689407
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              1.0820153394689234,
+              1.6370606502542824
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 160,
+            "from": 32,
+            "mean_gain": 1.3595379948616029,
+            "metric": "recovery",
+            "seed_differences": [
+              1.1640861630439758,
+              1.2252764105796814,
+              1.5799282789230347,
+              1.2031909823417664,
+              1.6252081394195557
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.12571584440038766,
+              0.16875089325739775
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 240,
+            "from": 32,
+            "mean_gain": 0.1472333688288927,
+            "metric": "forecast",
+            "seed_differences": [
+              0.1594536155462265,
+              0.11677185073494911,
+              0.15328153781592846,
+              0.15077026933431625,
+              0.1558895707130432
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.9535173139271826,
+              1.4858967819514186
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 240,
+            "from": 32,
+            "mean_gain": 1.2197070479393006,
+            "metric": "recovery",
+            "seed_differences": [
+              1.0037661790847778,
+              1.0908305048942566,
+              1.4412773251533508,
+              1.102571427822113,
+              1.4600898027420044
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.12504800078971914,
+              0.17013260977761216
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 320,
+            "from": 32,
+            "mean_gain": 0.14759030528366565,
+            "metric": "forecast",
+            "seed_differences": [
+              0.1617604847997427,
+              0.11588478833436966,
+              0.15275678783655167,
+              0.1516319364309311,
+              0.15591752901673317
+            ],
+            "to": 512
+          },
+          {
+            "axis": "n_train",
+            "ci95": [
+              0.8458927403170906,
+              1.349789022378222
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fixed_seq_len": 320,
+            "from": 32,
+            "mean_gain": 1.0978408813476563,
+            "metric": "recovery",
+            "seed_differences": [
+              0.8785297870635986,
+              0.9792706370353699,
+              1.3126370310783386,
+              1.0031400918960571,
+              1.315626859664917
+            ],
+            "to": 512
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.005731014814593418,
+              0.009034274425723179
+            ],
+            "classification": "not_resolved",
+            "excitation": "narrow",
+            "fixed_n_train": 32,
+            "from": 120,
+            "mean_gain": 0.0016516298055648804,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.0007570236921310425,
+              0.009286656975746155,
+              0.0010631680488586426,
+              -0.006421104073524475,
+              0.005086451768875122
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.19693674445435194,
+              -0.10379787087157577
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 32,
+            "from": 120,
+            "mean_gain": -0.15036730766296386,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.14972078800201416,
+              -0.17166447639465332,
+              -0.10689353942871094,
+              -0.12290537357330322,
+              -0.2006523609161377
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.016130088703348852,
+              0.006568621532633521
+            ],
+            "classification": "not_resolved",
+            "excitation": "narrow",
+            "fixed_n_train": 64,
+            "from": 120,
+            "mean_gain": -0.004780733585357666,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.017262443900108337,
+              0.0059458911418914795,
+              -0.0021205544471740723,
+              -0.010517731308937073,
+              5.117058753967285e-05
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.21845317653547497,
+              -0.09825209804643421
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 64,
+            "from": 120,
+            "mean_gain": -0.15835263729095458,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.15167343616485596,
+              -0.1745622158050537,
+              -0.10403656959533691,
+              -0.13019347190856934,
+              -0.23129749298095703
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.0012860030984100741,
+              0.0012088121031937043
+            ],
+            "classification": "not_resolved",
+            "excitation": "narrow",
+            "fixed_n_train": 128,
+            "from": 120,
+            "mean_gain": -3.859549760818481e-05,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.0010952651500701904,
+              0.0009758472442626953,
+              -0.0006875991821289062,
+              -0.0004776269197463989,
+              0.0010916665196418762
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.26791478261699836,
+              -0.17976063623676142
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 128,
+            "from": 120,
+            "mean_gain": -0.2238377094268799,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.22162103652954102,
+              -0.24864840507507324,
+              -0.1950451135635376,
+              -0.1846768856048584,
+              -0.26919710636138916
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.009632253533938543,
+              -0.0025391460594147296
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 256,
+            "from": 120,
+            "mean_gain": -0.006085699796676636,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.010866504162549973,
+              -0.00486692413687706,
+              -0.005242407321929932,
+              -0.0061201006174087524,
+              -0.003332562744617462
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.434031762237549,
+              -0.273139344100952
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 256,
+            "from": 120,
+            "mean_gain": -0.3535855531692505,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.3476114273071289,
+              -0.39025652408599854,
+              -0.32998836040496826,
+              -0.26393115520477295,
+              -0.4361402988433838
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.004151323856805791,
+              -0.0009490493219146833
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 512,
+            "from": 120,
+            "mean_gain": -0.002550186589360237,
+            "metric": "forecast",
+            "seed_differences": [
+              -0.0025047603994607925,
+              -0.002291956916451454,
+              -0.004195107147097588,
+              -0.003099663183093071,
+              -0.0006594453006982803
+            ],
+            "to": 320
+          },
+          {
+            "axis": "seq_len",
+            "ci95": [
+              -0.5908741581342944,
+              -0.3804158818818799
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fixed_n_train": 512,
+            "from": 120,
+            "mean_gain": -0.4856450200080872,
+            "metric": "recovery",
+            "seed_differences": [
+              -0.5300960540771484,
+              -0.48512423038482666,
+              -0.4413979649543762,
+              -0.374458909034729,
+              -0.5971479415893555
+            ],
+            "to": 320
+          }
+        ],
+        "excitations": {
+          "broad": "Large starting motion (initial-momentum scale 4.0)",
+          "narrow": "Small starting motion (initial-momentum scale 0.35)"
+        },
+        "fixed_budget_effects": [
+          {
+            "ci95": [
+              -0.036021207714802626,
+              -0.010999263381236192
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 240
+            },
+            "mean_gain": -0.02351023554801941,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 120
+            },
+            "sample_budget": 7680,
+            "seed_differences": [
+              -0.015424847602844238,
+              -0.03655079007148743,
+              -0.02521708607673645,
+              -0.011647909879684448,
+              -0.028710544109344482
+            ]
+          },
+          {
+            "ci95": [
+              0.05024135966720373,
+              0.15058347324905605
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 240
+            },
+            "mean_gain": 0.10041241645812989,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 120
+            },
+            "sample_budget": 7680,
+            "seed_differences": [
+              0.10159409046173096,
+              0.15177106857299805,
+              0.05336630344390869,
+              0.12650227546691895,
+              0.06882834434509277
+            ]
+          },
+          {
+            "ci95": [
+              -0.023790323526132574,
+              -0.010537076204549797
+            ],
+            "classification": "degrades",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 320
+            },
+            "mean_gain": -0.017163699865341185,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 160
+            },
+            "sample_budget": 10240,
+            "seed_differences": [
+              -0.00936630368232727,
+              -0.02187412977218628,
+              -0.014644771814346313,
+              -0.017859041690826416,
+              -0.022074252367019653
+            ]
+          },
+          {
+            "ci95": [
+              0.07048936567952696,
+              0.16883506097147402
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 320
+            },
+            "mean_gain": 0.11966221332550049,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 160
+            },
+            "sample_budget": 10240,
+            "seed_differences": [
+              0.12141084671020508,
+              0.172355055809021,
+              0.06965935230255127,
+              0.13962018489837646,
+              0.09526562690734863
+            ]
+          },
+          {
+            "ci95": [
+              0.048283861757940125,
+              0.0897728217824041
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 240
+            },
+            "mean_gain": 0.06902834177017211,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 120
+            },
+            "sample_budget": 15360,
+            "seed_differences": [
+              0.05681750178337097,
+              0.06152793765068054,
+              0.06828778982162476,
+              0.06052660942077637,
+              0.09798187017440796
+            ]
+          },
+          {
+            "ci95": [
+              0.559079125810918,
+              0.6789102760064039
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 240
+            },
+            "mean_gain": 0.6189947009086609,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 120
+            },
+            "sample_budget": 15360,
+            "seed_differences": [
+              0.5822569131851196,
+              0.5873646140098572,
+              0.6524608731269836,
+              0.5852854251861572,
+              0.6876056790351868
+            ]
+          },
+          {
+            "ci95": [
+              0.0510685932357113,
+              0.09795213821341589
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 320
+            },
+            "mean_gain": 0.0745103657245636,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 160
+            },
+            "sample_budget": 20480,
+            "seed_differences": [
+              0.05993729829788208,
+              0.06337055563926697,
+              0.07598629593849182,
+              0.06671211123466492,
+              0.10654556751251221
+            ]
+          },
+          {
+            "ci95": [
+              0.5579747868496873,
+              0.6760077523272537
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 320
+            },
+            "mean_gain": 0.6169912695884705,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 160
+            },
+            "sample_budget": 20480,
+            "seed_differences": [
+              0.5766303539276123,
+              0.5831427574157715,
+              0.6457515954971313,
+              0.5928022265434265,
+              0.6866294145584106
+            ]
+          },
+          {
+            "ci95": [
+              0.06609152564434066,
+              0.12145994892688737
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 240
+            },
+            "mean_gain": 0.09377573728561402,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 120
+            },
+            "sample_budget": 30720,
+            "seed_differences": [
+              0.10891258716583252,
+              0.054915398359298706,
+              0.09539902210235596,
+              0.10373911261558533,
+              0.10591256618499756
+            ]
+          },
+          {
+            "ci95": [
+              0.5428123262427534,
+              0.868265173146895
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 240
+            },
+            "mean_gain": 0.7055387496948242,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 120
+            },
+            "sample_budget": 30720,
+            "seed_differences": [
+              0.7250665426254272,
+              0.6307735443115234,
+              0.8012053370475769,
+              0.5229030251502991,
+              0.8477452993392944
+            ]
+          },
+          {
+            "ci95": [
+              0.06163948792371636,
+              0.11335836630907171
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 320
+            },
+            "mean_gain": 0.08749892711639404,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 160
+            },
+            "sample_budget": 40960,
+            "seed_differences": [
+              0.09996742010116577,
+              0.050847530364990234,
+              0.09106788039207458,
+              0.10014781355857849,
+              0.09546399116516113
+            ]
+          },
+          {
+            "ci95": [
+              0.5925508867306524,
+              0.8905114520983881
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 320
+            },
+            "mean_gain": 0.7415311694145202,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 160
+            },
+            "sample_budget": 40960,
+            "seed_differences": [
+              0.7467224597930908,
+              0.6844587922096252,
+              0.8347920179367065,
+              0.5712634325027466,
+              0.8704191446304321
+            ]
+          },
+          {
+            "ci95": [
+              0.1328567287488617,
+              0.1879622796015106
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 240
+            },
+            "mean_gain": 0.16040950417518615,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 120
+            },
+            "sample_budget": 61440,
+            "seed_differences": [
+              0.1914258599281311,
+              0.14503361284732819,
+              0.17657987773418427,
+              0.14587198197841644,
+              0.1431361883878708
+            ]
+          },
+          {
+            "ci95": [
+              0.1653548098186547,
+              0.4033924245258277
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 240
+            },
+            "mean_gain": 0.2843736171722412,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 120
+            },
+            "sample_budget": 61440,
+            "seed_differences": [
+              0.3291611075401306,
+              0.24408107995986938,
+              0.2550772428512573,
+              0.17036837339401245,
+              0.4231802821159363
+            ]
+          },
+          {
+            "ci95": [
+              0.12258983625021107,
+              0.17615221964273325
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 320
+            },
+            "mean_gain": 0.14937102794647217,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 160
+            },
+            "sample_budget": 81920,
+            "seed_differences": [
+              0.1754148006439209,
+              0.13889183104038239,
+              0.16887344419956207,
+              0.1256098449230194,
+              0.13806521892547607
+            ]
+          },
+          {
+            "ci95": [
+              0.22617585417280714,
+              0.5226387763356157
+            ],
+            "classification": "improves",
+            "excitation": "broad",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 320
+            },
+            "mean_gain": 0.37440731525421145,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 160
+            },
+            "sample_budget": 81920,
+            "seed_differences": [
+              0.4233693480491638,
+              0.3262825012207031,
+              0.34923994541168213,
+              0.22631490230560303,
+              0.546829879283905
+            ]
+          },
+          {
+            "ci95": [
+              -0.006866160811592473,
+              0.00020809549253119394
+            ],
+            "classification": "not_resolved",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 240
+            },
+            "mean_gain": -0.0033290326595306397,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 120
+            },
+            "sample_budget": 7680,
+            "seed_differences": [
+              -0.0005380362272262573,
+              -0.00771506130695343,
+              -0.0026948899030685425,
+              -0.0013370215892791748,
+              -0.0043601542711257935
+            ]
+          },
+          {
+            "ci95": [
+              0.04835020012491028,
+              0.11071785979635437
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 240
+            },
+            "mean_gain": 0.07953402996063233,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 120
+            },
+            "sample_budget": 7680,
+            "seed_differences": [
+              0.08772790431976318,
+              0.09329640865325928,
+              0.041683197021484375,
+              0.06867420673370361,
+              0.10628843307495117
+            ]
+          },
+          {
+            "ci95": [
+              -0.005105505625765982,
+              -0.0022104280786102385
+            ],
+            "classification": "degrades",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 320
+            },
+            "mean_gain": -0.0036579668521881104,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 160
+            },
+            "sample_budget": 10240,
+            "seed_differences": [
+              -0.005464509129524231,
+              -0.003644198179244995,
+              -0.002295076847076416,
+              -0.003776758909225464,
+              -0.003109291195869446
+            ]
+          },
+          {
+            "ci95": [
+              0.06170201623185699,
+              0.12061843550459321
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 32,
+              "seq_len": 320
+            },
+            "mean_gain": 0.0911602258682251,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 64,
+              "seq_len": 160
+            },
+            "sample_budget": 10240,
+            "seed_differences": [
+              0.11029601097106934,
+              0.11592912673950195,
+              0.057264089584350586,
+              0.08012473583221436,
+              0.09218716621398926
+            ]
+          },
+          {
+            "ci95": [
+              0.04570802740298026,
+              0.07961757489003428
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 240
+            },
+            "mean_gain": 0.06266280114650727,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 120
+            },
+            "sample_budget": 15360,
+            "seed_differences": [
+              0.06704467535018921,
+              0.04263812303543091,
+              0.06507417559623718,
+              0.05850158631801605,
+              0.08005544543266296
+            ]
+          },
+          {
+            "ci95": [
+              0.34464021268627765,
+              0.5184899753020036
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 240
+            },
+            "mean_gain": 0.4315650939941406,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 120
+            },
+            "sample_budget": 15360,
+            "seed_differences": [
+              0.3805117607116699,
+              0.39841973781585693,
+              0.49024295806884766,
+              0.36644744873046875,
+              0.5222035646438599
+            ]
+          },
+          {
+            "ci95": [
+              0.04705105345135867,
+              0.0820628442298776
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 320
+            },
+            "mean_gain": 0.06455694884061813,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 160
+            },
+            "sample_budget": 20480,
+            "seed_differences": [
+              0.0703103244304657,
+              0.043224036693573,
+              0.06647897511720657,
+              0.061140090227127075,
+              0.08163131773471832
+            ]
+          },
+          {
+            "ci95": [
+              0.34867640294318336,
+              0.5271365567278371
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 64,
+              "seq_len": 320
+            },
+            "mean_gain": 0.43790647983551023,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 128,
+              "seq_len": 160
+            },
+            "sample_budget": 20480,
+            "seed_differences": [
+              0.39083003997802734,
+              0.40288424491882324,
+              0.4878394603729248,
+              0.3697160482406616,
+              0.5382626056671143
+            ]
+          },
+          {
+            "ci95": [
+              0.04616561345781876,
+              0.07307999618325638
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 240
+            },
+            "mean_gain": 0.05962280482053757,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 120
+            },
+            "sample_budget": 30720,
+            "seed_differences": [
+              0.07434005662798882,
+              0.04903397336602211,
+              0.04924646019935608,
+              0.06538721174001694,
+              0.060106322169303894
+            ]
+          },
+          {
+            "ci95": [
+              0.44248320757128945,
+              0.6792502671601559
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 240
+            },
+            "mean_gain": 0.5608667373657227,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 120
+            },
+            "sample_budget": 30720,
+            "seed_differences": [
+              0.49695611000061035,
+              0.6057693958282471,
+              0.5762056112289429,
+              0.4401899576187134,
+              0.6852126121520996
+            ]
+          },
+          {
+            "ci95": [
+              0.04495636474218954,
+              0.07054444451007258
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 320
+            },
+            "mean_gain": 0.057750404626131055,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 160
+            },
+            "sample_budget": 40960,
+            "seed_differences": [
+              0.07084911316633224,
+              0.046986378729343414,
+              0.0478590652346611,
+              0.06385840475559235,
+              0.05919906124472618
+            ]
+          },
+          {
+            "ci95": [
+              0.45315606684296217,
+              0.6730755558529606
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 128,
+              "seq_len": 320
+            },
+            "mean_gain": 0.5631158113479614,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 256,
+              "seq_len": 160
+            },
+            "sample_budget": 40960,
+            "seed_differences": [
+              0.4960700273513794,
+              0.5968087911605835,
+              0.5730594396591187,
+              0.4621990919113159,
+              0.6874417066574097
+            ]
+          },
+          {
+            "ci95": [
+              0.023420162776640864,
+              0.05361185344106772
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 240
+            },
+            "mean_gain": 0.03851600810885429,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 120
+            },
+            "sample_budget": 61440,
+            "seed_differences": [
+              0.04662151634693146,
+              0.03145349211990833,
+              0.05006142519414425,
+              0.0436920877546072,
+              0.02075151912868023
+            ]
+          },
+          {
+            "ci95": [
+              0.7618722658763484,
+              1.107032586990778
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 240
+            },
+            "mean_gain": 0.9344524264335632,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 120
+            },
+            "sample_budget": 61440,
+            "seed_differences": [
+              0.8556820154190063,
+              0.844774067401886,
+              1.0111219882965088,
+              0.8176504373550415,
+              1.1430336236953735
+            ]
+          },
+          {
+            "ci95": [
+              0.02430512008289806,
+              0.052635125843482095
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 320
+            },
+            "mean_gain": 0.03847012296319008,
+            "metric": "forecast",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 160
+            },
+            "sample_budget": 81920,
+            "seed_differences": [
+              0.04541556164622307,
+              0.031648896634578705,
+              0.049589281901717186,
+              0.0437792781740427,
+              0.021917596459388733
+            ]
+          },
+          {
+            "ci95": [
+              0.7734328404199373,
+              1.1285373315084684
+            ],
+            "classification": "improves",
+            "excitation": "narrow",
+            "fewer_longer": {
+              "n_train": 256,
+              "seq_len": 320
+            },
+            "mean_gain": 0.9509850859642028,
+            "metric": "recovery",
+            "more_shorter": {
+              "n_train": 512,
+              "seq_len": 160
+            },
+            "sample_budget": 81920,
+            "seed_differences": [
+              0.8475707173347473,
+              0.863882839679718,
+              1.035530686378479,
+              0.8446807265281677,
+              1.1632604598999023
+            ]
+          }
+        ],
+        "forecast_contract": "Strict position-only comparison: PHAST-UNKNOWN, pHNN observer, and S5 receive the same histories and training budget.",
+        "matched_sample_budgets": [
+          7680,
+          10240,
+          15360,
+          20480,
+          30720,
+          40960,
+          61440,
+          81920
+        ],
+        "model_seeds": 5,
+        "n_train_values": [
+          32,
+          64,
+          128,
+          256,
+          512
+        ],
+        "recovery_contract": "Separate grey-box attribution test: potential, mass, chart, damping floor, and damping cap are declared; PHAST learns the remaining damping law.",
+        "seq_len_values": [
+          120,
+          160,
+          240,
+          320
+        ],
+        "training_contract": "Every cell receives 100 epochs and the same full 320-sample validation and test trajectories. Increasing N adds optimizer steps per epoch; increasing N or T adds sample processing and wall time. Fixed-update scaling is not established by this surface."
+      }
+    },
+    {
+      "answer": "No from the training transition law alone. The thermal and external-source hypotheses have identical total drift and covariance before intervention. Removing the external channel separates them.",
+      "cells": {
+        "combined": {
+          "channels": {
+            "external_diffusion": true,
+            "external_drift": true,
+            "thermal_noise": true
+          },
+          "label": "Thermal and external forcing",
+          "max_covariance_relative_error": 0.006279757085410784,
+          "max_discrete_energy_z": 2.5449372831604324,
+          "max_drift_z": 2.511877992462473,
+          "mean_absolute_continuous_to_discrete_gap": 0.26660775555789573,
+          "mean_absolute_discrete_energy_residual": 0.008289202129936777,
+          "moment_check_passed": true,
+          "n_probe_seed_pairs": 40,
+          "n_samples_per_probe": 250000
+        },
+        "external_diffusion_only": {
+          "channels": {
+            "external_diffusion": true,
+            "external_drift": false,
+            "thermal_noise": false
+          },
+          "label": "External diffusion only",
+          "max_covariance_relative_error": 0.006137998831083947,
+          "max_discrete_energy_z": 1.9872086991465474,
+          "max_drift_z": 1.955628849146028,
+          "mean_absolute_continuous_to_discrete_gap": 0.265988368613342,
+          "mean_absolute_discrete_energy_residual": 0.006067300721556741,
+          "moment_check_passed": true,
+          "n_probe_seed_pairs": 40,
+          "n_samples_per_probe": 250000
+        },
+        "external_drift_only": {
+          "channels": {
+            "external_diffusion": false,
+            "external_drift": true,
+            "thermal_noise": false
+          },
+          "label": "External drift only",
+          "max_covariance_relative_error": 6.933375533296182e-31,
+          "max_discrete_energy_z": 0.0,
+          "max_drift_z": 0.0,
+          "mean_absolute_continuous_to_discrete_gap": 0.2666077555578746,
+          "mean_absolute_discrete_energy_residual": 9.020562075079397e-17,
+          "moment_check_passed": true,
+          "n_probe_seed_pairs": 40,
+          "n_samples_per_probe": 250000
+        },
+        "thermal_only": {
+          "channels": {
+            "external_diffusion": false,
+            "external_drift": false,
+            "thermal_noise": true
+          },
+          "label": "FDT thermal noise only",
+          "max_covariance_relative_error": 0.006836463381904068,
+          "max_discrete_energy_z": 2.8641837004849586,
+          "max_drift_z": 2.864745806729971,
+          "mean_absolute_continuous_to_discrete_gap": 0.265988368613342,
+          "mean_absolute_discrete_energy_residual": 0.005840287793751099,
+          "moment_check_passed": true,
+          "n_probe_seed_pairs": 40,
+          "n_samples_per_probe": 250000
+        }
+      },
+      "evidence": "Four source-isolation cells; 40 probe-seed pairs per cell. Maximum covariance error is 0.68%; maximum drift and discrete-energy deviations are below 2.86 standard errors.",
+      "execution": {
+        "runs": [
+          {
+            "complete": 4,
+            "expected": 4,
+            "status": "complete"
+          }
+        ],
+        "summary": "All four full attribution cells pass their preregistered local-moment checks. The matched training law and shaker-removal intervention are complete."
+      },
+      "id": "uncertainty",
+      "intervention": {
+        "covariance_drop": 0.65,
+        "drift_change": 0.516333404976036
+      },
+      "label": "Uncertainty",
+      "matched_law": {
+        "after_external_channel_removal": {
+          "external_source_mean_drift_change": 0.516333404976036,
+          "external_source_relative_covariance_drop": 0.65,
+          "thermal_hypothesis_covariance_change": 0.0,
+          "thermal_hypothesis_drift_change": 0.0
+        },
+        "answer": "The training transition law does not identify whether covariance is thermal or externally supplied; removing the external channel does.",
+        "before_intervention": {
+          "maximum_covariance_gap": 2.7755575615628914e-17,
+          "maximum_drift_gap": 1.7763568394002505e-15
+        },
+        "construction": {
+          "internal_fraction": 0.35,
+          "temperature": 0.08
+        },
+        "intervention_separates_sources": true,
+        "training_laws_match": true
+      },
+      "motivates": "Interventions or independently calibrated channels before claiming that a learned stochastic term identifies a physical noise source.",
+      "not_established": "No learned model has yet recovered this decomposition from q-only data, and no long-horizon calibration claim is made.",
+      "protocol": {
+        "change": "Thermal versus external source decomposition, then removal of the external channel",
+        "fixed": "Total drift and covariance during training, plant, time step, and temperature",
+        "input": "Stochastic windy-pendulum states; 250,000 one-step samples at each of eight probe states and five seeds",
+        "readout": "Conditional drift, covariance, and the discrete stochastic energy ledger"
+      },
+      "question": "Can trajectory data distinguish FDT fluctuations from an external stochastic port, and what intervention makes the distinction observable?",
+      "sampling": {
+        "probe_seed_pairs_per_cell": 40,
+        "samples_per_probe": 250000
+      },
+      "source": "results/stochastic_attribution/full/web.json",
+      "status": "Mechanistic result",
+      "transition_moment_checks_passed": true
+    },
+    {
+      "action_contract": [
+        {
+          "action_scale": 0.5,
+          "kd": 5.0,
+          "kp": 40.0,
+          "raw_std": 0.6040394902229309,
+          "raw_to_torque_corr": 0.2151315255711476,
+          "robot": "anymal_d",
+          "torque_std": 10.478795051574707
+        },
+        {
+          "action_scale": 0.25,
+          "kd": 0.5,
+          "kp": 25.0,
+          "raw_std": 1.060180902481079,
+          "raw_to_torque_corr": -0.04828649545864513,
+          "robot": "go2",
+          "torque_std": 4.480320930480957
+        }
+      ],
+      "answer": "Unknown. Existing transfer experiments evaluate a frozen model on new embodiments or subsystem counts; they do not measure sequential adaptation and forgetting.",
+      "columns": [
+        "nominal",
+        "damping",
+        "inertia",
+        "actuation"
+      ],
+      "evidence": "The empty matrix is an evaluation contract, not a predicted result.",
+      "execution": {
+        "runs": [
+          {
+            "complete": 1,
+            "expected": 5,
+            "status": "partial"
+          }
+        ],
+        "summary": "One full sequential seed is complete (1/5). It does not expose a retention-adaptation conflict; four seeds remain before a scientific conclusion."
+      },
+      "id": "continual",
+      "label": "Environments",
+      "matrix": [
+        [
+          0.00019590392184909433,
+          null,
+          null,
+          null
+        ],
+        [
+          0.00019647166482172906,
+          0.00020614777167793363,
+          null,
+          null
+        ],
+        [
+          0.00019483253709040582,
+          0.00020613249216694385,
+          0.00011279718455625698,
+          null
+        ],
+        [
+          0.0001925796823343262,
+          0.0002051789197139442,
+          0.00011034765338990837,
+          0.00017330604896415025
+        ]
+      ],
+      "matrix_arm": "unrestricted fine-tuning",
+      "matrix_metric": "forecast MSE",
+      "motivates": "A stable/plastic update rule only if conventional freezing, fine-tuning, replay, and oracle block updates expose a real retention-adaptation conflict.",
+      "not_established": "No after-each-environment evaluation matrix exists for PHAST.",
+      "protocol": {
+        "change": "Damping, then inertia, then the actuation map",
+        "fixed": "Architecture, data budget per environment, evaluation environments",
+        "input": "A sequence of environments with one typed physical change at a time",
+        "readout": "A_ij evaluation matrix, forgetting, adaptation steps, and physical recovery"
+      },
+      "question": "Can one current PHAST model adapt across environments without erasing earlier competence?",
+      "rows": [
+        "after nominal",
+        "after damping",
+        "after inertia",
+        "after actuation"
+      ],
+      "source": "planned diagnostic contract",
+      "status": "One full seed"
+    },
+    {
+      "answer": "The oracle controller remains robust, but the current q-only PHAST port estimate fails under this fixed controller contract. Finite-difference and MAP estimates survive delay, dropout, and actuator loss, then fail under measurement noise and the combined stressor.",
+      "evidence": "3,000 trials: five state/port estimators, six feedback stressors, four initial-condition regimes, and 25 trials per cell.",
+      "execution": {
+        "runs": [
+          {
+            "complete": 3000,
+            "expected": 3000,
+            "status": "complete"
+          }
+        ],
+        "summary": "The full 3,000-trial closed-loop diagnostic is complete. The matrix below aggregates success over four initial-condition regimes."
+      },
+      "id": "closed-loop",
+      "label": "Closed loop",
+      "methods": [
+        "casimir_true",
+        "casimir_qonly_fd",
+        "casimir_qonly_map",
+        "casimir_qonly_fdtcn",
+        "casimir_qonly_phast"
+      ],
+      "motivates": "Closed-loop correction and uncertainty handling before repeated PHAST-informed intervention.",
+      "n_trials": 3000,
+      "noise_results": [
+        {
+          "finite_difference": 1.0,
+          "noise_aware": 1.0,
+          "oracle": 1.0,
+          "sigma": 0.0
+        },
+        {
+          "finite_difference": 1.0,
+          "noise_aware": 1.0,
+          "oracle": 1.0,
+          "sigma": 0.01
+        },
+        {
+          "finite_difference": 0.0,
+          "noise_aware": 0.26,
+          "oracle": 1.0,
+          "sigma": 0.05
+        }
+      ],
+      "not_established": "This diagnoses the present pendulum controller interface. It does not establish that PHAST cannot support closed-loop control after observer, uncertainty, or controller co-design.",
+      "protocol": {
+        "change": "q-only measurement noise and velocity estimator",
+        "fixed": "Plant, controller gains, target, horizon, and success definition",
+        "input": "The same pendulum controller and initial-condition regimes",
+        "readout": "Success, terminal error, effort, and velocity-estimation error"
+      },
+      "question": "When do state and port errors become failed physical decisions?",
+      "source": "results/closed_loop_diagnostic/full/summary.json",
+      "status": "Full diagnostic",
+      "stressors": [
+        "nominal",
+        "noise",
+        "delay",
+        "dropout",
+        "actuator_loss",
+        "combined"
+      ],
+      "success_matrix": [
+        [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.99,
+          0.99
+        ],
+        [
+          1.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.05,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.05,
+          0.0,
+          0.05,
+          0.06,
+          0.07,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "title": "Where current PHAST reaches its limits"
+}

@@ -578,8 +578,8 @@
     "damping_variation_cap": 0.5,
     "data_seed": 42,
     "excitation": {
-      "broad": "Initial momentum scale 4.0",
-      "narrow": "Initial momentum scale 0.35"
+      "broad": "Large starting angular momentum; scale 4.0. The pendulum visits a wider range of states.",
+      "narrow": "Small starting angular momentum; scale 0.35."
     },
     "history": 10,
     "horizon": 100,

@@ -25,6 +25,9 @@ from typing import Any, Iterable, Mapping, Optional
 import numpy as np
 import torch
 
+from benchmarks_core.api import RolloutConfig, Split, TrajectoryBatch
+from benchmarks_core.envs.pendulum_v2 import PendulumEnv
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = REPO_ROOT / "configs" / "experiments" / "phast_dissipation_scaling.json"
@@ -50,14 +53,121 @@ class RunSpec:
 
     @property
     def run_id(self) -> str:
-        return "__".join(
-            (
-                self.system,
-                self.excitation,
-                f"n{self.n_train}",
-                f"h{self.hidden_dim}",
-                self.variant,
+        parts = [self.system, self.excitation, f"n{self.n_train}"]
+        if "seq_len_values" in self.settings:
+            parts.append(f"t{self.settings['seq_len']}")
+        parts.extend((f"h{self.hidden_dim}", self.variant))
+        return "__".join(parts)
+
+
+def _slice_observation(value: Any, n: int, seq_len: int) -> Any:
+    if isinstance(value, torch.Tensor):
+        return value[:n, :seq_len]
+    if isinstance(value, Mapping):
+        return {key: _slice_observation(item, n, seq_len) for key, item in value.items()}
+    return value
+
+
+def _slice_split(split: Split, n: int, seq_len: int) -> Split:
+    def sliced(value: Any) -> Any:
+        if not isinstance(value, torch.Tensor):
+            return value
+        if value.ndim >= 2:
+            return value[:n, :seq_len]
+        if value.ndim == 1 and value.shape[0] >= n:
+            return value[:n]
+        return value
+
+    return Split(
+        observations=_slice_observation(split.observations, n, seq_len),
+        actions=sliced(split.actions),
+        rewards=sliced(split.rewards),
+        energy=sliced(split.energy),
+        dissipation=sliced(split.dissipation),
+        momenta=sliced(split.momenta),
+        meta={key: sliced(value) for key, value in split.meta.items()},
+    )
+
+
+class NestedSplitPendulumEnv(PendulumEnv):
+    """Pendulum study environment with nested train data and fixed eval splits.
+
+    ``cfg.seq_len`` changes only the amount of training evidence. Validation and
+    test trajectories retain ``fixed_eval_seq_len`` samples in every cell so a
+    cross-T comparison does not silently change the evaluation distribution.
+    """
+
+    def __init__(
+        self,
+        *,
+        max_n_train: int,
+        max_seq_len: int,
+        fixed_eval_seq_len: int,
+        split_seeds: Mapping[str, int],
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.max_n_train = int(max_n_train)
+        self.max_seq_len = int(max_seq_len)
+        self.fixed_eval_seq_len = int(fixed_eval_seq_len)
+        if self.fixed_eval_seq_len < 1:
+            raise ValueError("fixed_eval_seq_len must be positive.")
+        self.split_seeds = {key: int(value) for key, value in split_seeds.items()}
+
+    def _seeded_sample(
+        self,
+        n: int,
+        seed: int,
+        device: str,
+        *,
+        seq_len: Optional[int] = None,
+    ) -> Split:
+        if device != "cpu":
+            raise ValueError("Nested dissipation-scaling splits currently require CPU generation.")
+        numpy_state = np.random.get_state()
+        try:
+            with torch.random.fork_rng(devices=[]):
+                torch.manual_seed(seed)
+                np.random.seed(seed)
+                return self._sample(
+                    self._make_sim(),
+                    n,
+                    self.max_seq_len if seq_len is None else int(seq_len),
+                    device,
+                )
+        finally:
+            np.random.set_state(numpy_state)
+
+    def rollout(self, cfg: RolloutConfig) -> TrajectoryBatch:
+        if cfg.n_train > self.max_n_train:
+            raise ValueError(
+                f"Requested n_train={cfg.n_train} exceeds nested maximum {self.max_n_train}."
             )
+        if cfg.seq_len > self.max_seq_len:
+            raise ValueError(
+                f"Requested seq_len={cfg.seq_len} exceeds nested maximum {self.max_seq_len}."
+            )
+        train = self._seeded_sample(
+            self.max_n_train,
+            self.split_seeds["train"],
+            cfg.device,
+        )
+        val = self._seeded_sample(
+            cfg.n_val,
+            self.split_seeds["val"],
+            cfg.device,
+            seq_len=self.fixed_eval_seq_len,
+        )
+        test = self._seeded_sample(
+            cfg.n_test,
+            self.split_seeds["test"],
+            cfg.device,
+            seq_len=self.fixed_eval_seq_len,
+        )
+        return TrajectoryBatch(
+            train=_slice_split(train, cfg.n_train, cfg.seq_len),
+            val=val,
+            test=test,
         )
 
 
@@ -83,32 +193,35 @@ def expand_specs(config: Mapping[str, Any], profile: str) -> list[RunSpec]:
             if excitation not in system_cfg["excitation"]:
                 raise ValueError(f"System {system!r} has no excitation level {excitation!r}.")
             for n_train in settings["n_train_values"]:
-                for hidden_dim in settings["hidden_dims"]:
-                    for variant in settings["variants"]:
-                        variant_cfg = config["variants"].get(variant)
-                        if variant_cfg is None:
-                            raise ValueError(f"Profile {profile!r} references unknown variant {variant!r}.")
-                        specs.append(
-                            RunSpec(
-                                profile=profile,
-                                system=str(system),
-                                excitation=str(excitation),
-                                n_train=int(n_train),
-                                hidden_dim=int(hidden_dim),
-                                variant=str(variant),
-                                model=str(variant_cfg["model"]),
-                                contract=str(variant_cfg["contract"]),
-                                model_kwargs=dict(variant_cfg.get("model_kwargs", {})),
-                                settings=settings,
+                sequence_lengths = settings.get("seq_len_values", [settings["seq_len"]])
+                for seq_len in sequence_lengths:
+                    spec_settings = dict(settings)
+                    spec_settings["seq_len"] = int(seq_len)
+                    for hidden_dim in settings["hidden_dims"]:
+                        for variant in settings["variants"]:
+                            variant_cfg = config["variants"].get(variant)
+                            if variant_cfg is None:
+                                raise ValueError(f"Profile {profile!r} references unknown variant {variant!r}.")
+                            specs.append(
+                                RunSpec(
+                                    profile=profile,
+                                    system=str(system),
+                                    excitation=str(excitation),
+                                    n_train=int(n_train),
+                                    hidden_dim=int(hidden_dim),
+                                    variant=str(variant),
+                                    model=str(variant_cfg["model"]),
+                                    contract=str(variant_cfg["contract"]),
+                                    model_kwargs=dict(variant_cfg.get("model_kwargs", {})),
+                                    settings=spec_settings,
+                                )
                             )
-                        )
     return specs
 
 
 def register_study_environment(config: Mapping[str, Any], spec: RunSpec):
     """Register a typed environment that changes sampling coverage, not dynamics."""
     from benchmarks_core.envs.double_pendulum_v2 import DoublePendulumEnv
-    from benchmarks_core.envs.pendulum_v2 import PendulumEnv
     from phast.benchmarks import RegisteredEnv, get_env, register_env
 
     system_cfg = dict(config["systems"][spec.system])
@@ -117,7 +230,17 @@ def register_study_environment(config: Mapping[str, Any], spec: RunSpec):
     excitation.pop("description", None)
 
     if system_cfg["kind"] == "pendulum":
-        environment = PendulumEnv(qonly=True, **plant)
+        if spec.settings.get("nested_split_protocol", False):
+            environment = NestedSplitPendulumEnv(
+                qonly=True,
+                max_n_train=max(int(value) for value in spec.settings["n_train_values"]),
+                max_seq_len=max(int(value) for value in spec.settings["seq_len_values"]),
+                fixed_eval_seq_len=int(spec.settings["fixed_eval_seq_len"]),
+                split_seeds=spec.settings["split_seeds"],
+                **plant,
+            )
+        else:
+            environment = PendulumEnv(qonly=True, **plant)
         environment.p_scale = float(excitation["p_scale"])
     elif system_cfg["kind"] == "double_pendulum":
         damping_keys = {"b1_base", "b1_amp", "b2_base", "b2_amp"}
@@ -148,8 +271,6 @@ def register_study_environment(config: Mapping[str, Any], spec: RunSpec):
 
 def characterize_environment(env, spec: RunSpec) -> dict[str, Any]:
     """Record the actual hidden-state coverage used by the generated split."""
-    from benchmarks_core.api import RolloutConfig
-
     settings = spec.settings
     torch.manual_seed(int(settings["data_seed"]))
     np.random.seed(int(settings["data_seed"]))
@@ -356,13 +477,20 @@ def summarize_run(run_dir: Path) -> Optional[dict[str, Any]]:
         "system": spec["system"],
         "excitation": spec["excitation"],
         "n_train": spec["n_train"],
+        "seq_len": spec["settings"]["seq_len"],
         "hidden_dim": spec["hidden_dim"],
         "variant": spec["variant"],
         "model": spec["model"],
         "contract": spec["contract"],
         "seeds": len(seed_results),
+        "nested_split_protocol": bool(spec["settings"].get("nested_split_protocol", False)),
+        "protocol_version": spec["settings"].get("protocol_version"),
+        "fixed_eval_seq_len": spec["settings"].get("fixed_eval_seq_len"),
+        "data_seed": spec["settings"].get("data_seed"),
+        "split_seeds": spec["settings"].get("split_seeds"),
         "n_params": seed_results[0]["n_params"],
         "training_seconds_mean": float(np.mean([seed["training_seconds"] for seed in seed_results])),
+        "training_seconds_std": float(np.std([seed["training_seconds"] for seed in seed_results])),
         **manifest["excitation_coverage"],
         **_numeric_metrics(seed_results, "train"),
         **_numeric_metrics(seed_results, "test"),
@@ -387,12 +515,32 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument(
         "--profile",
-        choices=("smoke", "pilot", "bounded_pilot", "full"),
         default="smoke",
+        help="Profile name declared in the experiment config.",
     )
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--max-runs", type=int, default=None)
     parser.add_argument("--variants", nargs="+", default=None)
+    parser.add_argument("--excitations", nargs="+", default=None)
+    parser.add_argument(
+        "--n-train-values",
+        nargs="+",
+        type=int,
+        default=None,
+        help="Run only specifications with these training-trajectory counts.",
+    )
+    parser.add_argument(
+        "--seq-len-values",
+        nargs="+",
+        type=int,
+        default=None,
+        help="Run only specifications with these samples per trajectory.",
+    )
+    parser.add_argument(
+        "--defer-summary",
+        action="store_true",
+        help="Skip shared summary writes so disjoint variant workers can run concurrently.",
+    )
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser
@@ -408,6 +556,26 @@ def main(argv: Optional[list[str]] = None) -> int:
         missing = requested - {spec.variant for spec in specs}
         if missing:
             raise ValueError(f"Requested variants are absent from {args.profile}: {sorted(missing)}")
+    if args.excitations:
+        requested = set(args.excitations)
+        specs = [spec for spec in specs if spec.excitation in requested]
+        missing = requested - {spec.excitation for spec in specs}
+        if missing:
+            raise ValueError(f"Requested excitations are absent from {args.profile}: {sorted(missing)}")
+    if args.n_train_values:
+        requested = set(args.n_train_values)
+        available = {spec.n_train for spec in specs}
+        missing = requested - available
+        if missing:
+            raise ValueError(f"Requested n_train values are absent from {args.profile}: {sorted(missing)}")
+        specs = [spec for spec in specs if spec.n_train in requested]
+    if args.seq_len_values:
+        requested = set(args.seq_len_values)
+        available = {int(spec.settings["seq_len"]) for spec in specs}
+        missing = requested - available
+        if missing:
+            raise ValueError(f"Requested sequence lengths are absent from {args.profile}: {sorted(missing)}")
+        specs = [spec for spec in specs if int(spec.settings["seq_len"]) in requested]
     if args.max_runs is not None:
         specs = specs[: max(0, int(args.max_runs))]
 
@@ -432,9 +600,11 @@ def main(argv: Optional[list[str]] = None) -> int:
                 force=args.force,
             )
         )
-        write_summary(profile_dir)
-    rows = write_summary(profile_dir)
-    print(f"Completed {successes}/{len(specs)} requested runs; summary contains {len(rows)} runs.")
+        if not args.defer_summary:
+            write_summary(profile_dir)
+    rows = [] if args.defer_summary else write_summary(profile_dir)
+    summary_note = "summary deferred" if args.defer_summary else f"summary contains {len(rows)} runs"
+    print(f"Completed {successes}/{len(specs)} requested runs; {summary_note}.")
     return 0 if successes == len(specs) else 1
 
 

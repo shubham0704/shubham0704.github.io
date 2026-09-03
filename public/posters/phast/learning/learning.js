@@ -48,6 +48,7 @@ const DEFAULT_COMPARE_METHODS = [
 const state = {
   data: null,
   scalingData: null,
+  diagnosticData: null,
   systemIndex: 0,
   step: 0,
   playing: true,
@@ -56,7 +57,12 @@ const state = {
   coordinate: 0,
   mechanism: "dissipation",
   equationTerm: "R",
-  scalingAxis: "data",
+  scalingAxis: "excitation",
+  diagnostic: "evidence",
+  evidenceExcitation: "broad",
+  evidenceSurfaceView: "synthesis",
+  evidenceNTrain: null,
+  evidenceSeqLen: null,
   visibleMethods: new Set(),
   initialVisibleMethods: null,
   initialCoordinate: null,
@@ -79,8 +85,11 @@ function readViewState() {
   const equationTerms = new Set(["H", "J", "R", "G"]);
   if (equationTerms.has(params.get("term"))) state.equationTerm = params.get("term");
 
-  const axes = new Set(["data", "excitation", "width", "optimization"]);
+  const axes = new Set(["excitation", "width", "optimization"]);
   if (axes.has(params.get("axis"))) state.scalingAxis = params.get("axis");
+
+  const diagnostics = new Set(state.diagnosticData.studies.map((item) => item.id));
+  if (diagnostics.has(params.get("study"))) state.diagnostic = params.get("study");
 
   const coordinate = Number(params.get("coordinate"));
   if (params.has("coordinate") && Number.isInteger(coordinate) && coordinate >= 0) {
@@ -102,6 +111,7 @@ function writeViewState() {
   url.searchParams.set("mechanism", state.mechanism);
   url.searchParams.set("term", state.equationTerm);
   url.searchParams.set("axis", state.scalingAxis);
+  url.searchParams.set("study", state.diagnostic);
   url.searchParams.set("coordinate", String(state.coordinate));
   url.searchParams.set("methods", [...state.visibleMethods].join(",") || "none");
   window.history.replaceState(null, "", url.toString());
@@ -166,14 +176,31 @@ function formatScore(value) {
   return value.toFixed(value < 0.1 ? 4 : 3);
 }
 
+function formatCompact(value) {
+  const numeric = Number(value);
+  if (Number.isInteger(numeric)) return String(numeric);
+  if (Math.abs(numeric) >= 1) return numeric.toFixed(2);
+  return numeric.toFixed(3);
+}
+
 function formatScientific(value) {
   return Number(value).toExponential(2);
+}
+
+function formatDuration(seconds) {
+  return seconds < 60 ? `${seconds.toFixed(0)} s` : `${(seconds / 60).toFixed(1)} min`;
 }
 
 function coordinateLabels(system) {
   if (system.scene === "pendulum") return ["angle theta"];
   if (system.scene === "double-pendulum") return ["angle theta 1", "angle theta 2"];
   return ["cart position x", "pole angle theta"];
+}
+
+function coordinateAxisLabel(system, coordinate) {
+  if (system.scene === "pendulum") return "angle theta (rad)";
+  if (system.scene === "double-pendulum") return `angle theta ${coordinate + 1} (rad)`;
+  return coordinate === 0 ? "cart position x" : "pole angle theta (rad)";
 }
 
 function resizeCanvas(canvas) {
@@ -381,6 +408,12 @@ function makePath(values, xScale, yScale) {
   return values.map((value, index) => `${index ? "L" : "M"}${xScale(index).toFixed(2)},${yScale(value).toFixed(2)}`).join(" ");
 }
 
+function makeBandPath(values, spreads, xScale, yScale) {
+  const upper = values.map((value, index) => `${index ? "L" : "M"}${xScale(index).toFixed(2)},${yScale(value + spreads[index]).toFixed(2)}`).join(" ");
+  const lower = values.map((value, index) => `L${xScale(values.length - index - 1).toFixed(2)},${yScale(values[values.length - index - 1] - spreads[values.length - index - 1]).toFixed(2)}`).join(" ");
+  return `${upper}${lower}Z`;
+}
+
 function drawHeroRollout() {
   const svg = byId("hero-rollout");
   if (!svg || !state.data) return;
@@ -507,33 +540,42 @@ function renderEquationTerm() {
 function renderPlot(svg, series, options = {}) {
   const width = 900;
   const height = 310;
-  const margin = { left: 72, right: 24, top: 22, bottom: 48 };
+  const margin = { left: 82, right: 24, top: 28, bottom: 62 };
   if (!series.length) {
     svg.innerHTML = `<text class="plot-label" x="450" y="155" text-anchor="middle">Select at least one model above.</text>`;
     return;
   }
-  const allValues = series.map((item) => item.values);
+  const allValues = series.map((item) => item.values.flatMap((value, index) => {
+    const spread = item.stdValues?.[index] || 0;
+    if (!spread) return [value];
+    return options.logY ? [Math.max(value - spread, 1e-9), value + spread] : [value - spread, value + spread];
+  }));
   const [minY, maxY] = options.logY
     ? extent(allValues.map((values) => values.map((value) => Math.log10(Math.max(value, 1e-9)))))
     : extent(allValues);
   const n = Math.max(...series.map((item) => item.values.length));
   const x = (index) => margin.left + index / Math.max(1, n - 1) * (width - margin.left - margin.right);
   const yValue = (value) => options.logY ? Math.log10(Math.max(value, 1e-9)) : value;
-  const y = (value) => margin.top + (maxY - yValue(value)) / (maxY - minY) * (height - margin.top - margin.bottom);
+  const ySpan = Math.max(maxY - minY, 1e-9);
+  const y = (value) => margin.top + (maxY - yValue(value)) / ySpan * (height - margin.top - margin.bottom);
   const grid = [0, .25, .5, .75, 1].map((ratio) => {
     const gy = margin.top + ratio * (height - margin.top - margin.bottom);
     const raw = maxY - ratio * (maxY - minY);
     const label = options.logY ? `10^${raw.toFixed(1)}` : raw.toFixed(2);
     return `<line class="plot-grid" x1="${margin.left}" x2="${width - margin.right}" y1="${gy}" y2="${gy}"/><text class="plot-label" x="${margin.left - 12}" y="${gy + 7}" text-anchor="end">${label}</text>`;
   }).join("");
+  const bands = series.filter((item) => item.stdValues?.some((value) => value > 0)).map((item) => `<path class="plot-uncertainty" fill="${item.color}" d="${makeBandPath(item.values, item.stdValues, x, y)}"/>`).join("");
   const paths = series.map((item) => `<path class="plot-line" stroke="${item.color}" ${item.dash ? `stroke-dasharray="${item.dash}"` : ""} d="${makePath(item.values, x, y)}"/>`).join("");
   const zeroLine = options.zeroLine && minY <= 0 && maxY >= 0
-    ? `<line class="plot-zero" x1="${margin.left}" x2="${width - margin.right}" y1="${y(0)}" y2="${y(0)}"/><text class="plot-zero-label" x="${width - margin.right}" y="${y(0) - 7}" text-anchor="end">initial energy</text>`
+    ? `<line class="plot-zero" x1="${margin.left}" x2="${width - margin.right}" y1="${y(0)}" y2="${y(0)}"/><text class="plot-zero-label" x="${width - margin.right}" y="${y(0) - 7}" text-anchor="end">${escapeText(options.zeroLabel || "zero")}</text>`
     : "";
-  const cursor = options.cursor === false ? "" : `<line class="plot-cursor" x1="${x(state.step)}" x2="${x(state.step)}" y1="${margin.top}" y2="${height - margin.bottom}"/>`;
+  const cursorIndex = Math.min(state.step, n - 1);
+  const cursor = options.cursor === false ? "" : `<line class="plot-cursor" x1="${x(cursorIndex)}" x2="${x(cursorIndex)}" y1="${margin.top}" y2="${height - margin.bottom}"/>${options.cursorLabel ? `<text class="plot-cursor-label" x="${x(cursorIndex) + 7}" y="${margin.top + 13}">${escapeText(options.cursorLabel(cursorIndex))}</text>` : ""}`;
   const legendGap = Math.min(145, (width - margin.left - margin.right) / Math.max(1, series.length));
   const legend = series.map((item, index) => `<g transform="translate(${margin.left + index * legendGap},${height - 12})"><line x2="24" stroke="${item.color}" stroke-width="4" ${item.dash ? `stroke-dasharray="${item.dash}"` : ""}/><text class="plot-label" x="31" y="7">${escapeText(item.label)}</text></g>`).join("");
-  svg.innerHTML = `${grid}${zeroLine}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${paths}${cursor}${legend}`;
+  const xTitle = options.xLabel ? `<text class="plot-axis-title" x="${(margin.left + width - margin.right) / 2}" y="${height - 30}" text-anchor="middle">${escapeText(options.xLabel)}</text>` : "";
+  const yTitle = options.yLabel ? `<text class="plot-axis-title" transform="translate(17 ${(margin.top + height - margin.bottom) / 2}) rotate(-90)" text-anchor="middle">${escapeText(options.yLabel)}</text>` : "";
+  svg.innerHTML = `${grid}${zeroLine}<line class="plot-axis" x1="${margin.left}" x2="${width - margin.right}" y1="${height - margin.bottom}" y2="${height - margin.bottom}"/>${bands}${paths}${cursor}${xTitle}${yTitle}${legend}`;
 }
 
 function drawLowerIsBetterComparison(svg, rows) {
@@ -553,9 +595,10 @@ function drawLowerIsBetterComparison(svg, rows) {
     const points = rows.map((row, index) => {
       const x = left + 115 + index * 205;
       const cy = y(row[metric.key]);
+      const labelLines = index === 0 ? ["Bounded", "non-orthogonal"] : ["Ordered + PSD init.", "+ power loss"];
       return `<circle class="metric-point" cx="${x}" cy="${cy}" r="7" fill="${colors[index]}"/>
         <text class="metric-value" x="${x}" y="${cy - 15}" text-anchor="middle">${formatScientific(row[metric.key])}</text>
-        <text class="metric-name" x="${x}" y="254" text-anchor="middle">${escapeText(index === 0 ? "bounded" : "ordered + anchored")}</text>`;
+        <text class="metric-name" x="${x}" y="248" text-anchor="middle"><tspan x="${x}">${escapeText(labelLines[0])}</tspan><tspan x="${x}" dy="14">${escapeText(labelLines[1])}</tspan></text>`;
     }).join("");
     return `<g><text class="metric-title" x="${left + 225}" y="28" text-anchor="middle">${metric.label}</text>
       <text class="metric-reading" x="${left + 225}" y="48" text-anchor="middle">log scale · lower is better</text>
@@ -591,11 +634,17 @@ function drawPlots() {
   const methods = system.methods.filter((method) => state.visibleMethods.has(method.id));
   renderPlot(byId("trajectory-plot"), [
     { label: "Truth", color: COLORS.truth, values: system.truth.map((q) => q[coordinate]) },
-    ...methods.map((method) => ({ label: shortLabel(method.id), color: COLORS[method.id], dash: lineDash(method.id), values: method.prediction.map((q) => q[coordinate]) })),
-  ]);
+    ...methods.map((method) => ({
+      label: shortLabel(method.id),
+      color: COLORS[method.id],
+      dash: lineDash(method.id),
+      values: method.prediction_mean.map((q) => q[coordinate]),
+      stdValues: method.prediction_std.map((q) => q[coordinate]),
+    })),
+  ], { xLabel: "forecast step h", yLabel: coordinateAxisLabel(system, coordinate), cursorLabel: (index) => `h = ${index + 1}` });
   renderPlot(byId("error-plot"), methods.map((method) => ({
-    label: shortLabel(method.id), color: COLORS[method.id], dash: lineDash(method.id), values: method.error_by_step,
-  })), { logY: true });
+    label: shortLabel(method.id), color: COLORS[method.id], dash: lineDash(method.id), values: method.error_by_step_mean, stdValues: method.error_by_step_std,
+  })), { logY: true, xLabel: "forecast step h", yLabel: "coordinate MSE", cursorLabel: (index) => `h = ${index + 1}` });
   drawMechanismPlot();
 }
 
@@ -615,7 +664,7 @@ function drawMechanismPlot() {
       color: COLORS[method.id],
       dash: lineDash(method.id),
       values: normalizedPower(method.native_dissipation_power, system.truth.length),
-    })));
+    })), { cursor: false, xLabel: "forecast step h", yLabel: "normalized dissipated power" });
     return;
   }
   if (state.mechanism === "passivity") {
@@ -624,8 +673,8 @@ function drawMechanismPlot() {
       label: shortLabel(method.id),
       color: COLORS[method.id],
       dash: lineDash(method.id),
-      values: method.native_energy_change_normalized,
-    })), { zeroLine: true });
+      values: method.native_energy_change_normalized.map((value, index, values) => index === 0 ? 0 : value - values[index - 1]),
+    })), { zeroLine: true, zeroLabel: "no energy increase", cursor: false, xLabel: "forecast step h", yLabel: "normalized finite-step delta H" });
     return;
   }
   if (state.mechanism === "spectral") {
@@ -665,11 +714,22 @@ function renderMechanismEvidence() {
     ports: "$G_\\theta(q)u$ and $u^\\top y^{\\mathrm{port}}$",
     efficiency: "$M_\\theta(q)^{-1}p$ and $R_\\theta\\nabla H_\\theta$",
   };
+  const takeaways = {
+    dissipation: "PHAST and pHNN expose a dissipative channel; HNN cannot. This diagnostic does not isolate a PHAST-specific gain.",
+    passivity: "On this rollout, PHAST and pHNN have no upward energy steps; HNN has 24 of 99.",
+    spectral: "Ordering and anchoring reduce rollout error 3.2x and modal-power error 492x on LJ-3.",
+    ports: "PHAST port feedback matches 100% oracle success with 6.8% lower reported mean effort.",
+    efficiency: "At fixed rank r=2, the structured primitives scale near-linearly through n=256; end-to-end scaling remains untested.",
+  };
   const evidenceScope = evidenceScopes[mechanism.id] || { level: "Evidence", scope: mechanism.evidence_type };
   byId("mechanism-level").textContent = evidenceScope.level;
   byId("mechanism-kind").textContent = evidenceScope.scope;
   byId("mechanism-evidence").dataset.evidenceLevel = mechanism.id;
   byId("mechanism-formula").textContent = formulaCallbacks[mechanism.id] || "";
+  const hnn = currentMethod("hnn_observer_qonly");
+  byId("mechanism-takeaway").textContent = mechanism.id === "passivity"
+    ? `On this rollout, PHAST and pHNN have no upward energy steps; HNN has ${hnn.native_energy_increase_steps} of ${system.truth.length - 1}.`
+    : takeaways[mechanism.id] || mechanism.interpretation;
   byId("mechanism-title").textContent = mechanism.title;
   byId("mechanism-question").textContent = mechanism.question;
   byId("mechanism-interpretation").textContent = mechanism.interpretation;
@@ -703,7 +763,7 @@ function renderMechanismEvidence() {
     plot.hidden = false;
     result.innerHTML = `<p class="result-callout"><strong>What the family comparison tests:</strong> HNN has no damping channel through which energy can be lost; pHNN and PHAST do. Power curves are normalized separately because their learned Hamiltonian scales are not comparable. This is not yet a one-switch PHAST ablation.</p>`;
   } else if (mechanism.id === "passivity") {
-    byId("mechanism-caption").textContent = "Stored-energy change from rollout start, normalized within each model";
+    byId("mechanism-caption").textContent = "Finite-step change in stored energy, normalized within each model; values above zero are upward steps";
     plot.hidden = false;
     result.innerHTML = mechanismResultTable(
       ["Model", "Native channel", "Upward finite-step increments"],
@@ -712,7 +772,7 @@ function renderMechanismEvidence() {
         method.native_channels.psd_damping ? "Hamiltonian + PSD loss" : "Hamiltonian only",
         method.native_energy_increase_steps == null ? "not available" : `${method.native_energy_increase_steps} / ${system.truth.length - 1}`,
       ]),
-    ) + `<p class="result-callout"><strong>How to read the plot:</strong> zero is each model's energy at the start of the forecast. Moving below zero means that model reports a net loss of stored energy. Any upward segment is a finite-step energy increase. Compare direction and upward increments, not curve heights, because every learned Hamiltonian has its own scale and is normalized separately.</p><p class="result-caveat">This count describes the displayed finite-step rollout. PHAST's formal passivity claim is continuous-time; the full numerical map is not asserted to be unconditionally energy-monotone.</p>`;
+    ) + `<p class="result-callout"><strong>How to read the plot:</strong> each point is one finite-step energy change. A point above zero is an energy increase; a point below zero is a loss. Compare signs and counts, not vertical magnitudes, because every learned Hamiltonian is normalized separately.</p><p class="result-caveat">This count describes the displayed finite-step rollout. PHAST's formal passivity claim is continuous-time; the full numerical map is not asserted to be unconditionally energy-monotone.</p>`;
   } else if (mechanism.id === "spectral") {
     const [base, controlled] = mechanism.result.rows;
     byId("mechanism-caption").textContent = mechanism.result.benchmark;
@@ -727,7 +787,7 @@ function renderMechanismEvidence() {
     result.innerHTML = mechanismResultTable(
       ["Feedback signal", "Success", "Mean control effort"],
       mechanism.result.rows.map((row) => [escapeText(row.label), `${Math.round(row.success * 100)}%`, row.effort.toFixed(1)]),
-    ) + `<p class="result-callout"><strong>Result:</strong> the learned PHAST port matches oracle success and uses 6.8% less control effort. This is a separate full-state control experiment, not the q-only rollout shown above.</p>`;
+    ) + `<p class="result-callout"><strong>Result:</strong> the learned PHAST port matches oracle success and uses 6.8% less reported mean control effort. This is a separate full-state control experiment, not the q-only rollout shown above.</p><p class="result-caveat">The exported artifact does not include effort units or trial dispersion, so the effort difference is descriptive rather than an uncertainty-aware superiority claim.</p>`;
   } else {
     byId("mechanism-caption").textContent = "Measured CPU time per structured operation as physical dimension increases (fixed rank r=2)";
     plot.hidden = false;
@@ -881,6 +941,12 @@ function renderActiveResult() {
   byId("active-result-detail").textContent = `${system.label}: PHAST ${formatScore(phast.aggregate.mean)} +/- ${formatScore(phast.aggregate.std)}; ${shortLabel(baseline.id)} ${formatScore(baseline.aggregate.mean)} +/- ${formatScore(baseline.aggregate.std)} over five model seeds.`;
 }
 
+function renderTrajectoryCaption() {
+  const system = currentSystem();
+  byId("trajectory-caption-title").textContent = "Mean forecast +/- 1 SD across five model seeds";
+  byId("trajectory-caption-detail").textContent = `${coordinateAxisLabel(system, state.coordinate)} · same held-out motion for every model`;
+}
+
 function renderInterpretation() {
   const system = currentSystem();
   const phast = system.methods[0].aggregate.mean;
@@ -952,7 +1018,7 @@ function renderFullForecastScaling() {
       return `<td class="${className}" data-label="${escapeText(scalingMethod(methodId).label)}"><strong>${formatScore(value.mean)}</strong><small>+/- ${formatScore(value.std)}</small></td>`;
     }).join("");
     return `<tr>
-      <th scope="row"><span>${escapeText(cell.excitation)}</span><small>$N=${cell.n_train}$ · width ${cell.hidden_dim}</small></th>
+      <th scope="row"><span>${escapeText(startingMotionName(cell.excitation))}</span><small>$N_{\\mathrm{train}}=${cell.n_train}$ · width ${cell.hidden_dim}</small></th>
       ${values}
       <td data-label="Advantage"><strong>${(bestAlternative / bounded).toFixed(2)}x</strong><small>lower</small></td>
     </tr>`;
@@ -976,7 +1042,7 @@ function renderForecastScaling() {
     const nonPhast = [valueFor("phnn_observer"), valueFor("s5")].sort((left, right) => left.mean - right.mean)[0];
     const bestAlternative = Math.min(...cell.values.filter((value) => value.method !== "phast_partial_bounded").map((value) => value.mean));
     return `<tr>
-      <th scope="row"><span>${escapeText(cell.excitation)} excitation</span><small>$N=${cell.n_train}$ · width 64</small></th>
+      <th scope="row"><span>${escapeText(startingMotionName(cell.excitation))}</span><small>$N_{\\mathrm{train}}=${cell.n_train}$ · width 64</small></th>
       <td class="best-scaling-score" data-label="Bounded PHAST"><strong>${formatScore(bounded.mean)}</strong><small>+/- ${formatScore(bounded.std)}</small></td>
       <td data-label="PHAST without damping"><strong>${formatScore(noDamping.mean)}</strong><small>+/- ${formatScore(noDamping.std)}</small></td>
       <td data-label="Best non-PHAST"><strong>${formatScore(nonPhast.mean)}</strong><small>${escapeText(scalingMethod(nonPhast.method).label)} · +/- ${formatScore(nonPhast.std)}</small></td>
@@ -1005,7 +1071,7 @@ function renderCapacityScaling() {
       };
     });
     return `<tr>
-      <th scope="row"><span>${excitation} excitation</span><small>$N=256$</small></th>
+      <th scope="row"><span>${escapeText(startingMotionName(excitation))}</span><small>$N_{\\mathrm{train}}=256$</small></th>
       <td data-label="Width 32 · H=100 MSE"><strong>${formatScore(values[0].forecast.mean)}</strong><small>+/- ${formatScore(values[0].forecast.std)}</small></td>
       <td data-label="Width 64 · H=100 MSE"><strong>${formatScore(values[1].forecast.mean)}</strong><small>+/- ${formatScore(values[1].forecast.std)}</small></td>
       <td data-label="Width 32 · damping R²"><strong>${formatSigned(values[0].recovery.mean)}</strong><small>+/- ${values[0].recovery.std.toFixed(3)}</small></td>
@@ -1026,14 +1092,14 @@ function renderRecoveryGrid(rows, targetId) {
       const alpha = positive ? Math.min(.28, .07 + value * .45) : Math.min(.16, .07 + Math.abs(value) * .25);
       const fill = positive ? `rgba(23, 111, 80, ${alpha})` : `rgba(185, 75, 75, ${alpha})`;
       return `<div class="recovery-cell" style="--recovery-fill:${fill}">
-        <span>$N=${row.n_train}$ · width ${row.hidden_dim}</span>
+        <span>$N_{\\mathrm{train}}=${row.n_train}$ · width ${row.hidden_dim}</span>
         <strong>${formatSigned(value)}</strong>
         <small>+/- ${row.bounded.std.toFixed(3)}</small>
         <p>uncapped ${formatSigned(row.uncapped.mean, 1)}</p>
       </div>`;
     }).join("");
-    return `<section class="recovery-group" aria-label="${excitation} excitation recovery">
-      <header><h5>${excitation} excitation</h5><p>${escapeText(state.scalingData.study.excitation[excitation])}</p></header>
+    return `<section class="recovery-group" aria-label="${escapeText(startingMotionName(excitation))} recovery">
+      <header><h5>${escapeText(startingMotionName(excitation))}</h5><p>${escapeText(state.scalingData.study.excitation[excitation])}</p></header>
       <div>${cells}</div>
     </section>`;
   }).join("");
@@ -1105,70 +1171,77 @@ function boundedRecovery(excitation, nTrain, hiddenDim) {
   return scalingCell(state.scalingData.recovery, excitation, nTrain, hiddenDim).bounded;
 }
 
+function startingMotionName(excitation, includeScale = false) {
+  const label = excitation === "narrow" ? "small starting motion" : "large starting motion";
+  if (!includeScale) return label;
+  return `${label} (momentum scale ${excitation === "narrow" ? "0.35" : "4.0"})`;
+}
+
 function scalingAxisSpecification(axis) {
-  const excitationName = (excitation) => excitation === "narrow"
-    ? "narrow excitation (momentum scale 0.35)"
-    : "broad excitation (momentum scale 4.0)";
-  if (axis === "data") {
-    return {
-      question: "Does adding trajectories improve both long-horizon prediction and recovery of the damping law?",
-      fixed: "Bounded PHAST, width 64, 50 epochs, 160 samples per trajectory; narrow and broad excitation are shown separately.",
-      xLabel: "training trajectories",
-      xValues: [64, 256],
-      series: ["narrow", "broad"].map((excitation, index) => ({
-        label: excitationName(excitation),
-        color: index ? SCALING_COLORS.s5 : SCALING_COLORS.phast_partial_bounded,
-        forecast: [64, 256].map((nTrain) => boundedForecast(excitation, nTrain, 64).mean),
-        recovery: [64, 256].map((nTrain) => boundedRecovery(excitation, nTrain, 64).mean),
-      })),
-      interpretation: "Increasing the number of trajectories lowers narrow-regime forecast error from 0.0949 to 0.0425 and raises damping recovery from -0.190 to +0.097. Under broad excitation, recovery improves from +0.017 to +0.437, but rollout error rises from 0.107 to 0.164. More trajectories do not erase the cost of covering a harder physical regime.",
-      caption: "Changing the number of training trajectories at fixed trajectory length and width. Left: H=100 rollout MSE (lower is better). Right: damping R² (higher is better).",
-    };
-  }
   if (axis === "excitation") {
+    const seriesForTrainingSize = (nTrain, color) => ({
+      label: `N_train=${nTrain}`,
+      legendLabel: `fixed model: N_train=${nTrain}`,
+      color,
+      forecast: ["narrow", "broad"].map((excitation) => boundedForecast(excitation, nTrain, 64).mean),
+      forecastStd: ["narrow", "broad"].map((excitation) => boundedForecast(excitation, nTrain, 64).std),
+      recovery: ["narrow", "broad"].map((excitation) => boundedRecovery(excitation, nTrain, 64).mean),
+      recoveryStd: ["narrow", "broad"].map((excitation) => boundedRecovery(excitation, nTrain, 64).std),
+    });
     return {
-      question: "Does observing a wider range of motion make the physical law easier to recover?",
-      fixed: "Bounded PHAST, width 64, 50 epochs; N=64 and N=256 are shown separately.",
-      xLabel: "initial-momentum regime",
-      xValues: ["narrow (0.35)", "broad (4.0)"],
-      series: [64, 256].map((nTrain, index) => ({
-        label: `N=${nTrain}`,
-        color: index ? SCALING_COLORS.phast_partial_bounded : SCALING_COLORS.phnn_observer,
-        forecast: ["narrow", "broad"].map((excitation) => boundedForecast(excitation, nTrain, 64).mean),
-        recovery: ["narrow", "broad"].map((excitation) => boundedRecovery(excitation, nTrain, 64).mean),
-      })),
-      interpretation: "Broad excitation makes the forecasting task harder, yet it makes damping substantially more recoverable. At N=256, rollout error changes from 0.0425 to 0.164 while damping R² rises from +0.097 to +0.437. Forecast accuracy and physical identification therefore move in opposite directions.",
-      caption: "Changing the range of observed initial momenta at fixed width. The same intervention has different effects on prediction and identification.",
+      question: "Does starting the pendulum with more momentum reveal the damping law more clearly?",
+      fixed: "Bounded PHAST, N_train=256, width 64, 50 epochs, and 160 samples per trajectory. Only initial momentum changes: scale 0.35 versus 4.0.",
+      takeaway: "Larger starting motion reveals damping better, but the wider state range is harder to forecast.",
+      xLabel: "range of starting motion",
+      xValues: [
+        { label: "Small momentum", detail: "initial scale = 0.35" },
+        { label: "Large momentum", detail: "initial scale = 4.0" },
+      ],
+      series: [seriesForTrainingSize(256, SCALING_COLORS.phast_partial_bounded)],
+      tableSeries: [
+        seriesForTrainingSize(64, SCALING_COLORS.phnn_observer),
+        seriesForTrainingSize(256, SCALING_COLORS.phast_partial_bounded),
+      ],
+      interpretation: "Larger starting momentum makes the trajectories harder to forecast, but it reveals substantially more about damping. At N_train=256, rollout error changes from 0.0425 to 0.164 while damping R² rises from +0.097 to +0.437. Forecast accuracy and physical identification therefore move in opposite directions.",
+      caption: "The left and right panels evaluate the same two starting-motion conditions. Each pair compares small initial momentum (scale 0.35) with large initial momentum (scale 4.0); the points are independent evaluations, not a time trajectory.",
     };
   }
   if (axis === "width") {
     return {
       question: "Is neural capacity the limiting factor in this study?",
-      fixed: "Bounded PHAST, N=256, 50 epochs; narrow and broad excitation are shown separately.",
+      fixed: "Bounded PHAST, N_train=256, 50 epochs; small and large starting-motion ranges are shown separately.",
+      takeaway: "No clear width effect appears from 32 to 64; observed recovery changes overlap seed variation.",
       xLabel: "hidden width",
-      xValues: [32, 64],
+      xValues: [{ label: "Width 32", detail: "hidden units" }, { label: "Width 64", detail: "hidden units" }],
       series: ["narrow", "broad"].map((excitation, index) => ({
-        label: excitationName(excitation),
+        label: startingMotionName(excitation, true),
         color: index ? SCALING_COLORS.s5 : SCALING_COLORS.phast_partial_bounded,
         forecast: [32, 64].map((width) => boundedForecast(excitation, 256, width).mean),
+        forecastStd: [32, 64].map((width) => boundedForecast(excitation, 256, width).std),
         recovery: [32, 64].map((width) => boundedRecovery(excitation, 256, width).mean),
+        recoveryStd: [32, 64].map((width) => boundedRecovery(excitation, 256, width).std),
       })),
-      interpretation: "Doubling width barely changes rollout error: 0.0429 to 0.0425 under narrow excitation and 0.163 to 0.164 under broad excitation. Recovery improves modestly. In this range, neural capacity is not the primary forecasting bottleneck.",
-      caption: "Changing hidden width at fixed data volume. Forecasting is nearly flat, while damping recovery improves modestly.",
+      interpretation: "Doubling width barely changes rollout error: 0.0429 to 0.0425 for small starting motions and 0.163 to 0.164 for large starting motions. The damping-recovery intervals overlap across seeds, so this experiment does not establish a width effect.",
+      caption: "Two measured widths at fixed data volume. Forecasting is nearly flat, and damping-recovery changes are not separated from seed variation.",
     };
   }
   return {
-    question: "Does PHAST's forecasting advantage disappear when every model trains longer?",
-    fixed: "Separate strict UNKNOWN study, N=1000, five model seeds; no physical components are supplied.",
-    xLabel: "training epochs",
+    question: "Does PHAST's forecasting advantage disappear when every model receives a larger training budget?",
+    fixed: "Separate strict UNKNOWN study, N_train=1000, five model seeds; no physical components are supplied. Each run retains its best validation checkpoint within the budget.",
+    takeaway: "PHAST's advantage persists as the maximum epoch budget increases from 50 to 200.",
+    xLabel: "maximum epoch budget",
     xValues: [50, 100, 200],
-    interpretation: "PHAST-UNKNOWN improves from 0.114 at 50 epochs to 0.0181 at 200 epochs, a 6.3x reduction. Longer training strengthens rather than removes its advantage in this study; this is evidence about optimization sensitivity, not a general scaling law.",
-    caption: "H=100 windy-pendulum rollout error under a strict UNKNOWN contract. Lines show means and bars show one standard deviation.",
+    interpretation: "PHAST-UNKNOWN improves from 0.114 at a 50-epoch budget to 0.0181 at a 200-epoch budget, a 6.3x reduction. This tests optimization sensitivity, not a general compute scaling law; the selected checkpoint can occur before the final epoch.",
+    caption: "H=100 windy-pendulum rollout error under a strict UNKNOWN contract. Lines show means and bars show one standard deviation; each point uses the best validation checkpoint within its budget.",
   };
 }
 
-function panelMarkup({ x, y, width, height, title, subtitle, xValues, series, format, includeZero = false, logScale = false }) {
-  const allValues = series.flatMap((item) => item.values);
+function panelMarkup({ x, y, width, height, title, subtitle, xValues, series, format, includeZero = false, logScale = false, connectSeries = true }) {
+  const allValues = series.flatMap((item) => item.values.flatMap((value, index) => {
+    const spread = item.stdValues?.[index] || 0;
+    const lower = value - spread;
+    return [logScale ? Math.max(lower, Number.EPSILON) : lower, value + spread];
+  }));
   let minValue = includeZero ? Math.min(0, ...allValues) : 0;
   let maxValue = Math.max(...allValues);
   if (logScale) {
@@ -1180,7 +1253,7 @@ function panelMarkup({ x, y, width, height, title, subtitle, xValues, series, fo
     maxValue += span * .18;
   }
   const left = x + 58;
-  const right = x + width - 18;
+  const right = x + width - 28;
   const top = y + 54;
   const bottom = y + height - 56;
   const px = (index) => xValues.length === 1 ? (left + right) / 2 : left + index / (xValues.length - 1) * (right - left);
@@ -1192,18 +1265,30 @@ function panelMarkup({ x, y, width, height, title, subtitle, xValues, series, fo
   const zero = !logScale && includeZero && minValue < 0 && maxValue > 0 ? `<line class="axis-zero" x1="${left}" x2="${right}" y1="${py(0)}" y2="${py(0)}"/>` : "";
   const paths = series.map((item, seriesIndex) => {
     const path = item.values.map((value, index) => `${index ? "L" : "M"}${px(index)},${py(value)}`).join(" ");
-    const points = item.values.map((value, index) => `<circle class="axis-point" cx="${px(index)}" cy="${py(value)}" r="5" fill="${item.color}"/><text class="axis-value" x="${px(index)}" y="${py(value) + (seriesIndex % 2 ? -10 : 18)}" text-anchor="middle">${format(value)}</text>`).join("");
-    return `<path class="axis-series" stroke="${item.color}" d="${path}"/>${points}`;
+    const points = item.values.map((value, index) => {
+      const spread = item.stdValues?.[index] || 0;
+      const low = logScale ? Math.max(value - spread, Number.EPSILON) : value - spread;
+      const high = value + spread;
+      const whisker = spread ? `<line class="axis-whisker" stroke="${item.color}" x1="${px(index)}" x2="${px(index)}" y1="${py(high)}" y2="${py(low)}"/><line class="axis-whisker" stroke="${item.color}" x1="${px(index) - 5}" x2="${px(index) + 5}" y1="${py(high)}" y2="${py(high)}"/><line class="axis-whisker" stroke="${item.color}" x1="${px(index) - 5}" x2="${px(index) + 5}" y1="${py(low)}" y2="${py(low)}"/>` : "";
+      return `${whisker}<circle class="axis-point" cx="${px(index)}" cy="${py(value)}" r="5" fill="${item.color}"/><text class="axis-value" x="${px(index)}" y="${py(value) + (seriesIndex % 2 ? -12 : 20)}" text-anchor="middle">${format(value)}</text>`;
+    }).join("");
+    return `${connectSeries ? `<path class="axis-series" stroke="${item.color}" d="${path}"/>` : ""}${points}`;
   }).join("");
-  const labels = xValues.map((value, index) => `<text class="axis-x-label" x="${px(index)}" y="${bottom + 30}" text-anchor="middle">${escapeText(value)}</text>`).join("");
+  const labels = xValues.map((value, index) => {
+    const label = typeof value === "object" ? value.label : value;
+    const detail = typeof value === "object" ? value.detail : "";
+    return `<text class="axis-x-label" x="${px(index)}" y="${bottom + 25}" text-anchor="middle"><tspan class="axis-x-label-main" x="${px(index)}">${escapeText(label)}</tspan>${detail ? `<tspan class="axis-x-label-detail" x="${px(index)}" dy="15">${escapeText(detail)}</tspan>` : ""}</text>`;
+  }).join("");
   return `<g><text class="axis-panel-title" x="${x}" y="${y + 17}">${escapeText(title)}</text><text class="axis-panel-subtitle" x="${x}" y="${y + 36}">${escapeText(subtitle)}</text>${grid}${zero}<line class="axis-baseline" x1="${left}" x2="${right}" y1="${bottom}" y2="${bottom}"/>${paths}${labels}</g>`;
 }
 
 function renderMatchedAxisPlot(specification) {
-  const leftSeries = specification.series.map((item) => ({ label: item.label, color: item.color, values: item.forecast }));
-  const rightSeries = specification.series.map((item) => ({ label: item.label, color: item.color, values: item.recovery }));
-  const legend = specification.series.map((item, index) => `<g transform="translate(${335 + index * 190},366)"><line x2="24" stroke="${item.color}" stroke-width="3"/><text class="axis-legend" x="32" y="4">${escapeText(item.label)}</text></g>`).join("");
-  byId("scaling-axis-plot").innerHTML = `${panelMarkup({ x: 22, y: 10, width: 440, height: 330, title: "Forecasting", subtitle: "H=100 rollout MSE · lower is better", xValues: specification.xValues, series: leftSeries, format: (value) => value.toFixed(3) })}${panelMarkup({ x: 502, y: 10, width: 436, height: 330, title: "Physical recovery", subtitle: "damping R² · higher is better", xValues: specification.xValues, series: rightSeries, format: (value) => formatSigned(value, 2), includeZero: true })}${legend}`;
+  const leftSeries = specification.series.map((item) => ({ label: item.label, color: item.color, values: item.forecast, stdValues: item.forecastStd }));
+  const rightSeries = specification.series.map((item) => ({ label: item.label, color: item.color, values: item.recovery, stdValues: item.recoveryStd }));
+  const connectSeries = state.scalingAxis !== "excitation";
+  byId("scaling-axis-legend").innerHTML = specification.series.map((item) => `<span style="--series-color:${item.color}">${escapeText(item.legendLabel || item.label)}</span>`).join("");
+  byId("scaling-axis-note").textContent = `Each dot is the mean over ${state.scalingData.study.model_seeds} model seeds. Whiskers show +/- one standard deviation; data seed ${state.scalingData.study.data_seed} is fixed.`;
+  byId("scaling-axis-plot").innerHTML = `${panelMarkup({ x: 22, y: 10, width: 440, height: 330, title: "Forecasting", subtitle: "H=100 rollout MSE · lower is better", xValues: specification.xValues, series: leftSeries, format: (value) => value.toFixed(3), connectSeries })}${panelMarkup({ x: 502, y: 10, width: 436, height: 330, title: "Physical recovery", subtitle: "damping R² · higher is better", xValues: specification.xValues, series: rightSeries, format: (value) => formatSigned(value, 2), includeZero: true, connectSeries })}`;
 }
 
 function renderOptimizationAxisPlot() {
@@ -1214,9 +1299,12 @@ function renderOptimizationAxisPlot() {
     label: scalingMethod(method).label,
     color: SCALING_COLORS[method],
     values: epochs.map((epoch) => rows.find((row) => row.method === method && row.epochs === epoch).mean),
+    stdValues: epochs.map((epoch) => rows.find((row) => row.method === method && row.epochs === epoch).std),
   }));
-  const legend = series.map((item, index) => `<g transform="translate(${90 + index * 205},366)"><line x2="24" stroke="${item.color}" stroke-width="3"/><text class="axis-legend" x="32" y="4">${escapeText(item.label)}</text></g>`).join("");
-  byId("scaling-axis-plot").innerHTML = `${panelMarkup({ x: 45, y: 10, width: 870, height: 330, title: "Optimization sensitivity", subtitle: "H=100 rollout MSE · logarithmic axis · lower is better", xValues: epochs, series, format: (value) => value.toFixed(value < .1 ? 3 : 2), logScale: true })}${legend}`;
+  byId("scaling-axis-legend").innerHTML = series.map((item) => `<span style="--series-color:${item.color}">${escapeText(item.label)}</span>`).join("");
+  byId("scaling-axis-note").textContent = `Each dot is the mean over ${state.scalingData.optimization.model_seeds} model seeds. Whiskers show +/- one standard deviation.`;
+  const budgetLabels = epochs.map((epoch) => ({ label: String(epoch), detail: "epoch budget" }));
+  byId("scaling-axis-plot").innerHTML = panelMarkup({ x: 45, y: 10, width: 870, height: 330, title: "Optimization sensitivity", subtitle: "H=100 rollout MSE · logarithmic axis · lower is better", xValues: budgetLabels, series, format: (value) => value.toFixed(value < .1 ? 3 : 2), logScale: true });
 }
 
 function renderScalingAxisTable(specification) {
@@ -1226,12 +1314,16 @@ function renderScalingAxisTable(specification) {
     const methods = ["phast_unknown", "phnn_observer", "s5", "transformer"];
     byId("scaling-axis-table").innerHTML = `<table><thead><tr><th>Method</th>${epochs.map((epoch) => `<th>${epoch} epochs</th>`).join("")}<th>Reduction</th></tr></thead><tbody>${methods.map((method) => {
       const values = epochs.map((epoch) => rows.find((row) => row.method === method && row.epochs === epoch));
-      return `<tr><th>${escapeText(scalingMethod(method).label)}</th>${values.map((value) => `<td>${formatScore(value.mean)} <small>+/- ${formatScore(value.std)}</small></td>`).join("")}<td>${(values[0].mean / values[2].mean).toFixed(1)}x</td></tr>`;
+      return `<tr><th>${escapeText(scalingMethod(method).label)}</th>${values.map((value) => `<td>${formatScore(value.mean)} <small>+/- ${formatScore(value.std)}<br>median selected epoch ${value.median_best_epoch}</small></td>`).join("")}<td>${(values[0].mean / values[2].mean).toFixed(1)}x</td></tr>`;
     }).join("")}</tbody></table>`;
     return;
   }
-  const rows = specification.series.flatMap((item) => specification.xValues.map((xValue, index) => `<tr><th>${escapeText(item.label)}</th><td>${escapeText(xValue)}</td><td>${formatScore(item.forecast[index])}</td><td>${formatSigned(item.recovery[index])}</td></tr>`)).join("");
-  byId("scaling-axis-table").innerHTML = `<table><thead><tr><th>Condition</th><th>${escapeText(specification.xLabel)}</th><th>H=100 MSE</th><th>Damping R²</th></tr></thead><tbody>${rows}</tbody></table>`;
+  const tableSeries = specification.tableSeries || specification.series;
+  const rows = tableSeries.flatMap((item) => specification.xValues.map((xValue, index) => {
+    const condition = typeof xValue === "object" ? `${xValue.label} (${xValue.detail})` : xValue;
+    return `<tr><th>${escapeText(item.label)}</th><td>${escapeText(condition)}</td><td>${formatScore(item.forecast[index])}</td><td>${formatSigned(item.recovery[index])}</td></tr>`;
+  })).join("");
+  byId("scaling-axis-table").innerHTML = `<table><thead><tr><th>Condition</th><th>${escapeText(specification.xLabel)}</th><th>Mean H=100 MSE</th><th>Mean damping R²</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function renderScalingAxisReader() {
@@ -1239,6 +1331,7 @@ function renderScalingAxisReader() {
   document.querySelectorAll("[data-scaling-axis]").forEach((button) => button.setAttribute("aria-selected", button.dataset.scalingAxis === state.scalingAxis ? "true" : "false"));
   byId("scaling-axis-question").textContent = specification.question;
   byId("scaling-axis-fixed").textContent = specification.fixed;
+  byId("scaling-axis-takeaway").textContent = specification.takeaway;
   byId("scaling-axis-interpretation").textContent = specification.interpretation;
   byId("scaling-axis-caption").textContent = specification.caption;
   if (state.scalingAxis === "optimization") renderOptimizationAxisPlot();
@@ -1249,25 +1342,24 @@ function renderScalingAxisReader() {
 function renderScalingFindings() {
   const forecast = state.scalingData.forecast;
   const recovery = state.scalingData.recovery;
-  const narrowSmall = scalingCell(forecast, "narrow", 64, 64).values.find((value) => value.method === "phast_partial_bounded").mean;
-  const narrowLarge = scalingCell(forecast, "narrow", 256, 64).values.find((value) => value.method === "phast_partial_bounded").mean;
   const broadRecovery = scalingCell(recovery, "broad", 256, 64).bounded.mean;
   const narrowRecovery = scalingCell(recovery, "narrow", 256, 64).bounded.mean;
   const broadWidth32 = scalingCell(forecast, "broad", 256, 32).values.find((value) => value.method === "phast_partial_bounded").mean;
   const broadWidth64 = scalingCell(forecast, "broad", 256, 64).values.find((value) => value.method === "phast_partial_bounded").mean;
 
   byId("scaling-findings").innerHTML = `
-    <article><span>Number of trajectories</span><h4>More trajectories improve the familiar regime.</h4><p>At fixed $T_{\\mathrm{traj}}=160$, increasing $N_{\\mathrm{traj}}$ from 64 to 256 lowers bounded-PHAST error from ${formatScore(narrowSmall)} to ${formatScore(narrowLarge)}. Scaling with trajectory length remains unmeasured.</p></article>
-    <article><span>Excitation</span><h4>Recovery needs informative motion.</h4><p>At $N=256$ and width 64, broad excitation raises damping $R_D^2$ from ${formatSigned(narrowRecovery)} to ${formatSigned(broadRecovery)}, although its rollout is harder.</p></article>
-    <article><span>Capacity</span><h4>Width is not the limiting axis here.</h4><p>At broad excitation and $N=256$, width 32 and 64 give nearly identical errors: ${formatScore(broadWidth32)} and ${formatScore(broadWidth64)}.</p></article>
+    <article><span>Scope</span><h4>This is a hypothesis-forming pilot.</h4><p>Cross-cell data-volume claims are deferred to the nested, fixed-test $N\\times T$ surface in Section 5. The values here remain useful only for matched within-cell comparisons and the controlled axes shown above.</p></article>
+    <article><span>Starting motion</span><h4>Recovery needs trajectories that visit informative states.</h4><p>At $N_{\\mathrm{train}}=256$ and width 64, increasing the initial-momentum scale from 0.35 to 4.0 raises damping $R_D^2$ from ${formatSigned(narrowRecovery)} to ${formatSigned(broadRecovery)}, although the wider-motion rollout is harder.</p></article>
+    <article><span>Capacity</span><h4>Width is not the limiting axis here.</h4><p>For large starting motions and $N_{\\mathrm{train}}=256$, width 32 and 64 give nearly identical errors: ${formatScore(broadWidth32)} and ${formatScore(broadWidth64)}.</p></article>
     <article><span>Boundary</span><h4>Bounds improve attribution, not uniqueness.</h4><p>The best $R_D^2$ is ${formatSigned(broadRecovery)}. The experiment supports conditional recovery, not general identifiability from positions.</p></article>`;
 }
 
 function renderScalingProvenance() {
   const data = state.scalingData;
   byId("scaling-provenance").innerHTML = `
-    <p><strong>Matched 50-epoch study.</strong> Windy pendulum, $K=${data.study.history}$, $H=${data.study.horizon}$, data seed ${data.study.data_seed}, and ${data.study.model_seeds} model seeds. Narrow and broad initial-momentum distributions are crossed with $N\\in\\{64,256\\}$ and width $\\in\\{32,64\\}$.</p>
+    <p><strong>Matched 50-epoch study.</strong> Windy pendulum, $K=${data.study.history}$, $H=${data.study.horizon}$, data seed ${data.study.data_seed}, and ${data.study.model_seeds} model seeds. Narrow and broad initial-momentum distributions are crossed with $N_{\\mathrm{train}}\\in\\{64,256\\}$ and width $\\in\\{32,64\\}$.</p>
     <p><strong>Recovery contract.</strong> Potential, mass, chart, damping floor ${data.study.damping_floor}, and damping-variation cap ${data.study.damping_variation_cap} are declared. The position-dependent PSD damping is learned.</p>
+    <p><strong>Historical split caveat.</strong> The pilot regenerated each data-volume cell from the same seed, so its held-out trajectories were not identical across $N_{\\mathrm{train}}$. Do not read cross-$N$ differences as a scaling effect. The Section 5 surface supersedes that comparison with nested training prefixes and fixed validation/test trajectories.</p>
     <pre>conda run -n math python scripts/run_phast_dissipation_scaling.py --profile pilot
 conda run -n math python scripts/run_phast_dissipation_scaling.py --profile bounded_pilot</pre>
     <p><strong>Artifacts.</strong> <code>${escapeText(data.provenance.forecast_source)}</code> and <code>${escapeText(data.provenance.bounded_source)}</code>. The optimization curves come from <code>${escapeText(data.provenance.optimization_source)}</code>.</p>
@@ -1281,6 +1373,347 @@ function renderScalingStudy() {
   renderOptimizationScalingTable();
   renderScalingFindings();
   renderScalingProvenance();
+}
+
+function diagnosticStudy() {
+  return state.diagnosticData.studies.find((study) => study.id === state.diagnostic);
+}
+
+function diagnosticHeatFill(value, min, max, higherIsBetter) {
+  const normalized = max === min ? .5 : (value - min) / (max - min);
+  const score = higherIsBetter ? normalized : 1 - normalized;
+  if (score >= .5) return `rgba(23, 111, 80, ${(.08 + score * .22).toFixed(3)})`;
+  return `rgba(185, 75, 75, ${(.06 + (1 - score) * .18).toFixed(3)})`;
+}
+
+function renderEvidenceDiagnostic() {
+  const study = diagnosticStudy();
+  if (study.surface) {
+    renderEvidenceSurface(study);
+    return;
+  }
+  const runFor = (profile) => study.execution.runs.find((run) => run.profile === profile);
+  const recovery = runFor("diagnostic_surface") || { complete: 0, expected: 80 };
+  const forecast = runFor("diagnostic_forecast_surface") || { complete: 0, expected: 120 };
+  const progress = (run, label, detail) => {
+    const fraction = Math.min(1, run.complete / run.expected);
+    return `<div class="surface-progress-row"><span>${label}</span><div aria-label="${label}: ${run.complete} of ${run.expected} cells complete"><i style="--progress:${(100 * fraction).toFixed(1)}%"></i></div><strong>${run.complete}/${run.expected}</strong><p>${detail}</p></div>`;
+  };
+  byId("diagnostic-visual").innerHTML = `<div class="surface-pending">
+    <p class="diagnostic-matrix-note">Evidence gate</p>
+    <h4>No $N\\times T$ conclusion is displayed until every preregistered cell is verified.</h4>
+    <p>Training sets are nested prefixes. Every validation and test trajectory retains the same 320 samples in every cell, so only the training evidence changes with $T$. Partial means remain hidden to avoid selecting a favorable region while the matrix is incomplete.</p>
+    <div class="surface-progress">
+      ${progress(forecast, "Strict forecast", "PHAST-UNKNOWN, pHNN observer, and S5; five seeds per cell")}
+      ${progress(recovery, "Damping recovery", "Bounded and uncapped PHAST-PARTIAL; five seeds per cell")}
+    </div>
+    <dl><div><dt>Trajectory count</dt><dd>32, 64, 128, 256, 512</dd></div><div><dt>Samples per trajectory</dt><dd>120, 160, 240, 320</dd></div><div><dt>Motion coverage</dt><dd>small and large starting momentum</dd></div><div><dt>Decision</dt><dd>A/B/C/D from forecast winner and damping R-squared above or below zero</dd></div></dl>
+  </div>`;
+}
+
+function renderEvidenceSurface(study) {
+  const surface = study.surface;
+  const methodLabels = {
+    phast_unknown: "PHAST",
+    phnn_observer: "pHNN",
+    s5: "S5",
+  };
+  const regions = {
+    A: { label: "A · both", short: "forecast + recovery", detail: "PHAST forecasts best and recovers damping" },
+    B: { label: "B · forecast only", short: "forecast only", detail: "PHAST forecasts best; damping recovery is below zero" },
+    C: { label: "C · recovery only", short: "recovery only", detail: "Damping is recovered; another model forecasts better" },
+    D: { label: "D · neither", short: "neither criterion", detail: "Neither criterion is met" },
+  };
+  const cellAt = (nTrain, seqLen) => surface.cells.find((cell) => (
+    cell.excitation === state.evidenceExcitation
+    && cell.n_train === nTrain
+    && cell.seq_len === seqLen
+  ));
+  const regionFor = (cell) => {
+    if (cell.region && regions[cell.region]) return cell.region;
+    const forecast = cell.forecast_winner === "phast_unknown";
+    const recovery = cell.recovery.bounded.mean > 0;
+    if (forecast && recovery) return "A";
+    if (forecast) return "B";
+    if (recovery) return "C";
+    return "D";
+  };
+  const selectedCells = surface.cells.filter((cell) => cell.excitation === state.evidenceExcitation);
+  const recoveryMeans = surface.cells
+    .filter((cell) => cell.excitation === state.evidenceExcitation)
+    .map((cell) => cell.recovery.bounded.mean);
+  const recoveryMin = Math.min(...recoveryMeans);
+  const recoveryMax = Math.max(...recoveryMeans);
+  const headers = `<div class="surface-corner"><span>T ↓ samples / trajectory</span><b>N → trajectories</b></div>${surface.n_train_values.map((nTrain) => `<div class="surface-axis-label">N=${nTrain}</div>`).join("")}`;
+  const mapRows = surface.seq_len_values.map((seqLen) => {
+    const cells = surface.n_train_values.map((nTrain) => {
+      const cell = cellAt(nTrain, seqLen);
+      const region = regionFor(cell);
+      const budgetClass = cell.has_fixed_budget_peer ? "has-budget-peer" : "";
+      if (state.evidenceSurfaceView === "forecast") {
+        const winner = methodLabels[cell.forecast_winner];
+        const phastWins = cell.forecast_winner === "phast_unknown";
+        return `<button type="button" class="surface-cell surface-forecast ${phastWins ? "is-phast" : "is-baseline"} ${budgetClass}" data-surface-cell data-n-train="${nTrain}" data-seq-len="${seqLen}"><strong>${winner}</strong><small>${cell.forecast_winner_margin.toFixed(2)}x lower error</small></button>`;
+      }
+      if (state.evidenceSurfaceView === "recovery") {
+        const value = cell.recovery.bounded.mean;
+        return `<button type="button" class="surface-cell surface-recovery ${value > 0 ? "is-positive" : "is-negative"} ${budgetClass}" style="--surface-fill:${diagnosticHeatFill(value, recoveryMin, recoveryMax, true)}" data-surface-cell data-n-train="${nTrain}" data-seq-len="${seqLen}"><strong>${formatSigned(value, 2)}</strong><small>${value > 0 ? "above mean law" : "below mean law"}</small></button>`;
+      }
+      return `<button type="button" class="surface-cell surface-region-${region.toLowerCase()} ${budgetClass}" data-surface-cell data-n-train="${nTrain}" data-seq-len="${seqLen}"><strong>${regions[region].label}</strong><small>${regions[region].short}</small></button>`;
+    }).join("");
+    return `<div class="surface-axis-label">T=${seqLen}</div>${cells}`;
+  }).join("");
+  const controls = Object.entries(surface.excitations).map(([id, label]) => `<button type="button" data-surface-excitation="${id}" aria-selected="${id === state.evidenceExcitation}">${escapeText(label)}</button>`).join("");
+  const viewLabels = { synthesis: "Conclusion", forecast: "Forecast", recovery: "Damping recovery" };
+  const viewControls = Object.entries(viewLabels).map(([id, label]) => `<button type="button" data-surface-view="${id}" aria-selected="${id === state.evidenceSurfaceView}">${label}</button>`).join("");
+  const regionCounts = Object.keys(regions).map((region) => `${region}: ${selectedCells.filter((cell) => regionFor(cell) === region).length}`).join(" · ");
+  const mapHeadings = {
+    synthesis: ["Where do both claims hold?", "A cell is positive only when PHAST wins the matched forecast comparison and bounded PHAST recovers more than a constant mean-damping law. A marked corner identifies a fixed-sample-budget comparison."],
+    forecast: ["Who forecasts best?", "Lowest five-seed mean H=100 rollout error; the number is the margin over the second-best method."],
+    recovery: ["Is the damping law recovered?", "Bounded-PHAST damping R-squared; zero equals a constant mean-damping law."],
+  };
+  const [mapTitle, mapDescription] = mapHeadings[state.evidenceSurfaceView];
+  const regionKey = state.evidenceSurfaceView === "synthesis"
+    ? `<div class="surface-region-key">${Object.entries(regions).map(([id, region]) => `<span class="surface-region-${id.toLowerCase()}"><b>${region.label}</b>${region.detail}</span>`).join("")}</div>`
+    : "";
+  const summarizeEffectList = (effects) => {
+    if (!effects.length) return "pending";
+    const count = (classification) => effects.filter((effect) => effect.classification === classification).length;
+    return `${count("improves")}/${effects.length} improve · ${count("degrades")} degrade · ${count("not_resolved")} unresolved`;
+  };
+  const summarizeEffects = (axis, metric) => {
+    const effects = (surface.endpoint_effects || []).filter((effect) => (
+      effect.excitation === state.evidenceExcitation
+      && effect.axis === axis
+      && effect.metric === metric
+    ));
+    return summarizeEffectList(effects);
+  };
+  const summarizeFixedBudget = (metric) => {
+    const effects = (surface.fixed_budget_effects || []).filter((effect) => (
+      effect.excitation === state.evidenceExcitation
+      && effect.metric === metric
+    ));
+    return summarizeEffectList(effects);
+  };
+  const effectSummary = surface.endpoint_effects ? `<div class="surface-effect-summary">
+    <div><span>Endpoint comparison</span><b>PHAST forecast</b><b>Bounded recovery</b></div>
+    <div><strong>More trajectories at 100 epochs<br><small>N=${surface.n_train_values[0]} to ${surface.n_train_values.at(-1)}, across T</small></strong><span>${summarizeEffects("n_train", "forecast")}</span><span>${summarizeEffects("n_train", "recovery")}</span></div>
+    <div><strong>Longer trajectories<br><small>T=${surface.seq_len_values[0]} to ${surface.seq_len_values.at(-1)}, across N</small></strong><span>${summarizeEffects("seq_len", "forecast")}</span><span>${summarizeEffects("seq_len", "recovery")}</span></div>
+    <div><strong>More, shorter trajectories at fixed samples<br><small>matched N×T pairs</small></strong><span>${summarizeFixedBudget("forecast")}</span><span>${summarizeFixedBudget("recovery")}</span></div>
+    <p>Improvement or degradation requires the paired 95% seed interval to exclude zero; otherwise the endpoint effect is unresolved.</p>
+  </div>` : "";
+  byId("diagnostic-visual").innerHTML = `
+    <div class="surface-reader">
+      <div class="surface-excitation" role="group" aria-label="Choose starting-motion coverage">${controls}</div>
+      <div class="surface-contracts">
+        <p><span>Forecast contract</span>${escapeText(surface.forecast_contract)}</p>
+        <p><span>Recovery contract</span>${escapeText(surface.recovery_contract)}</p>
+      </div>
+      <div class="surface-view-controls" role="group" aria-label="Choose map reading">${viewControls}</div>
+      <p class="surface-counts"><span>Cells in this motion regime</span>${regionCounts}</p>
+      ${regionKey}
+      ${effectSummary}
+      <section class="surface-map-frame"><header><h4>${mapTitle}</h4><p>${mapDescription}</p></header><div class="surface-map">${headers}${mapRows}</div></section>
+      <div class="surface-cell-reading" id="surface-cell-reading" aria-live="polite"></div>
+    </div>`;
+
+  const showReading = (nTrain, seqLen) => {
+    const cell = cellAt(nTrain, seqLen);
+    state.evidenceNTrain = nTrain;
+    state.evidenceSeqLen = seqLen;
+    document.querySelectorAll("[data-surface-cell]").forEach((button) => button.setAttribute("aria-pressed", "false"));
+    const active = document.querySelector(`[data-surface-cell][data-n-train="${nTrain}"][data-seq-len="${seqLen}"]`);
+    active?.setAttribute("aria-pressed", "true");
+    const trainingText = (result) => result.training_seconds
+      ? `<small>training ${formatDuration(result.training_seconds.mean)} +/- ${formatDuration(result.training_seconds.std)}</small>`
+      : "";
+    const scores = ["phast_unknown", "phnn_observer", "s5"].map((method) => {
+      const result = cell.forecast[method];
+      return `<span><b>${methodLabels[method]}</b>${formatScore(result.mean)} +/- ${formatScore(result.std)}${trainingText(result)}</span>`;
+    }).join("");
+    const bounded = cell.recovery.bounded;
+    const uncapped = cell.recovery.uncapped;
+    const forecastEffect = cell.forecast_phast_effect;
+    const boundEffect = cell.recovery.bound_effect;
+    const intervalText = (effect) => effect
+      ? `${formatSigned(effect.mean_gain, 3)} [${formatSigned(effect.ci95[0], 3)}, ${formatSigned(effect.ci95[1], 3)}] · ${effect.classification.replace("not_resolved", "unresolved")}`
+      : "not computed";
+    const region = regionFor(cell);
+    const sampleBudget = cell.sample_budget ?? nTrain * seqLen;
+    const budgetPeer = selectedCells.find((candidate) => (
+      candidate.sample_budget === sampleBudget
+      && (candidate.n_train !== nTrain || candidate.seq_len !== seqLen)
+    ));
+    const budgetReading = budgetPeer
+      ? ` Same total sample budget as N=${budgetPeer.n_train}, T=${budgetPeer.seq_len}.`
+      : " No other measured cell has the same total sample budget.";
+    byId("surface-cell-reading").innerHTML = `<strong>N=${nTrain}, T=${seqLen}<small>${regions[region].label}</small></strong><p>${regions[region].detail}. Total observed training samples: ${sampleBudget.toLocaleString()}.${budgetReading} Every model receives 100 epochs. Increasing N adds optimizer steps; increasing N or T adds sample processing and wall time. Forecast and recovery use the two separate contracts stated above.</p><div class="surface-reading-groups"><section><em>Strict forecast</em>${scores}<span class="surface-contrast"><b>PHAST MSE advantage vs ${forecastEffect ? methodLabels[forecastEffect.baseline] : "best baseline"}</b>${intervalText(forecastEffect)}</span></section><section><em>Grey-box recovery</em><span><b>Bounded PHAST</b>${formatSigned(bounded.mean)} +/- ${bounded.std.toFixed(3)}${trainingText(bounded)}</span><span><b>Uncapped PHAST</b>${formatSigned(uncapped.mean)} +/- ${uncapped.std.toFixed(3)}${trainingText(uncapped)}</span><span class="surface-contrast"><b>Bounded minus uncapped R-squared</b>${intervalText(boundEffect)}</span></section></div>`;
+  };
+  document.querySelectorAll("[data-surface-excitation]").forEach((button) => button.addEventListener("click", () => {
+    state.evidenceExcitation = button.dataset.surfaceExcitation;
+    renderEvidenceSurface(study);
+  }));
+  document.querySelectorAll("[data-surface-view]").forEach((button) => button.addEventListener("click", () => {
+    state.evidenceSurfaceView = button.dataset.surfaceView;
+    renderEvidenceSurface(study);
+  }));
+  document.querySelectorAll("[data-surface-cell]").forEach((button) => button.addEventListener("click", () => {
+    showReading(Number(button.dataset.nTrain), Number(button.dataset.seqLen));
+  }));
+  const selectedN = surface.n_train_values.includes(state.evidenceNTrain) ? state.evidenceNTrain : surface.n_train_values.at(-1);
+  const selectedT = surface.seq_len_values.includes(state.evidenceSeqLen) ? state.evidenceSeqLen : surface.seq_len_values.at(-1);
+  showReading(selectedN, selectedT);
+}
+
+function renderUncertaintyDiagnostic(study) {
+  const matched = study.matched_law;
+  const before = matched.before_intervention;
+  const after = matched.after_external_channel_removal;
+  const cellOrder = ["thermal_only", "external_drift_only", "external_diffusion_only", "combined"];
+  const channelMark = (active) => `<span class="channel-mark ${active ? "is-active" : ""}">${active ? "yes" : "no"}</span>`;
+  const rows = cellOrder.map((cellId) => {
+    const cell = study.cells[cellId];
+    return `<tr>
+      <th scope="row">${escapeText(cell.label)}</th>
+      <td>${channelMark(cell.channels.thermal_noise)}</td>
+      <td>${channelMark(cell.channels.external_drift)}</td>
+      <td>${channelMark(cell.channels.external_diffusion)}</td>
+      <td>${(100 * cell.max_covariance_relative_error).toFixed(2)}%</td>
+      <td>${Math.max(cell.max_drift_z, cell.max_discrete_energy_z).toFixed(2)}</td>
+    </tr>`;
+  }).join("");
+  byId("diagnostic-visual").innerHTML = `
+    <div class="attribution-reader">
+      <section class="matched-law">
+        <p class="diagnostic-matrix-note">Decisive test</p>
+        <div class="attribution-stage">
+          <span>During training</span>
+          <h4>Same observable transition law</h4>
+          <p><i>b</i><sub>total</sub><sup>thermal</sup> = <i>b</i><sub>total</sub><sup>external</sup></p>
+          <p><i>A</i><sub>total</sub><sup>thermal</sup> = <i>A</i><sub>total</sub><sup>external</sup></p>
+          <small>maximum numerical gaps: drift ${formatScientific(before.maximum_drift_gap)}, covariance ${formatScientific(before.maximum_covariance_gap)}</small>
+        </div>
+        <div class="intervention-arrow" aria-hidden="true"><span>remove external shaker</span><b>&darr;</b></div>
+        <div class="attribution-outcomes">
+          <article>
+            <span>Thermal hypothesis predicts</span>
+            <strong>No change</strong>
+            <p>drift ${formatCompact(after.thermal_hypothesis_drift_change)} · covariance ${formatCompact(after.thermal_hypothesis_covariance_change)}</p>
+          </article>
+          <article>
+            <span>External-source hypothesis predicts</span>
+            <strong>${(100 * after.external_source_relative_covariance_drop).toFixed(0)}% less covariance</strong>
+            <p>mean drift changes by ${after.external_source_mean_drift_change.toFixed(3)}</p>
+          </article>
+        </div>
+        <p class="attribution-conclusion"><strong>Observed answer:</strong> fitting the training law identifies total stochastic dynamics, not their physical source. The intervention supplies the missing evidence.</p>
+      </section>
+      <details class="attribution-checks">
+        <summary>Inspect the four source-isolation checks</summary>
+        <div class="capability-table-wrap"><table>
+          <thead><tr><th>Cell</th><th>Thermal</th><th>External drift</th><th>External diffusion</th><th>Covariance error</th><th>Max |z|</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+        <p>Each cell uses ${study.sampling.probe_seed_pairs_per_cell} probe/seed pairs and ${study.sampling.samples_per_probe.toLocaleString()} one-step samples per probe. “Max |z|” is the larger of the drift and discrete-energy deviations measured in standard errors.</p>
+      </details>
+    </div>`;
+}
+
+function renderContinualDiagnostic(study) {
+  const headers = `<div class="matrix-label">evaluation</div>${study.columns.map((column) => `<div class="matrix-label">${escapeText(column)}</div>`).join("")}`;
+  const rows = study.rows.map((row, rowIndex) => `<div class="matrix-label">${escapeText(row)}</div>${study.columns.map((column, columnIndex) => {
+    const value = study.matrix?.[rowIndex]?.[columnIndex];
+    return value === null || value === undefined
+      ? '<div class="matrix-empty">not seen</div>'
+      : `<div class="matrix-value"><strong>${formatScore(value)}</strong></div>`;
+  }).join("")}`).join("");
+  const note = study.matrix
+    ? `Smoke integration · ${study.matrix_arm} · ${study.matrix_metric} · not a scientific estimate`
+    : "Evaluation contract. No result is implied.";
+  const actionContract = study.action_contract?.length
+    ? `<section class="action-contract-audit">
+        <div><span>Required interface</span><h4>A command is not a force.</h4><p><i>a</i><sub>r</sub> &rarr; A<sub>r</sub>(q, q&#775;) &rarr; &tau;<sub>r</sub></p></div>
+        <div class="action-contract-table">
+          <div class="matrix-label">robot</div><div class="matrix-label">controller</div><div class="matrix-label">command std</div><div class="matrix-label">torque std</div><div class="matrix-label">mean corr.</div>
+          ${study.action_contract.map((row) => `<div><strong>${escapeText(row.robot)}</strong></div><div>Kp ${formatCompact(row.kp)} · Kd ${formatCompact(row.kd)} · scale ${formatCompact(row.action_scale)}</div><div>${formatCompact(row.raw_std)}</div><div>${formatCompact(row.torque_std)}</div><div>${formatSigned(row.raw_to_torque_corr)}</div>`).join("")}
+        </div>
+        <p>Before testing adaptation across robots, the model must use each robot's declared command-to-effort map. Otherwise an apparent dynamics shift can be an actuator-interface error.</p>
+      </section>`
+    : "";
+  byId("diagnostic-visual").innerHTML = `<div class="diagnostic-matrix-wrap"><p class="diagnostic-matrix-note">${escapeText(note)}</p><div class="diagnostic-matrix">${headers}${rows}</div></div>${actionContract}`;
+}
+
+function renderClosedLoopDiagnostic(study) {
+  if (study.success_matrix) {
+    const methodLabels = {
+      casimir_true: "Oracle state",
+      casimir_qonly_fd: "Finite difference",
+      casimir_qonly_map: "MAP residual",
+      casimir_qonly_fdtcn: "FD-TCN observer",
+      casimir_qonly_phast: "Current q-only PHAST",
+    };
+    const stressorLabels = {
+      nominal: "nominal",
+      noise: "noise",
+      delay: "delay",
+      dropout: "dropout",
+      actuator_loss: "actuator loss",
+      combined: "combined",
+    };
+    const headers = `<div class="matrix-label">success rate</div>${study.stressors.map((item) => `<div class="matrix-label">${escapeText(stressorLabels[item] || item)}</div>`).join("")}`;
+    const rows = study.methods.map((method, rowIndex) => `<div class="matrix-label">${escapeText(methodLabels[method] || method)}</div>${study.stressors.map((_, columnIndex) => {
+      const value = study.success_matrix[rowIndex][columnIndex];
+      return `<div class="matrix-value" style="--heat-fill:${diagnosticHeatFill(value, 0, 1, true)};background:var(--heat-fill)"><strong>${Math.round(value * 100)}%</strong><small>100 trials</small></div>`;
+    }).join("")}`).join("");
+    byId("diagnostic-visual").innerHTML = `<div class="diagnostic-matrix-wrap closed-loop-wrap"><p class="diagnostic-matrix-note">Success aggregated over four initial-condition regimes. Each cell is an observed result, not an architectural capability mark.</p><div class="diagnostic-matrix diagnostic-matrix-wide" style="--diagnostic-cols:${study.stressors.length}">${headers}${rows}</div></div>`;
+    return;
+  }
+  const series = [
+    { key: "oracle", label: "Oracle velocity", color: "#17252c" },
+    { key: "finite_difference", label: "Finite difference", color: "#bf4f4f" },
+    { key: "noise_aware", label: "Noise-aware observer", color: "#176f50" },
+  ];
+  const legend = series.map((item) => `<span style="--bar-color:${item.color}">${item.label}</span>`).join("");
+  const groups = study.noise_results.map((row) => `<div class="diagnostic-bar-group">${series.map((item) => `<div class="diagnostic-bar" style="--bar-value:${row[item.key]};--bar-color:${item.color}"><strong>${Math.round(row[item.key] * 100)}%</strong></div>`).join("")}<span>noise sigma ${row.sigma}</span></div>`).join("");
+  byId("diagnostic-visual").innerHTML = `<div class="diagnostic-bars"><div class="diagnostic-bar-legend">${legend}</div><div class="diagnostic-bar-groups">${groups}</div></div>`;
+}
+
+function renderDiagnosticStudy() {
+  const study = diagnosticStudy();
+  document.querySelectorAll("[data-diagnostic]").forEach((button) => button.setAttribute("aria-selected", button.dataset.diagnostic === study.id ? "true" : "false"));
+  const status = byId("diagnostic-status");
+  status.textContent = study.status;
+  status.dataset.status = study.status.toLowerCase().replaceAll(" ", "-");
+  byId("diagnostic-source").textContent = study.source;
+  byId("diagnostic-question").textContent = study.question;
+  byId("diagnostic-execution").textContent = study.execution?.summary || "";
+  byId("diagnostic-observed").textContent = study.answer;
+  byId("diagnostic-boundary").textContent = study.not_established;
+  byId("diagnostic-motivates").textContent = study.motivates;
+  byId("diagnostic-input").textContent = study.protocol.input;
+  byId("diagnostic-change").textContent = study.protocol.change;
+  byId("diagnostic-fixed").textContent = study.protocol.fixed;
+  byId("diagnostic-readout").textContent = study.protocol.readout;
+  byId("diagnostic-evidence").textContent = study.evidence;
+  if (study.id === "evidence") renderEvidenceDiagnostic();
+  else if (study.id === "uncertainty") renderUncertaintyDiagnostic(study);
+  else if (study.id === "continual") renderContinualDiagnostic(study);
+  else renderClosedLoopDiagnostic(study);
+  byId("diagnostic-caption").textContent = study.evidence;
+  if (typeof window.renderMathInElement === "function") {
+    window.renderMathInElement(byId("diagnostic-study"), {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      throwOnError: false,
+    });
+  }
+}
+
+function renderDiagnosticTabs() {
+  byId("diagnostic-tabs").innerHTML = state.diagnosticData.studies.map((study) => `<button type="button" role="tab" data-diagnostic="${study.id}" aria-controls="diagnostic-study" aria-selected="${study.id === state.diagnostic}">${escapeText(study.label)}</button>`).join("");
 }
 
 function renderSystem() {
@@ -1311,6 +1744,7 @@ function renderSystem() {
   state.initialCoordinate = null;
   select.innerHTML = labels.map((label, index) => `<option value="${index}">${escapeText(label)}</option>`).join("");
   select.value = String(state.coordinate);
+  renderTrajectoryCaption();
   drawHeroRollout();
   renderEquationTerm();
   renderMethodFilter();
@@ -1371,6 +1805,7 @@ function wireControls() {
   });
   byId("coordinate-select").addEventListener("change", (event) => {
     state.coordinate = Number(event.target.value);
+    renderTrajectoryCaption();
     drawHeroRollout();
     drawPlots();
     writeViewState();
@@ -1386,6 +1821,13 @@ function wireControls() {
     button.addEventListener("click", () => {
       state.scalingAxis = button.dataset.scalingAxis;
       renderScalingAxisReader();
+      writeViewState();
+    });
+  });
+  document.querySelectorAll("[data-diagnostic]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.diagnostic = button.dataset.diagnostic;
+      renderDiagnosticStudy();
       writeViewState();
     });
   });
@@ -1418,20 +1860,25 @@ function wireControls() {
 }
 
 async function init() {
-  const [response, scalingResponse] = await Promise.all([
-    fetch("data/comparison.json?v=7"),
+  const [response, scalingResponse, diagnosticResponse] = await Promise.all([
+    fetch("data/comparison.json?v=8"),
     fetch("data/scaling.json?v=1"),
+    fetch("data/diagnostic-program.json?v=4"),
   ]);
   if (!response.ok) throw new Error(`Could not load comparison data (${response.status})`);
   if (!scalingResponse.ok) throw new Error(`Could not load scaling data (${scalingResponse.status})`);
+  if (!diagnosticResponse.ok) throw new Error(`Could not load diagnostic data (${diagnosticResponse.status})`);
   state.data = await response.json();
   state.scalingData = await scalingResponse.json();
+  state.diagnosticData = await diagnosticResponse.json();
   readViewState();
   renderResultSummary();
   renderSynthesisTable();
   renderCapabilityTable();
   renderMechanismTabs();
   renderScalingStudy();
+  renderDiagnosticTabs();
+  renderDiagnosticStudy();
   wireControls();
   renderSystem();
   restartTimer();
