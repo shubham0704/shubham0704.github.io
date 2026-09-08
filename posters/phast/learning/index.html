@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive account of what PHAST learns, why its physical structure matters, and where the evidence remains incomplete.">
+  <meta name="citation_title" content="PHAST: Grey-Box Port-Hamiltonian State-Space Models with Recoverable Physical Structure">
+  <meta name="citation_author" content="Shubham Bhardwaj">
+  <meta name="citation_author" content="Chandrajit Bajaj">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_pdf_url" content="https://shubham-bhardwaj.com/posters/phast/phast-paper.pdf">
+  <title>How PHAST Learns</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="learning.css?v=26">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="#main-content">PHAST <span>learning study</span></a>
+    <nav aria-label="Page navigation">
+      <a href="#model">Formulation</a>
+      <a href="#evidence">Forecast</a>
+      <a href="#mechanisms">Mechanisms</a>
+      <a href="#scaling">Scaling</a>
+      <a href="#limits">Limits</a>
+      <a href="#frontier">Frontier</a>
+      <a href="../phast-paper.pdf">Paper</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="research-hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Interactive research note</p>
+        <h1 id="page-title">PHAST learns dynamics that account for their own energy and loss.</h1>
+        <p class="hero-thesis">From ten observed positions, the model infers a phase state, predicts the next 100 positions, and exposes why energy was stored, exchanged, or dissipated.</p>
+        <p class="paper-meta"><strong>Shubham Bhardwaj</strong> and <strong>Chandrajit Bajaj</strong> · 2026 preprint</p>
+      </div>
+
+      <figure class="hero-rollout-figure">
+        <figcaption>
+          <span>One held-out trajectory</span>
+          <strong>Ten observations initialize the model. The remaining future is open loop.</strong>
+        </figcaption>
+        <svg id="hero-rollout" viewBox="0 0 960 360" role="img" aria-label="Observed positions followed by ground-truth and PHAST open-loop forecasts"></svg>
+      </figure>
+
+      <div class="contract-line" aria-label="Experimental contract">
+        <span><strong>Input</strong> $q_{t-K+1:t}$ with $K=10$</span>
+        <span><strong>Forecast</strong> $\hat q_{t+1:t+H}$ with $H=100$</span>
+        <span><strong>Strict UNKNOWN</strong> no supplied $V,M,D,G,p$</span>
+        <span><strong>Evaluation</strong> five model seeds</span>
+      </div>
+    </section>
+
+    <section class="result-overview" aria-labelledby="overview-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">The empirical signal</p>
+        <h2 id="overview-title">The same position-only contract, across three different systems.</h2>
+        <p>The number is the error ratio between the strongest matched non-PHAST baseline and PHAST-UNKNOWN. Select a system to inspect the trajectory.</p>
+      </div>
+      <div class="result-summary" id="result-summary" aria-live="polite"></div>
+    </section>
+
+    <section class="equation-section" id="model" aria-labelledby="model-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">1 · Learning problem</p>
+        <h2 id="model-title">First define what is observed, learned, and tested.</h2>
+        <p>The notation below follows the paper. It stays fixed when we move from forecasting to physical recovery and scaling.</p>
+      </div>
+
+      <div class="learning-formulation" aria-label="Learning problem formulation">
+        <article class="formulation-row">
+          <div class="formulation-label"><span>Observe</span><strong>Trajectories</strong></div>
+          <div class="formulation-math">$$\left\{q^{(b)}_{0:T-1}\right\}_{b=1}^{N_{\mathrm{train}}}$$</div>
+          <p>Each training trajectory contains $T$ observed configurations. $N_{\mathrm{train}}$ is the number of trajectories available for learning.</p>
+        </article>
+        <article class="formulation-row">
+          <div class="formulation-label"><span>Predict</span><strong>Open loop</strong></div>
+          <div class="formulation-math">$$\begin{aligned}
+          \hat x_t&=\operatorname{Init}(\mathcal O_t),\\
+          \hat x_{t+h+1}&=\Phi_{\Delta t}^{\mathcal K}(\hat x_{t+h};u_{t+h}),\\
+          h&=0,\ldots,H-1
+          \end{aligned}$$</div>
+          <p>Under position-only sensing, $\mathcal O_t=q_{t-K+1:t}$. $\operatorname{Init}$ produces $\hat x_t=(\hat q_t,\hat p_t)$; $\Phi_{\Delta t}^{\mathcal K}$ advances it by one sample under the declared physics contract $\mathcal K$. These autonomous rollouts use $u=0$.</p>
+        </article>
+        <article class="formulation-row">
+          <div class="formulation-label"><span>Learn</span><strong>One step</strong></div>
+          <div class="formulation-math">$$\mathcal L_q=\frac{1}{T-1}\sum_{t=0}^{T-2}\operatorname{err}_{\mathcal Q}(\hat q_{t+1},q_{t+1})$$</div>
+          <p>The main q-only comparison trains every model with the same manifold-aware next-step observation loss. Ground-truth damping is not a training target.</p>
+        </article>
+        <article class="formulation-row formulation-evaluation">
+          <div class="formulation-label"><span>Test</span><strong>Two questions</strong></div>
+          <div class="formulation-math">$$\operatorname{RollErr}_{\mathcal Q}(H)\ \downarrow
+          \qquad\text{and}\qquad R_D^2\ \uparrow$$</div>
+          <p>Open-loop error asks whether the future is predicted. Damping recovery asks whether the model identified the physical loss law. They need not improve together.</p>
+        </article>
+      </div>
+
+      <div class="notation-key" aria-label="Notation distinction">
+        <span>$H$</span><p>rollout horizon</p>
+        <span>$H_\theta(x)$</span><p>Hamiltonian, or learned total energy</p>
+        <span>$N_{\mathrm{train}}$</span><p>number of training trajectories</p>
+      </div>
+
+      <div class="phast-bridge" id="phast-model">
+        <p class="chapter-kicker">PHAST realization</p>
+        <h3>PHAST gives the learned transition a phase state and an energy account.</h3>
+        <p>The observer implements $\operatorname{Init}$. The port-Hamiltonian dynamics implement $\Phi_{\Delta t}^{\mathcal K}$. The equations below specify what that transition is allowed to store, exchange, dissipate, and receive through a port.</p>
+      </div>
+
+      <div class="equation-lab">
+        <div class="equation-stage">
+          <div class="equation-primary">$$\dot x=(J-R_\theta)\nabla H_\theta+G_\theta u$$</div>
+          <div class="equation-secondary">$$\dot H_\theta=-\nabla H_\theta^\top R_\theta\nabla H_\theta+u^\top y^{\mathrm{port}}$$</div>
+          <div class="term-tabs" role="tablist" aria-label="Inspect an equation term">
+            <button type="button" role="tab" data-equation-term="H" aria-selected="false">$H$ stores</button>
+            <button type="button" role="tab" data-equation-term="J" aria-selected="false">$J$ exchanges</button>
+            <button type="button" role="tab" data-equation-term="R" aria-selected="true">$R$ dissipates</button>
+            <button type="button" role="tab" data-equation-term="G" aria-selected="false">$G$ connects</button>
+          </div>
+        </div>
+
+        <div class="equation-reading">
+          <div>
+            <p class="eyebrow" id="equation-term-label">Dissipation</p>
+            <h3 id="equation-term-title">$R_\theta$ makes irreversible loss explicit.</h3>
+            <p id="equation-term-copy">Its mechanical block $D_\theta(q)\succeq0$ removes energy without being allowed to create it. This is the quantity tested in the recovery study.</p>
+            <p class="term-formula" id="equation-term-formula">$P_{\mathrm{loss}}=\nabla H_\theta^\top R_\theta\nabla H_\theta\geq0$</p>
+          </div>
+          <figure>
+            <svg id="equation-visual" viewBox="0 0 900 310" role="img" aria-label="Visual explanation of the selected equation term"></svg>
+            <figcaption id="equation-visual-caption">PHAST exposes a non-negative dissipated-power channel along the rollout.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <details class="research-detail formulation-detail">
+        <summary>Read the observer and pH symbols</summary>
+        <div class="detail-columns">
+          <div>
+            <h3>From observations to state</h3>
+            <p data-formula="observer">$\hat p_t=\mathcal C_\psi\!\left(q_t,\mathcal O_\phi(q_{t-9:t})\right)$ infers the unobserved momentum from recent positions.</p>
+            <p data-formula="energy">$H_\theta(q,p)=V_\theta(q)+\tfrac12p^\top M_\theta(q)^{-1}p$ separates potential and kinetic energy.</p>
+            <p data-formula="dynamics">$x=(q,p)$ is then advanced by the pH transition above.</p>
+            <p data-formula="power">$y^{\mathrm{port}}=G_\theta^\top\nabla H_\theta$ is conjugate to $u$, so $u^\top y^{\mathrm{port}}$ is supplied power.</p>
+          </div>
+          <div>
+            <h3>What UNKNOWN means</h3>
+            <p>PHAST-UNKNOWN receives the position history and the declared coordinate chart. It receives no potential, mass, damping, port map, velocity, momentum, or simulator phase state.</p>
+            <p id="comparison-note"></p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="forecast-section" id="evidence" aria-labelledby="evidence-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">2 · Forecast</p>
+        <h2 id="evidence-title">Stop observing. Which model preserves the future?</h2>
+        <p>After $K=10$ observed positions, every model predicts $H=100$ future positions. We report $\operatorname{RollErr}_{\mathcal Q}(H)$ over the whole forecast, not only its final point.</p>
+      </div>
+
+      <div class="system-context">
+        <div class="system-tabs" role="tablist" aria-label="Choose a physical system">
+          <button type="button" role="tab" data-system="0" aria-selected="true">Windy pendulum</button>
+          <button type="button" role="tab" data-system="1" aria-selected="false">Damped double pendulum</button>
+          <button type="button" role="tab" data-system="2" aria-selected="false">Windy cart-pole</button>
+        </div>
+        <p class="system-question" id="system-question">Loading experiment data...</p>
+      </div>
+
+      <div class="active-result" aria-live="polite">
+        <span id="active-result-number"></span>
+        <div><small>Take-home · aggregate over five model seeds</small><strong id="active-result-title"></strong><p id="active-result-detail"></p></div>
+      </div>
+
+      <div class="plot-toolbar">
+        <div class="playback" aria-label="Animation controls">
+          <button type="button" id="play-toggle">Pause</button>
+          <label for="time-scrubber">Step <output id="step-output">1</output> / 100</label>
+          <input id="time-scrubber" type="range" min="0" max="99" value="0">
+          <select id="speed-control" aria-label="Playback speed"><option value="240">0.5x</option><option value="120" selected>1x</option><option value="60">2x</option></select>
+        </div>
+        <div class="coordinate-control"><label for="coordinate-select">Coordinate</label><select id="coordinate-select"></select></div>
+      </div>
+
+      <figure class="primary-trace">
+        <figcaption><strong id="trajectory-caption-title">Mean forecast ±1 SD across five model seeds</strong><span id="trajectory-caption-detail">same held-out motion for every model</span></figcaption>
+        <svg id="trajectory-plot" viewBox="0 0 900 310" role="img" aria-label="Open-loop coordinate traces"></svg>
+      </figure>
+
+      <div class="method-filter" id="method-filter" aria-label="Choose forecast methods"></div>
+      <div class="trajectory-context"><span>Animation below · seed 42</span><p class="selection-note" id="selection-note"></p></div>
+      <p class="method-instruction" id="method-instruction">Four methods are shown first. Add the remaining sequence models when needed.</p>
+      <div class="motion-grid" id="motion-grid" aria-label="Synchronized physical rollouts"></div>
+
+      <details class="research-detail">
+        <summary>Inspect stepwise error and all numerical comparisons</summary>
+        <figure class="secondary-plot"><figcaption>Error at each rollout step</figcaption><svg id="error-plot" viewBox="0 0 900 310" role="img" aria-label="Rollout mean squared error by step"></svg></figure>
+        <div class="score-table-wrap"><table id="score-table"><caption>Matched result · 100 epochs · five seeds · $H=100$ rollout MSE</caption><thead><tr><th>Model</th><th>Information supplied</th><th>Mean +/- std.</th><th>Parameters</th><th>Relative to PHAST</th></tr></thead><tbody></tbody></table></div>
+        <div class="score-table-wrap"><table id="submitted-score-table"><caption>Submitted broad comparison · 50 epochs</caption><thead><tr><th>Model</th><th>Contract</th><th>Mean +/- std.</th><th>Parameters</th></tr></thead><tbody></tbody></table></div>
+      </details>
+    </section>
+
+    <section class="mechanism-section" id="mechanisms" aria-labelledby="mechanism-section-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">3 · Mechanism</p>
+        <h2 id="mechanism-section-title">Accuracy is useful. Isolation tells us why.</h2>
+        <p>Each tab states the input, the one change under study, the fixed conditions, and the readout. Physical recovery is reported separately as $R_D^2$ because low rollout error alone does not identify the damping law.</p>
+      </div>
+      <div class="mechanism-tabs" id="mechanism-tabs" role="tablist" aria-label="Choose a mechanism"></div>
+      <div class="mechanism-evidence" id="mechanism-evidence" aria-live="polite">
+        <div class="mechanism-copy">
+          <div class="evidence-scope-line"><span id="mechanism-level"></span><strong id="mechanism-kind"></strong></div>
+          <div class="mechanism-takeaway"><span>Take-home</span><strong id="mechanism-takeaway"></strong></div>
+          <h3 id="mechanism-title"></h3>
+          <p class="mechanism-question" id="mechanism-question"></p>
+          <p id="mechanism-interpretation"></p>
+          <p class="equation-callback"><span>Equation</span><strong id="mechanism-formula"></strong></p>
+        </div>
+        <figure class="mechanism-figure"><figcaption id="mechanism-caption"></figcaption><svg id="mechanism-plot" viewBox="0 0 900 310" role="img" aria-label="Selected mechanism evidence"></svg><div class="mechanism-result" id="mechanism-result"></div></figure>
+        <details class="research-detail construction-detail">
+          <summary>Read how this experiment is constructed</summary>
+          <dl class="experiment-construction"><div><dt>Input</dt><dd id="construction-input"></dd></div><div><dt>Change</dt><dd id="construction-intervention"></dd></div><div><dt>Held fixed</dt><dd id="construction-fixed"></dd></div><div><dt>Readout</dt><dd id="construction-readout"></dd></div></dl>
+        </details>
+      </div>
+    </section>
+
+    <section class="visual-scaling" id="scaling" aria-labelledby="scaling-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">4 · Single-axis diagnostics</p>
+        <h2 id="scaling-title">What changes when motion, capacity, or training time changes?</h2>
+        <p>These pilot comparisons vary one factor at a time. Starting motion changes only the pendulum's initial momentum: scale 0.35 versus 4.0; the plant and damping law stay fixed. The corrected joint $N\times T$ scaling study follows in Section 5.</p>
+      </div>
+
+      <div class="objective-pair">
+        <div><span>Forecast</span>$$\operatorname{RollErr}_{\mathcal Q}(H)=\frac{1}{BH}\sum_{b=1}^{B}\sum_{h=1}^{H}e_{\mathcal Q}(\hat q_{b,K+h-1},q_{b,K+h-1})$$<small>lower is better</small></div>
+        <div><span>Recover damping</span>$$R_D^2=1-\frac{\sum_q\lVert D_\theta(q)-D^\star(q)\rVert_F^2}{\sum_q\lVert D^\star(q)-\bar D^\star\rVert_F^2}$$<small>higher is better</small></div>
+      </div>
+      <p class="metric-notation">$B$ is the number of held-out trajectories and $e_{\mathcal Q}$ is the same coordinate-aware error used in training. $D^\star$ is the simulator damping law, $\bar D^\star$ its mean over test configurations, and $D_\theta$ the learned law. For $R_D^2$, zero matches a constant mean-damping predictor; a negative value is worse.</p>
+
+      <div class="axis-tabs" role="tablist" aria-label="Scaling axis">
+        <button type="button" role="tab" aria-selected="true" data-scaling-axis="excitation">Starting motion</button>
+        <button type="button" role="tab" aria-selected="false" data-scaling-axis="width">Width</button>
+        <button type="button" role="tab" aria-selected="false" data-scaling-axis="optimization">Training time</button>
+      </div>
+      <div class="scaling-question"><span>Question</span><p id="scaling-axis-question"></p><span>Held fixed</span><p id="scaling-axis-fixed"></p></div>
+      <div class="axis-takeaway"><span>Take-home</span><strong id="scaling-axis-takeaway"></strong></div>
+      <figure class="axis-figure"><div class="axis-series-key" id="scaling-axis-legend" aria-label="Plot series"></div><p class="axis-sample-note" id="scaling-axis-note"></p><svg id="scaling-axis-plot" viewBox="0 0 960 340" role="img" aria-labelledby="scaling-axis-caption"></svg><figcaption id="scaling-axis-caption"></figcaption></figure>
+      <div class="axis-reading"><span>Reading</span><p id="scaling-axis-interpretation"></p></div>
+      <div class="axis-value-table" id="scaling-axis-table"></div>
+
+      <p class="scaling-boundary"><strong>Boundary:</strong> this pilot does not establish scaling with data volume. Section 5 crosses trajectory count $N$ and length $T$ with nested training data and a fixed held-out set. Physical dimension, sampling interval, and changing observation interfaces remain untested.</p>
+
+      <details class="research-detail">
+        <summary>Inspect all scaling conditions, recovery scores, and reproduction details</summary>
+        <div id="forecast-full-table"></div>
+        <div class="recovery-matrix" id="recovery-scaling-grid"></div>
+        <div class="recovery-matrix" id="recovery-full-grid"></div>
+        <div id="optimization-scaling-table"></div>
+        <div class="scaling-findings" id="scaling-findings"></div>
+        <div id="scaling-provenance"></div>
+      </details>
+    </section>
+
+    <section class="diagnostic-program" id="limits" aria-labelledby="limits-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">5 · Diagnostic programme</p>
+        <h2 id="limits-title">Four questions locate what PHAST cannot yet do.</h2>
+        <p>These studies stress the current model. They do not use the proposed plasticity machinery as an experimental treatment.</p>
+      </div>
+
+      <div class="diagnostic-tabs" id="diagnostic-tabs" role="tablist" aria-label="Choose a diagnostic study"></div>
+      <article class="diagnostic-study" id="diagnostic-study" aria-live="polite">
+        <header class="diagnostic-header">
+          <div><span id="diagnostic-status"></span><strong id="diagnostic-source"></strong></div>
+          <h3 id="diagnostic-question"></h3>
+          <p class="diagnostic-execution" id="diagnostic-execution"></p>
+        </header>
+
+        <figure class="diagnostic-figure">
+          <div id="diagnostic-visual"></div>
+          <figcaption id="diagnostic-caption"></figcaption>
+        </figure>
+
+        <div class="diagnostic-reading">
+          <div><span>Observed answer</span><p id="diagnostic-observed"></p></div>
+          <div><span>Not established</span><p id="diagnostic-boundary"></p></div>
+          <div><span>Motivates</span><p id="diagnostic-motivates"></p></div>
+        </div>
+
+        <details class="research-detail diagnostic-detail">
+          <summary>Read the diagnostic contract</summary>
+          <dl class="experiment-construction">
+            <div><dt>Input</dt><dd id="diagnostic-input"></dd></div>
+            <div><dt>Change</dt><dd id="diagnostic-change"></dd></div>
+            <div><dt>Held fixed</dt><dd id="diagnostic-fixed"></dd></div>
+            <div><dt>Readout</dt><dd id="diagnostic-readout"></dd></div>
+          </dl>
+          <p class="diagnostic-evidence" id="diagnostic-evidence"></p>
+        </details>
+      </article>
+    </section>
+
+    <section class="frontier-section" id="frontier" aria-labelledby="frontier-title">
+      <div class="visual-heading">
+        <p class="chapter-kicker">6 · Research frontier</p>
+        <h2 id="frontier-title">What the evidence supports, and what the thesis must still resolve.</h2>
+      </div>
+      <p class="findings-system" id="findings-system"></p>
+      <div class="frontier-rows">
+        <article><span>Supported</span><div><h3 id="claim-title"></h3><p id="claim-explanation"></p><strong id="claim-result"></strong></div></article>
+        <article><span>Limitation</span><div><h3>Forecasting is not unique physical identification.</h3><p>Bounded damping removes one demonstrated error sink. It does not prove that $V$, $M$, and $D$ are uniquely recoverable from positions without declared anchors.</p></div></article>
+        <article><span>Next experiment</span><div><h3 id="next-test-title"></h3><p id="next-test-copy"></p></div></article>
+      </div>
+      <div class="proposal-questions">
+        <h3>The proposed machinery begins after the diagnostic boundary</h3>
+        <ol>
+          <li><strong>Identify:</strong> determine whether residual evidence identifies a changed mechanism or only an observational ambiguity.</li>
+          <li><strong>Adapt:</strong> protect established structure while updating only justified physical directions.</li>
+          <li><strong>Act:</strong> correct the model from action-conditioned observations without destabilizing the physical loop.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="research-appendix" aria-labelledby="appendix-title">
+      <div class="visual-heading"><p class="chapter-kicker">Research appendix</p><h2 id="appendix-title">Full comparisons and reproducibility</h2><p>The main argument stays visual. The exact model taxonomy, cross-system numbers, and artifact fingerprints remain inspectable here.</p></div>
+      <details class="research-detail">
+        <summary>Architecture taxonomy from Table 2</summary>
+        <div class="capability-table-wrap"><table id="capability-table"><thead><tr><th>Method family</th><th>Loss channel</th><th>Certified law</th><th>Bounded damping</th><th>Rollout</th><th>Evidence here</th></tr></thead><tbody></tbody></table></div>
+        <div class="capability-table-wrap"><table id="capability-context-table"><thead><tr><th>Related family</th><th>Loss channel</th><th>Certified law</th><th>Bounded damping</th><th>Rollout</th><th>Evidence here</th></tr></thead><tbody></tbody></table></div>
+      </details>
+      <details class="research-detail">
+        <summary>Cross-system synthesis</summary>
+        <div class="score-table-wrap"><table id="synthesis-table"><thead><tr><th>System</th><th>PHAST-UNKNOWN</th><th>Best matched baseline</th><th>Relative error</th><th>Next causal test</th></tr></thead><tbody></tbody></table></div>
+      </details>
+      <details class="research-detail">
+        <summary>Data, code, citation, and checkpoint fingerprints</summary>
+        <div class="artifact-ledger">
+          <div><span>Data</span><a href="data/comparison.json" download>Comparison JSON</a><a href="data/scaling.json" download>Scaling JSON</a><a href="data/diagnostic-program.json" download>Diagnostic programme JSON</a></div>
+          <div><span>Code</span><a href="code/export_phast_learning_gallery.py" download>Gallery exporter</a><a href="code/run_phast_dissipation_scaling.py" download>Scaling runner</a><a href="data/phast-learning-study-code.zip" download>Study bundle</a></div>
+          <div><span>Paper</span><a href="../phast-paper.pdf">PDF</a><a href="data/phast-citation.bib" download>BibTeX</a><button type="button" id="copy-view-link">Copy this view</button><span id="copy-view-status" role="status"></span></div>
+        </div>
+        <p id="contract-detail"></p><pre id="checkpoint-detail"></pre>
+        <pre id="citation-text">@misc{bhardwaj2026phast,
+  title={PHAST: Grey-Box Port-Hamiltonian State-Space Models with Recoverable Physical Structure},
+  author={Bhardwaj, Shubham and Bajaj, Chandrajit},
+  year={2026}
+}</pre>
+        <button type="button" id="copy-citation">Copy BibTeX</button><span id="copy-citation-status" role="status"></span>
+      </details>
+    </section>
+  </main>
+
+  <footer><a href="../">PHAST poster</a><span>Shubham Bhardwaj and Chandrajit Bajaj</span></footer>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script defer src="learning.js?v=26"></script>
+</body>
+</html>

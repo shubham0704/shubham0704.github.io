@@ -1,0 +1,61 @@
+{
+  "study": "phast_stochastic_calibration",
+  "description": "Q-only forecast calibration for frozen bounded PHAST-PARTIAL cores under FDT process noise and observation noise.",
+  "checkpoint_template": "results/dissipation_scaling/diagnostic_surface/windy_pendulum__broad__n512__t120__h64__phast_partial_bounded/checkpoints/phast_partial_qonly_seed{seed}.pt",
+  "creator_kwargs": {
+    "damping_type": "auto",
+    "d_base": 0.3,
+    "d_amp": 0.5,
+    "damping_position_dependent": true,
+    "damping_beta_sum_max": 0.5,
+    "damping_beta_sum_policy": "fixed",
+    "damping_d0_policy": "fixed"
+  },
+  "physics": {
+    "dt": 0.05,
+    "damping_base": 0.3,
+    "damping_amplitude": 0.5
+  },
+  "coverage_levels": [0.5, 0.8, 0.95],
+  "primary_coverage": 0.8,
+  "coverage_tolerance": 0.05,
+  "uninformative_width": 3.141592653589793,
+  "profiles": {
+    "smoke": {
+      "model_seeds": [0],
+      "process_temperatures": [0.0, 0.1],
+      "observation_noise": [0.0, 0.05],
+      "excitations": ["broad"],
+      "horizons": [1, 5, 10],
+      "max_horizon": 10,
+      "context": 10,
+      "n_test": 12,
+      "n_calibration": 16,
+      "particles": 24,
+      "data_seed": 3042,
+      "calibration_seed": 4042,
+      "particle_seed": 5042,
+      "energy_score_pairings": 4,
+      "torch_threads": 1,
+      "force_cpu": true
+    },
+    "full": {
+      "model_seeds": [0, 1, 2, 3, 4],
+      "process_temperatures": [0.0, 0.05, 0.1],
+      "observation_noise": [0.0, 0.02, 0.05],
+      "excitations": ["broad"],
+      "horizons": [1, 5, 10, 25, 50, 100, 200],
+      "max_horizon": 200,
+      "context": 10,
+      "n_test": 128,
+      "n_calibration": 128,
+      "particles": 64,
+      "data_seed": 3042,
+      "calibration_seed": 4042,
+      "particle_seed": 5042,
+      "energy_score_pairings": 8,
+      "torch_threads": 2,
+      "force_cpu": true
+    }
+  }
+}
