@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "title": "When does current PHAST remain useful inside repeated feedback?",
+  "profiles": {
+    "smoke": {
+      "methods": ["casimir_true", "casimir_qonly_fd", "casimir_qonly_map", "casimir_qonly_fdtcn", "casimir_qonly_phast"],
+      "regimes": ["near_stable"],
+      "stressors": ["nominal", "noise", "delay", "dropout", "actuator_loss", "combined"],
+      "n_trials": 2,
+      "n_steps": 120,
+      "dt": 0.01,
+      "observer_window": 12,
+      "observer_train_epochs": 1,
+      "observer_train_trajectories": 4,
+      "observer_train_steps": 40,
+      "observer_train_batch_size": 16,
+      "qonly_phast_train_epochs": 1,
+      "qonly_phast_train_trajectories": 4,
+      "qonly_phast_train_steps": 40,
+      "qonly_phast_train_batch_size": 4,
+      "base_seed": 42,
+      "observer_train_noise_range": [0.0, 0.05],
+      "torch_threads": 1,
+      "force_cpu": true
+    },
+    "full": {
+      "methods": ["casimir_true", "casimir_qonly_fd", "casimir_qonly_map", "casimir_qonly_fdtcn", "casimir_qonly_phast"],
+      "regimes": ["near_stable", "far_stable", "near_unstable", "far_unstable"],
+      "stressors": ["nominal", "noise", "delay", "dropout", "actuator_loss", "combined"],
+      "n_trials": 25,
+      "n_steps": 1000,
+      "dt": 0.01,
+      "observer_window": 25,
+      "observer_train_epochs": 50,
+      "observer_train_trajectories": 50,
+      "observer_train_steps": 100,
+      "observer_train_batch_size": 32,
+      "qonly_phast_train_epochs": 80,
+      "qonly_phast_train_trajectories": 50,
+      "qonly_phast_train_steps": 100,
+      "qonly_phast_train_batch_size": 16,
+      "base_seed": 42,
+      "observer_train_noise_range": [0.0, 0.05],
+      "torch_threads": 1,
+      "force_cpu": true
+    },
+    "thresholds": {
+      "methods": ["casimir_true", "casimir_qonly_fd", "casimir_qonly_map", "casimir_qonly_fdtcn", "casimir_qonly_phast"],
+      "regimes": ["near_stable", "far_stable", "near_unstable", "far_unstable"],
+      "sweeps": ["measurement_noise", "measurement_delay", "measurement_dropout", "actuator_gain"],
+      "n_trials": 25,
+      "n_steps": 1000,
+      "dt": 0.01,
+      "observer_window": 25,
+      "observer_train_epochs": 50,
+      "observer_train_trajectories": 50,
+      "observer_train_steps": 100,
+      "observer_train_batch_size": 32,
+      "qonly_phast_train_epochs": 80,
+      "qonly_phast_train_trajectories": 50,
+      "qonly_phast_train_steps": 100,
+      "qonly_phast_train_batch_size": 16,
+      "base_seed": 42,
+      "observer_train_noise_range": [0.0, 0.05],
+      "reliability_target": 0.8,
+      "torch_threads": 1,
+      "force_cpu": true
+    }
+  },
+  "controller": {
+    "k_c": 15.0,
+    "damping_gain": 2.0,
+    "xi_correction_gain": 0.0,
+    "convergence_eps": 0.1,
+    "stability_window": 50
+  },
+  "stressors": {
+    "nominal": {"label": "nominal feedback", "measurement_noise_std": 0.0, "measurement_delay_steps": 0, "measurement_dropout_probability": 0.0, "actuator_gain": 1.0},
+    "noise": {"label": "noisy position", "measurement_noise_std": 0.05, "measurement_delay_steps": 0, "measurement_dropout_probability": 0.0, "actuator_gain": 1.0},
+    "delay": {"label": "five-step sensor delay", "measurement_noise_std": 0.0, "measurement_delay_steps": 5, "measurement_dropout_probability": 0.0, "actuator_gain": 1.0},
+    "dropout": {"label": "twenty-percent sample hold", "measurement_noise_std": 0.0, "measurement_delay_steps": 0, "measurement_dropout_probability": 0.2, "actuator_gain": 1.0},
+    "actuator_loss": {"label": "seventy-percent actuator gain", "measurement_noise_std": 0.0, "measurement_delay_steps": 0, "measurement_dropout_probability": 0.0, "actuator_gain": 0.7},
+    "combined": {"label": "noise, delay, dropout, and actuator loss", "measurement_noise_std": 0.05, "measurement_delay_steps": 5, "measurement_dropout_probability": 0.2, "actuator_gain": 0.7}
+  },
+  "sweeps": {
+    "measurement_noise": {
+      "label": "measurement noise standard deviation",
+      "field": "measurement_noise_std",
+      "levels": [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.075, 0.1]
+    },
+    "measurement_delay": {
+      "label": "measurement delay in controller steps",
+      "field": "measurement_delay_steps",
+      "levels": [0, 1, 2, 3, 5, 8, 12]
+    },
+    "measurement_dropout": {
+      "label": "sample-hold dropout probability",
+      "field": "measurement_dropout_probability",
+      "levels": [0.0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+    },
+    "actuator_gain": {
+      "label": "realized actuator gain",
+      "field": "actuator_gain",
+      "levels": [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
+    }
+  }
+}

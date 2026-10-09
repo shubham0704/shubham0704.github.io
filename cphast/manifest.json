@@ -1,0 +1,96 @@
+{
+  "bundle": "C-PHAST static project page",
+  "updated": "2026-06-18",
+  "sections": [
+    {
+      "id": "landing-hero",
+      "title": "Candidate Futures Hero",
+      "assets": [
+        {
+          "path": "videos/cphast_candidate_futures_interpreted_h264.mp4",
+          "type": "video/mp4",
+          "caption": "Same-state Go2 candidate futures with interpreted physical consequences."
+        },
+        {
+          "path": "videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png",
+          "type": "image/png",
+          "caption": "Poster frame for the hero video."
+        }
+      ]
+    },
+    {
+      "id": "action-card-interface",
+      "title": "Observables to Action Cards",
+      "assets": [
+        {
+          "path": "images/signals_to_action_cards_web.png",
+          "type": "image/png",
+          "caption": "Pipeline from raw observables to typed consequences, planner-facing factors, and objective-conditioned action cards."
+        }
+      ]
+    },
+    {
+      "id": "real-spot-shadow-mode",
+      "title": "Real Spot Shadow-Mode Query",
+      "assets": [
+        {
+          "path": "images/spot_real_query_context.png",
+          "type": "image/png",
+          "caption": "Real Spot-with-arm logged context, candidate behavior descriptors, and objective-conditioned selected futures."
+        },
+        {
+          "path": "images/spot_third_person_arm_visible_frame.png",
+          "type": "image/png",
+          "caption": "Third-person Spot-with-arm frame with the arm visible."
+        }
+      ]
+    },
+    {
+      "id": "branchable-rollouts",
+      "title": "Branchable Rollout Evidence",
+      "assets": [
+        {
+          "path": "videos/cphast_candidate_futures_interpreted_h264.mp4",
+          "type": "video/mp4",
+          "caption": "Candidate futures: same observed Go2 state, different physical commitments."
+        },
+        {
+          "path": "videos/go2_lateral_push_envelope_3tile.mp4",
+          "type": "video/mp4",
+          "caption": "Synchronized lateral-push envelope for 1.5, 2.25, and 3.0 m/s perturbations."
+        },
+        {
+          "path": "videos/anymal_to_go2_source_target_comparison_slow8.mp4",
+          "type": "video/mp4",
+          "caption": "Source-to-target embodiment comparison for ANYmal-D to Go2."
+        },
+        {
+          "path": "videos/go2_zero_shot_model_failure_comparison_slow8.mp4",
+          "type": "video/mp4",
+          "caption": "Go2 zero-shot rollout comparison highlighting model failure modes."
+        }
+      ]
+    },
+    {
+      "id": "domain-evidence",
+      "title": "Cross-Domain Evidence",
+      "assets": [
+        {
+          "path": "images/isaaclab_source_target_transfer_hero.png",
+          "type": "image/png",
+          "caption": "Embodiment transfer snapshot: train on ANYmal-D and deploy on Unitree Go2."
+        },
+        {
+          "path": "images/cphast_rollout_contract.png",
+          "type": "image/png",
+          "caption": "C-PHAST rollout contract: deployment specification, shared typed block library, composed rollout, and typed readouts."
+        },
+        {
+          "path": "images/microgrid_redeployment_current.png",
+          "type": "image/png",
+          "caption": "Microgrid candidate network futures from a typed DGU/line asset library."
+        }
+      ]
+    }
+  ]
+}

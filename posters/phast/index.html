@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Live PHAST research poster: position-only forecasting, port-Hamiltonian structure, and conditional physical recovery.">
+  <title>PHAST Live Poster</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="../shared/poster.css">
+</head>
+<body data-poster="phast">
+  <div class="poster-toolbar" aria-label="Poster controls">
+    <a href="../cphast/" title="Open C-PHAST poster">C-PHAST</a>
+    <a href="learning/" title="Open the matched PHAST learning comparison">Watch PHAST learn</a>
+    <button type="button" data-action="font-down" title="Decrease text size">A−</button>
+    <button type="button" data-action="font-up" title="Increase text size">A+</button>
+    <button type="button" data-action="pause" aria-pressed="false" title="Pause live media">Pause</button>
+    <button type="button" data-action="static" aria-pressed="false" title="Show printable media">Static</button>
+    <button type="button" data-action="edit" aria-pressed="false" title="Rearrange poster cards">Layout</button>
+    <button type="button" data-action="reset" title="Restore poster layout">Reset</button>
+    <button type="button" data-action="print" title="Print poster">Print</button>
+  </div>
+
+  <main class="poster">
+    <header class="poster-header">
+      <div>
+        <p class="poster-kicker">Grey-box learning from position histories</p>
+        <h1 class="poster-title">PHAST: Port-Hamiltonian State-Space Models with Recoverable Physical Structure</h1>
+        <p class="poster-authors">Shubham Bhardwaj · Chandrajit Bajaj</p>
+        <p class="poster-affiliation">The University of Texas at Austin</p>
+      </div>
+      <div class="poster-header-side">
+        <div class="poster-header-stats" aria-label="PHAST headline results">
+          <div class="header-stat"><strong>13</strong><span>benchmarks across six physical domains</span></div>
+          <div class="header-stat"><strong>12/13</strong><span>UNKNOWN wins over the best non-PHAST baseline</span></div>
+          <div class="header-stat"><strong>q-only</strong><span>position history is the observed signal</span></div>
+          <div class="header-stat"><strong>5 seeds</strong><span>shared evaluation protocol</span></div>
+        </div>
+        <a href="phast-paper.pdf" aria-label="Open PHAST paper">
+          <img class="poster-qr" src="assets/qr.png" alt="QR code for the live PHAST poster">
+        </a>
+      </div>
+    </header>
+
+    <div class="poster-grid four-cols">
+      <section class="poster-column" id="phast-col-1" aria-label="PHAST motivation and method">
+        <article class="poster-card" id="phast-question" data-tone="orange">
+          <h2>Can positions reveal hidden physical state?</h2>
+          <div class="lede-box">
+            <p><strong>PHAST observes only a recent position history.</strong> A causal observer infers a phase state; a port-Hamiltonian transition then rolls it forward while keeping storage, mass geometry, dissipation, and ports explicit.</p>
+          </div>
+        </article>
+
+        <article class="poster-card" id="phast-method" data-tone="green">
+          <h2>Where does the physics enter?</h2>
+          <div class="math-story" aria-label="PHAST state inference and continuous-time power balance">
+            <div class="math-step">
+              <span class="math-label">Infer hidden phase</span>
+              <span class="math-expression"><i data-var="q-history">q</i><sub>t−K+1:t</sub> → <i data-var="observer">o</i><sub>φ</sub> → <i data-var="phase-state">x̂</i><sub>t</sub> = (<i data-var="position">q</i><sub>t</sub>, <i data-var="momentum">p̂</i><sub>t</sub>)</span>
+            </div>
+            <div class="math-step emphasized">
+              <span class="math-label">Evolve physically</span>
+              <span class="math-expression"><i data-var="state-rate">ẋ</i> = (<i data-var="J">J</i> − <i data-var="R">R</i>)∇<i data-var="H">H</i> + <i data-var="G">G</i><i data-var="u">u</i></span>
+            </div>
+            <div class="math-step">
+              <span class="math-label">Forecast observations</span>
+              <span class="math-expression"><i data-var="position-rollout">q̂</i><sub>t+1:t+H</sub> = <i data-var="position-readout">Π</i><sub>q</sub>(<i data-var="phase-rollout">x̂</i><sub>t+1:t+H</sub>)</span>
+            </div>
+          </div>
+          <div class="loss-strip">
+            <span>Headline training loss</span>
+            <strong><i data-var="phast-loss">ℒ</i><sub>q</sub> = <span data-var="index-count">1/N<sub>ℐ</sub></span> Σ<sub>(b,t)∈ℐ</sub> ‖q̂<sup>(b)</sup><sub>t+1</sub> − q<sup>(b)</sup><sub>t+1</sub>‖<sub>ℳ</sub><sup>2</sup></strong>
+            <small>All optional phase, port, passivity, energy, and rollout coefficients are zero in the headline tables.</small>
+          </div>
+          <div class="channel-grid">
+            <div class="channel"><strong>Storage H</strong><span>potential and kinetic energy</span></div>
+            <div class="channel"><strong>Interconnection J</strong><span>skew power exchange</span></div>
+            <div class="channel"><strong>Dissipation R</strong><span>positive-semidefinite loss</span></div>
+            <div class="channel"><strong>Ports G, u</strong><span>external forcing and exchange</span></div>
+          </div>
+          <div class="math-consequence">
+            <span class="math-label">Differentiate stored energy</span>
+            <span class="math-expression"><i data-var="H-rate">Ḣ</i> = −∇<i data-var="H">H</i><sup>T</sup><i data-var="R">R</i>∇<i data-var="H">H</i> + <i data-var="u">u</i><sup>T</sup><i data-var="port-output">y</i><sup>port</sup></span>
+            <span class="math-reason"><i data-var="J">J</i> = −<i data-var="J">J</i><sup>T</sup> cancels internal exchange; <i data-var="R">R</i> ⪰ 0 can only remove energy.</span>
+            <strong class="math-result">No external input: <i data-var="u">u</i> = 0 ⇒ <i data-var="H-rate">Ḣ</i> ≤ 0</strong>
+          </div>
+        </article>
+
+        <article class="poster-card" id="phast-contracts" data-tone="blue">
+          <h2>What information does each regime receive?</h2>
+          <div class="mode-tabs" role="tablist" data-switcher data-target="#phast-contract-panel">
+            <button type="button" role="tab" aria-selected="true" data-content='{"tag":"UNKNOWN","title":"No supplied physical components","input":"Input: position history and coordinate chart.","learned":"Learned: potential, mass, damping, and port components.","evidence":"Matched result: PHAST-UNKNOWN beats the best non-PHAST baseline on 12 of 13 benchmarks."}'>UNKNOWN</button>
+            <button type="button" role="tab" aria-selected="false" data-content='{"tag":"PARTIAL","title":"Declared anchors or bounds","input":"Input: position history plus an explicitly declared subset of physical knowledge.","learned":"Learned: every component not fixed by the contract.","evidence":"Purpose: test whether the same architecture can use partial physics and improve attribution."}'>PARTIAL</button>
+            <button type="button" role="tab" aria-selected="false" data-content='{"tag":"KNOWN","title":"Specified components are fixed","input":"Input: position history plus the declared physical components.","learned":"Learned: only components left unknown by the contract.","evidence":"Purpose: test grey-box use and component recovery under sufficient anchors."}'>KNOWN</button>
+          </div>
+          <div class="contract-panel" id="phast-contract-panel" role="tabpanel">
+            <span class="contract-tag" data-field="tag">UNKNOWN</span>
+            <h3 data-field="title">No supplied physical components</h3>
+            <p data-field="input">Input: position history and coordinate chart.</p>
+            <p data-field="learned">Learned: potential, mass, damping, and port components.</p>
+            <p data-field="evidence">Matched result: PHAST-UNKNOWN beats the best non-PHAST baseline on 12 of 13 benchmarks.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="poster-column" id="phast-col-2" aria-label="PHAST live evidence">
+        <article class="poster-card" id="phast-live" data-tone="green">
+          <h2>Do the forecasts remain stable across domains?</h2>
+          <figure class="poster-figure">
+            <img
+              src="assets/phast_monolithic_demo.gif"
+              data-live-src="assets/phast_monolithic_demo.gif"
+              data-static-src="assets/hero_windy_cartpole.png"
+              alt="Animated 100-step PHAST rollouts across eight physical systems">
+            <figcaption><strong>Live comparison.</strong> One hundred-step open-loop rollouts across mechanical, electrical, molecular, thermal, gravitational, and ecological systems. Static mode shows a representative windy Cart-Pole rollout.</figcaption>
+          </figure>
+        </article>
+      </section>
+
+      <section class="poster-column" id="phast-col-3" aria-label="PHAST benchmark evidence">
+        <article class="poster-card" id="phast-phase" data-tone="green">
+          <h2>What does long-horizon drift look like?</h2>
+          <figure class="poster-figure">
+            <img src="assets/gallery_rollouts_phase.png" alt="Representative PHAST rollouts and phase portraits">
+            <figcaption>Representative trajectories and phase portraits expose drift and qualitative orbit error rather than reducing every system to one aggregate score.</figcaption>
+          </figure>
+        </article>
+
+        <article class="poster-card" id="phast-suite" data-tone="orange">
+          <h2>What changes across the benchmark suite?</h2>
+          <figure class="poster-figure">
+            <img src="assets/system_schematics.png" alt="Schematics of eight PHAST benchmark systems">
+            <figcaption>The architecture is shared. The coordinate chart and declared KNOWN/PARTIAL components encode each benchmark’s information contract.</figcaption>
+          </figure>
+        </article>
+      </section>
+
+      <section class="poster-column" id="phast-col-4" aria-label="PHAST results and interpretation">
+        <article class="poster-card" id="phast-result" data-tone="green">
+          <h2>Are the gains caused by supplied physics?</h2>
+          <span class="evidence-badge">Matched UNKNOWN comparison</span>
+          <div class="metric-row">
+            <div class="metric-block"><strong>12/13</strong><span>benchmarks won by PHAST-UNKNOWN</span></div>
+            <div class="metric-block"><strong>1.8%</strong><span>only loss: conservative double pendulum</span></div>
+          </div>
+          <p>PHAST-UNKNOWN receives no supplied potential, mass, damping, port model, velocity, momentum, or simulator phase state.</p>
+          <p>The exception is S5 at 0.618 versus PHAST-UNKNOWN at 0.629.</p>
+        </article>
+
+        <article class="poster-card" id="phast-identification" data-tone="orange">
+          <h2>Does an accurate forecast recover the right physics?</h2>
+          <figure class="poster-figure">
+            <img src="assets/gallery_damping_energy.png" alt="PHAST damping recovery and energy behavior">
+            <figcaption><strong>Not necessarily.</strong> Unconstrained damping can absorb model error and preserve forecasting accuracy while producing incorrect physical attribution. Bounding PSD damping removes this demonstrated error-sink mechanism under declared anchors.</figcaption>
+          </figure>
+        </article>
+
+        <article class="poster-card" id="phast-scope" data-tone="red">
+          <h2>What is guaranteed—and what is not?</h2>
+          <ul>
+            <li><strong>Guaranteed:</strong> continuous-time port-Hamiltonian passivity under the stated assumptions.</li>
+            <li><strong>Implemented:</strong> a structure-preserving split approximation, not an unconditional finite-step energy theorem.</li>
+            <li><strong>Recovery:</strong> conditional on the declared information contract; position-only components are not generally identifiable.</li>
+          </ul>
+        </article>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="../shared/poster.js"></script>
+</body>
+</html>
