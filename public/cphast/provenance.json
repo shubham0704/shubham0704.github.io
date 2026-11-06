@@ -9,8 +9,8 @@
   "artifacts": [
     {
       "path": "index.html",
-      "sha256": "3c5a37d31ae1e2ee3cdbb4fcd3583407df4d060ce042844532353496ef8c5350",
-      "bytes": 30327
+      "sha256": "514f1b12d4f9422941dcdf44e38670571d1c0c73c38dd02eefd006967d28510c",
+      "bytes": 40003
     },
     {
       "path": "style.css",
@@ -1594,7 +1594,7 @@
     },
     {
       "path": "explorer/index.html",
-      "sha256": "b55f471db52ed12f86036b1cca240088ffc4d33b35c2698e9534e2b95ae2bb96",
+      "sha256": "e48105606b6b83356ea5fd50b88f77d1e95143eec0560af815e71338f177622e",
       "bytes": 863
     },
     {
@@ -1996,6 +1996,46 @@
       "path": "EVIDENCE_AUDIT.md",
       "sha256": "f91e349460a84764f5cbb6cf11761b4da1ce9d39606b4fe84d0349d57a9266c5",
       "bytes": 10779
+    },
+    {
+      "path": "explorer/assets/attachment-DuIb4ta-.js",
+      "sha256": "ee699e13f13cbbdbb02549705ce14b78311f3f791e8548bbaed69220cc14ae34",
+      "bytes": 35851
+    },
+    {
+      "path": "explorer/assets/bounds-DYWF9HIh.js",
+      "sha256": "64508bc8a47daff6a511d6907a7b8a6b8743d5bad3874cef4102818f0eece392",
+      "bytes": 19695
+    },
+    {
+      "path": "explorer/assets/go2-guide-B4t15OOY.js",
+      "sha256": "4198c767e2cda0a8f9cdfc75b456cde1a8d065aac146f28b02ad22e9c94e3ee2",
+      "bytes": 43106
+    },
+    {
+      "path": "explorer/assets/index-BvEL0eZh.js",
+      "sha256": "19d579916c25710ded6e640edff8546743d273702cab88df7ea4a97410191a47",
+      "bytes": 84020
+    },
+    {
+      "path": "explorer/assets/microgrid-tour-CRqqMcBg.js",
+      "sha256": "d73da30fbe060bc71484060e629813f97545970f8e293f758ae62efc0d0385bb",
+      "bytes": 34013
+    },
+    {
+      "path": "explorer/assets/science-experiment-lwDXC2yM.js",
+      "sha256": "931499f3b46e10b40456e9b520da7b8248cb9820bdbf3ebcb42da2fbff0d4e91",
+      "bytes": 67680
+    },
+    {
+      "path": "robotics-story.css",
+      "sha256": "90f0bd3e2dffffaddb3a6d52beb2d7baf9db4173905ce3deab78c1afe4587029",
+      "bytes": 3833
+    },
+    {
+      "path": "robotics-story.js",
+      "sha256": "2e9553b81af5272f513aa61baa829d2e1271b6aab9b2c17c836329e4b1be2da9",
+      "bytes": 3054
     }
   ]
 }
