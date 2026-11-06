@@ -1,0 +1,112 @@
+\subsection{When the margins certify a decision}
+\label{app:certificate-validation}
+
+We test whether valid envelopes can resolve candidate decisions, rather than
+only contain observed errors. This is an analytic \textsc{known}-law check:
+the reference laws and an initial-state box are supplied. It does not
+calibrate a learned model or infer the box from partial observations.
+
+Three DGUs form a chain, with unit capacitances, inductances, and resistances
+in their physical units. Initially, the bus voltages are $(22,24,26)$ V,
+the DGU currents are $(2,2,2)$ A, and the two line currents are zero; each
+node draws a known constant 2 A load. The nine candidates have source
+voltages
+\[
+ u_{c,s}=26\mathbf 1+c\mathbf 1+s(-1,0,1)^\top\ \mathrm V,
+ \qquad c\in\{-2,0,2\},\quad s\in\{-1.5,0,1.5\}.
+\]
+Each candidate keeps the graph fixed and rolls out 100 steps of 0.01 s.
+The maintained C-PHAST world-model interface calls its
+\texttt{CompositionalPHAST} core with four substeps. DGU resistance in the
+predictor is either the correct $1\,\Omega$ or a prescribed
+$1.1\,\Omega$; no parameters are fitted. The coordinatewise initial radius
+is $r\in\{0,0.001,0.01,0.05,0.2,1\}$ V for voltage coordinates and A for
+current coordinates, shared by all candidates.
+
+The score is the existing voltage-regulation/current-sharing objective,
+averaged over samples $1{:}{N_{\mathrm{pred}}}$:
+\[
+ J(a)=\frac1{N_{\mathrm{pred}}}\sum_{k=1}^{{N_{\mathrm{pred}}}}\left[
+ \left(\frac{\bar V_k-24\,\mathrm V}{1\,\mathrm V}\right)^2+
+ \frac13\sum_{i=1}^3
+ \left(\frac{I_{i,k}-\bar I_k}{1\,\mathrm A}\right)^2\right],
+ \qquad \bar V_k=\frac13\sum_i V_{i,k},\quad
+ \bar I_k=\frac13\sum_i I_{i,k}.
+\]
+The constraint limits the largest absolute sampled line current. We retain
+all four prescribed diagnostic limits, $0.25$, $0.5$, $1$, and $2$ A;
+these are not hardware ratings.
+
+\paragraph{Enclosure.}
+The independent reference dynamics are linear, $\dot x=Ax+Gu$, with
+$x=(V_1,I_1,V_2,I_2,V_3,I_3,I_{e,1},I_{e,2})^\top$ and
+$u=(-I_{\mathrm{load},1},V_{\mathrm{src},1},\ldots,-I_{\mathrm{load},3},V_{\mathrm{src},3})^\top$.
+Here each load is 2 A and the three source-voltage entries are $u_{c,s}$;
+the six-input forcing includes both, with units carried by $G$.
+We enclose the resulting $14\times14$ augmented exponential
+$\exp(\Delta t[\begin{smallmatrix}A&G\\0&0\end{smallmatrix}])$
+using 50-digit outward-rounded interval arithmetic, a 40-term Taylor
+polynomial, and the remainder
+$e^{\|Z\|_\infty}\|Z\|_\infty^{41}/41!$, where
+$Z=\Delta t[\begin{smallmatrix}A&G\\0&0\end{smallmatrix}]$.
+Interval powers retain the signed initial-state sensitivity over the horizon.
+If $[E_k]$ encloses the state-transition block and $[c_k(a)]$ the reference
+trajectory from the box center, then every allowed initial state satisfies
+\[
+ x_{i,k}(a)\in[c_{i,k}(a)]+[-r,r]\sum_j|[E_{k,ij}]|.
+\]
+Interval evaluation of the score and peak current gives uniform consequence
+enclosures. Their maximum deviations from the native predictor's scores give
+$\Delta_J$ and $\Delta_g$, including the prescribed model mismatch and
+discretization error. This direct enclosure instantiates the decision-margin
+argument without requiring a contraction estimate for this electrical system.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Analytic certificate informativeness at the prescribed 1 A sampled
+line-current limit. Feasible, infeasible, and unresolved counts sum to nine;
+rankings count strictly separated score envelopes among 36 unordered pairs.
+Color distinguishes resolved feasible cases (green) from unresolved cases
+(orange), not a performance ranking.}
+\label{tab:certificate-informativeness}
+\begin{tabular}{ccrrrr}
+\toprule
+Predictor $R$ ($\Omega$) & Radius $r$ & Feasible & Infeasible & Unresolved & Rankings \\
+\midrule
+1.0 & 0     & \goodcell{6} & 3 & 0 & 33/36 \\
+1.0 & 0.001 & \goodcell{6} & 3 & 0 & 33/36 \\
+1.0 & 0.01  & \goodcell{6} & 3 & 0 & 33/36 \\
+1.0 & 0.05  & \goodcell{6} & 0 & \warncell{3} & 29/36 \\
+1.0 & 0.2   & 0 & 0 & \warncell{9} & 0/36 \\
+1.0 & 1     & 0 & 0 & \warncell{9} & 0/36 \\
+\midrule
+1.1 & 0     & \goodcell{6} & 3 & 0 & 32/36 \\
+1.1 & 0.001 & \goodcell{6} & 3 & 0 & 32/36 \\
+1.1 & 0.01  & \goodcell{6} & 3 & 0 & 30/36 \\
+1.1 & 0.05  & \goodcell{6} & 0 & \warncell{3} & 24/36 \\
+1.1 & 0.2   & 0 & 0 & \warncell{9} & 0/36 \\
+1.1 & 1     & 0 & 0 & \warncell{9} & 0/36 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+With 10\% resistance mismatch and $r=0.05$, six candidates satisfy the 1 A
+limit for every state in the box, while three remain unresolved
+(Table~\ref{tab:certificate-informativeness}). The selected retained candidate
+has $c=s=0$; its peak-current envelope is $[0.8285,0.9667]$ A
+(rounded outward). Its regret against the best candidate in the same
+retained set is at most $0.417$ in the dimensionless score. The tighter
+limits, 0.25 and 0.5 A, certify all nine candidates infeasible for
+$r\le0.2$; the 2 A limit retains all nine for $r\le0.2$. At $r=1$, every
+limit is unresolved. Thus validity alone does not imply an informative
+decision, and lack of certification does not imply infeasibility.
+
+An independent adaptive ODE integration agrees with the nominal matrix flow
+within $1.6\times10^{-12}$ in the reported physical coordinates. All 11,529
+candidate--vertex diagnostic rollouts satisfy the asserted envelopes,
+orderings, feasibility implications, and regret bounds within $10^{-9}$
+floating-point checking tolerance. The interval construction, not these
+finite tests, establishes the box-wide result. The certificate covers the
+sampled horizon only, not intersample overloads or repeated execution.
+\FloatBarrier

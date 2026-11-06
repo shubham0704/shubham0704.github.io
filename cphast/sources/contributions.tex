@@ -1,0 +1,71 @@
+\section{Introduction}
+\label{sec:intro}
+
+Before adding a distributed generation unit (DGU) to a direct-current (DC) microgrid, an operator must decide where it should attach.
+The existing wiring can remain unchanged, yet the new connection can redistribute currents throughout the enlarged network and overload a line (Figure~\ref{fig:reconfiguration-question}).
+The unit and line may be familiar; their joint response in this connection has not been observed.
+Trying the connection to collect data risks the very failure the operator wants to foresee.
+Can we predict how the enlarged network will behave using what we have learned about its components?
+
+\Needspace{7\baselineskip}
+Reusing component laws is only part of the prediction.
+The network already carries currents and stores energy, but its sensors may reveal only voltages.
+A forecast must infer its starting state from these measurements and return physical quantities that can be checked against operating limits.
+Underestimating a current can hide an overload; an overly pessimistic forecast can reject a useful connection.
+The operator needs a world model, a learned simulator of these candidate futures.
+
+\phantomsection\label{sec:intro:study-questions}
+Changing a connection is one way to change a physical system.
+A robot may retain its joint layout while its mass and actuation change, or an arm may contain more joints.
+How much of a learned model remains useful when the body itself changes?
+
+Existing methods already learn reusable dynamics or infer hidden states.
+Compositional port-Hamiltonian (pH) neural networks learn subsystem models and combine them through known or learned interconnections, integrating from supplied subsystem states~\citep{neary2023compositional}.
+N-PHDAE embeds learned electrical laws in differential-algebraic equations and composes subsystems through known circuit constraints~\citep{neary2024nphdae}.
+PHAST forecasts a single system with structured energy and damping and estimates its starting state from measurement histories~\citep{phast2025}, and CT-SUBNET estimates the state of a fixed system from its input and output history with a learned encoder~\citep{beintema2023ctsubnet}.
+Local models and state estimates also serve voltage control~\citep{tucci2016lineindependent,sadabadi2018plugandplay}, current sharing~\citep{cucuzzella2018robust}, and protection~\citep{liu2018protection}.
+Comparing proposed configurations needs these pieces in one predictor: laws reused across instances of a type, a starting state estimated through those same laws, and a test of whether its remaining errors permit a reliable choice.
+
+\Needspace{30\baselineskip}
+We introduce \textbf{C-PHAST} (Compositional Port-Hamiltonian Architecture for Structured Temporal Dynamics), which extends PHAST to systems assembled from reusable component models.
+Components of the same type, such as DGUs or lines, share one law for energy storage and dissipation; we supply known laws and learn the uncertain ones from training trajectories (Table~\ref{tab:cphast-regimes-intro}).
+Components exchange power through ports, pairs of variables such as voltage and current whose product is power.
+In a power-preserving connection, power leaving one component enters others, and for a fixed connection the assembled system has an equivalent monolithic pH representation~\citep{ehrhardt2025coupling}.
+What C-PHAST adds is the query of a proposed configuration.
+It estimates the existing system's present state from partial measurement histories through the learned laws, keeps that estimate for each candidate's existing components, and takes supplied starting states for added components (Figure~\ref{fig:candidate-query}).
+Each candidate is simulated with the laws fixed, and voltages and currents are derived from the learned energy, so an operator or controller can reject candidates that exceed limits and compare the rest (Figure~\ref{fig:decision-overview}; Section~\ref{sec:method:query}).
+
+\input{figures/cphast_decision_overview}
+
+\Needspace{8\baselineskip}
+\subsection{Contributions}
+
+\begin{enumerate}
+\item \textbf{Predicting proposed systems from reusable laws.}
+We extend PHAST from a single-system model to a predictor of proposed configurations, combining history-based state inference with reusable component laws and physical readouts.
+The laws stay fixed during a query: existing components retain their estimated states, while additions receive supplied starting states.
+The predictions expose candidate responses and possible operating-limit violations before intervention (Section~\ref{sec:method}).
+
+\item \textbf{When interconnection creates emergent properties.}
+For known linear--quadratic systems, we establish conditions under which a lossless connection increases expected energy dissipation through existing damping, or improves estimation of a hidden initial state using existing sensors (Sections~\ref{sec:composition-dissipation}--\ref{sec:composition-inference}).
+The connection can route disturbances to damping elsewhere or let an existing sensor reveal a previously hidden state, while the component laws remain unchanged.
+
+\item \textbf{Reliable comparisons under prediction uncertainty.}
+Under stated model, integration and estimation assumptions, we propagate prediction errors into margins for candidate rankings and operating-limit checks (Section~\ref{sec:guarantees}).
+For affine state assignments, known affine dynamics and quadratic scores, we retain shared starting-state uncertainty when bounding score differences.
+This resolves comparisons that separate candidate bounds can leave undecided (Appendix~\ref{app:paired-candidate-bounds}).
+
+\Needspace{4\baselineskip}
+\item \textbf{Evidence of reuse across changed systems.}
+Electrical composition provides the main test: from supplied starting states, fixed learned nonlinear DGU laws predict unseen five-unit networks with \textbf{over 40-fold} lower voltage RMSE than compositional pHNNs in each complete paired fit (Table~\ref{tab:nonlinear-composition-comparison}).
+A separate sensing study improves hidden-current prediction from noisy voltage histories and known inputs on a fixed network relative to CT-SUBNET (Table~\ref{tab:ct-subnet-sensing}).
+Supporting robotics experiments transfer learned leg dynamics from ANYmal-D to Go2 without retraining (Table~\ref{tab:isaaclab-transfer}).
+\par\Needspace{4\baselineskip}
+\end{enumerate}
+
+These capabilities are tested separately.
+Learned nonlinear electrical laws are composed from supplied starting states, voltage-only initialization is tested on a fixed network and on held-out five-node networks, and certified rankings use known laws.
+No study yet ranks proposed connections with learned laws from voltage-only initialization, or tests physical switching or repeated closed-loop operation.
+The comparisons evaluate complete procedures and do not isolate the effect of architecture.
+Reuse covers component types already in the model; adding a DGU reuses the DGU law, but its wiring and starting state are supplied.
+Section~\ref{sec:scope_assumptions} gives the formal assumptions, and Appendix~\ref{app:method:domains} the modeling resolution in each domain.

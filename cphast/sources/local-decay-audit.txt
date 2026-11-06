@@ -1,0 +1,121 @@
+ONE-CHECKPOINT LOCAL T1 VERIFICATION
+==================================
+Status: complete; independent native checks and interval/region audit passed.
+
+Decision
+--------
+This checkpoint supports a small local energy-decay certificate for branch 0.
+The proposed branch-1 rewiring advantage fails the prespecified linear gate:
+its expected residual energy is higher, not lower, at leading order under the
+frozen equal-energy isotropic perturbation distribution.
+No comparison direction, law, horizon, initial distribution, or acceptance
+threshold was changed after observing this result.
+
+Frozen contract
+---------------
+Protocol SHA256:
+9542ac35e5553ff2f62d9137950e6745c23bc3946a8eac951af328bc353f0da8
+Checkpoint: nonlinear_dgu_20260930/results/full_v1/pair_01/staged/weights_100000.pt
+Checkpoint SHA256:
+84930cb9a7020aa0021825c6a07100bce1b454c6b45b0a1ebcdf2ac9a7382542
+Both candidates have five DGUs and four lines. Branch 0 connects the added
+node to retained bus 0; branch 1 connects it to retained bus 2. All component
+laws, parameters and buffers are identical. Horizon T=2 seconds, zero input.
+State: five charges, five node fluxes, four line fluxes (14 physical states).
+Initial perturbation: z0=epsilon*xi, xi uniform on the unit sphere in R^14,
+z=Q_star^(1/2)(x-x_star). Thus E[xi xi^T]=I/14. This is a new local analytical
+verification contract, not the original forced reconfiguration population.
+
+Equilibrium and decay
+---------------------
+Validated scalar equilibrium charge per node: q_star approximately
+0.000160634306410133624; all node and line fluxes are zero.
+The isolating interval width is below 1e-40. At that interval:
+U'' approximately 0.454077666779137 >0,
+M approximately 1.800009711707210 >0,
+D approximately 1.199991023594382 >0.
+Q_star is positive definite on the reduced physical coordinates.
+
+Branch 0 verified damping-Gramian lower margin: eta >= 0.08399557658071112
+(the exact binary64 proposed margin is interval-Cholesky checked).
+The normalized radius ladder tried, in frozen order:
+  rho=0.1   : gamma upper approximately 85.2566, NOT certified.
+  rho=0.01  : gamma upper approximately 1.33457, NOT certified.
+  rho=0.001 : gamma upper below 0.837034, independently certified.
+The two rejected bounds do not establish instability at those radii.
+
+Let h=H-H(x_star). The certified invariant set is the equilibrium component
+of h<=rho^2/8 inside ||z||<rho, with rho the stored binary64 value of 0.001.
+In particular, h<=1.25e-7 is a conservative energy threshold, and the set
+contains ||z0||<=0.000408248290463862 (conservatively rounded downward).
+The bound h(t+2)<=0.838*h(t) holds throughout this set.
+The outer ball rho=0.001 is NOT itself the claimed initial-state region.
+For scale, that outer ball is contained in charge offsets approximately
+1.4841e-3, node-flux offsets 1.3417e-3 and line-flux offsets 8.9443e-4.
+Those coordinate extrema are containment bounds, not a rectangular box in
+which every combination is certified. This is a small learned-energy region.
+
+Rewiring result
+---------------
+delta=trace(W1-W0)/14, where W_k=(I-exp(A_k*T)^T exp(A_k*T))/2.
+The outward-rounded result is contained in the simple display interval
+  -0.001288792 <= delta <= -0.001288791 < 0.
+Consequently E[h0(T)-h1(T)]=epsilon^2*delta+O(epsilon^3) has a negative
+leading coefficient. Branch 1 is not the advantageous wiring for this
+prespecified local average. This is not per-state dominance or a conclusion
+about other horizons, forced operating points or initial distributions.
+The nonlinear positive-benefit calculation for branch 1 was stopped at this
+gate, as required. A positive decay certificate does not imply rewiring benefit.
+
+Independent numerical checks completed
+--------------------------------------
+The separate checker loads the checkpoint independently and uses the native
+Hamiltonian gradients, damping API and incidence port to differentiate the
+continuous vector field. No checkpoint keys were injected; all installed
+checkpoint values and both branches' component parameters/buffers match.
+Native Jacobian versus pH linearization maximum error: 5.56e-17.
+Independent Gramian quadrature versus exponential identity error: <3.89e-16.
+Independent benefit from quadrature: -0.0012887914787721047.
+Independent benefit from exponential identity: -0.0012887914787721602.
+Difference: 5.56e-17. These are numerical cross-checks, not interval proofs.
+The separate interval checker also passed. It uses explicit activation
+derivatives instead of producer Taylor jets, and a full-time Taylor exponential
+instead of scaling/squaring. It independently checks the root signs, curvature,
+exponential tail, Gramian eta witness, regional derivatives and energy barrier.
+Its regional bounds are tighter; the reported 0.837034 remains the common
+conservative bound. Both implementations share mpmath.iv, so independence of
+the arithmetic library is not claimed. See verifier/AUDIT.txt for the verdict.
+
+Scope and preservation
+----------------------
+This is a local certificate for the unforced continuous learned model with
+one frozen checkpoint. It does not certify the numerical integrator, the
+physical plant, an uncertain-law class, incremental contraction, all fits,
+the former operating population, or four-cost superadditivity.
+Only the new t1_local_checkpoint_20261018 sandbox is written.
+660 existing input/source hashes and 84,285 protected file metadata records
+were frozen. POSTFLIGHT.json records their final comparison, including any
+new files outside this sandbox within the protected trees.
+No training, checkpoint changes, paper edits, slide edits or new trajectory
+experiments were performed. The one output-serialization failure and repair
+are retained in EXECUTION_NOTES.txt; no scientific threshold was relaxed.
+
+Artifacts
+---------
+PROTOCOL.json             frozen choices and stopping gates
+FROZEN.json               original hashes and protected inventory
+native_export.json        exact native parameters and diagnostic probes
+linear_result.json        linear gate, written before regional verification
+validated_results.json    producer interval endpoints and all radius trials
+PROOF.txt                 complete analytic regional-bound argument
+verifier/                 independent checker, results and audit
+POSTFLIGHT.json           preservation check and final artifact hashes
+
+Reproduction (math environment only)
+-----------------------------------
+Use /Users/shubham/miniconda3/envs/math/bin/python, with CONDA_PREFIX set to
+that environment and PYTHONDONTWRITEBYTECODE=1. Do not rerun freeze.py over
+the existing frozen record. Authentication is performed by the native
+exporter and independent verifier before model evaluation.
+Scripts: export_native.py; certify.py; verifier/verify.py;
+verifier/interval_audit.py; postflight.py.

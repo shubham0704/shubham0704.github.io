@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Live research posters for PHAST and C-PHAST.">
+  <title>PHAST Research Posters</title>
+  <style>
+    :root { color-scheme: light; font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif; color:#14232d; background:#edf1f2; letter-spacing:0; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; }
+    header { padding:clamp(32px,7vw,90px) clamp(20px,6vw,90px) 38px; color:#fff; background:#173f5f; border-bottom:8px solid #f3c84b; }
+    h1 { max-width:900px; margin:0; font-size:clamp(42px,6vw,82px); line-height:1; }
+    header p { max-width:760px; margin:18px 0 0; color:#d7e7ee; font-size:clamp(17px,1.8vw,24px); line-height:1.45; }
+    main { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; max-width:1500px; margin:0 auto; padding:clamp(20px,4vw,60px); }
+    article { overflow:hidden; background:#fff; border:1px solid #cdd8dc; border-top:6px solid #2774a8; border-radius:6px; }
+    article:last-child { border-top-color:#23805a; }
+    img,video { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#101820; }
+    .copy { padding:clamp(18px,2.5vw,34px); }
+    h2 { margin:0; font-family:Georgia,serif; font-size:clamp(28px,3vw,48px); }
+    p { color:#52636e; font-size:clamp(15px,1.25vw,19px); line-height:1.5; }
+    a { display:inline-flex; min-height:44px; align-items:center; margin-top:8px; padding:9px 14px; color:#fff; background:#173f5f; border-radius:4px; font-weight:800; text-decoration:none; }
+    article:last-child a { background:#1d6652; }
+    @media(max-width:760px){ main{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Two structured world-model stories.</h1>
+    <p>PHAST asks what can be forecast and physically recovered from position histories. C-PHAST asks how reusable physical models can compare candidate robot futures before execution.</p>
+  </header>
+  <main>
+    <article>
+      <img src="phast/assets/hero_windy_cartpole.png" alt="PHAST windy Cart-Pole rollout">
+      <div class="copy">
+        <h2>PHAST</h2>
+        <p>Position-only forecasting, explicit port-Hamiltonian components, three information contracts, and the distinction between forecasting and physical identification.</p>
+        <a href="phast/">Open live poster</a>
+      </div>
+    </article>
+    <article>
+      <video muted loop autoplay playsinline poster="../cphast/videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png">
+        <source src="../cphast/videos/cphast_candidate_futures_interpreted_h264.mp4" type="video/mp4">
+      </video>
+      <div class="copy">
+        <h2>C-PHAST</h2>
+        <p>Composable physical blocks, action-conditioned rollouts, typed consequences, objective switching, robot transfer, and executed recovery-command selection.</p>
+        <a href="cphast/">Open live poster</a>
+      </div>
+    </article>
+  </main>
+</body>
+</html>

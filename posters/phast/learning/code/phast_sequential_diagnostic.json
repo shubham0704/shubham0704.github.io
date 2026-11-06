@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "title": "Can one current PHAST model retain competence across physical environments?",
+  "profiles": {
+    "smoke": {
+      "environments": ["nominal", "damping", "inertia", "actuation"],
+      "arms": ["frozen", "finetune", "oracle_block", "replay", "joint_offline", "separate_experts"],
+      "model": "phast_unknown_qonly",
+      "n_train": 16,
+      "n_val": 8,
+      "n_test": 8,
+      "seq_len": 120,
+      "epochs_initial": 2,
+      "epochs_adapt": 1,
+      "seeds": 1,
+      "seed_offset": 0,
+      "data_seed": 42,
+      "hidden_dim": 16,
+      "n_layers": 1,
+      "batch_size": 16,
+      "learning_rate": 0.001,
+      "rollout_horizons": [25, 100],
+      "rollout_context": 10,
+      "rollout_n": 8,
+      "replay_per_environment": 8,
+      "torch_threads": 1,
+      "force_cpu": true
+    },
+    "full": {
+      "environments": ["nominal", "damping", "inertia", "actuation"],
+      "arms": ["frozen", "finetune", "oracle_block", "replay", "joint_offline", "separate_experts"],
+      "model": "phast_unknown_qonly",
+      "n_train": 256,
+      "n_val": 64,
+      "n_test": 128,
+      "seq_len": 200,
+      "epochs_initial": 75,
+      "epochs_adapt": 35,
+      "seeds": 5,
+      "seed_offset": 0,
+      "data_seed": 42,
+      "hidden_dim": 64,
+      "n_layers": 2,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "rollout_horizons": [10, 25, 50, 100],
+      "rollout_context": 10,
+      "rollout_n": 128,
+      "replay_per_environment": 64,
+      "torch_threads": 1,
+      "force_cpu": true
+    }
+  },
+  "environment_definitions": {
+    "nominal": {
+      "label": "nominal plant",
+      "changed_block": "initial",
+      "m": 1.0,
+      "L": 1.0,
+      "b_base": 0.3,
+      "b_amplitude": 0.5,
+      "action_gain": 1.0
+    },
+    "damping": {
+      "label": "changed damping",
+      "changed_block": "damping",
+      "m": 1.0,
+      "L": 1.0,
+      "b_base": 0.55,
+      "b_amplitude": 0.2,
+      "action_gain": 1.0
+    },
+    "inertia": {
+      "label": "changed inertia",
+      "changed_block": "mass",
+      "m": 1.4,
+      "L": 1.0,
+      "b_base": 0.3,
+      "b_amplitude": 0.5,
+      "action_gain": 1.0
+    },
+    "actuation": {
+      "label": "changed actuation gain",
+      "changed_block": "input_matrix",
+      "m": 1.0,
+      "L": 1.0,
+      "b_base": 0.3,
+      "b_amplitude": 0.5,
+      "action_gain": 0.65
+    }
+  },
+  "model_kwargs": {
+    "mass_mode": "constant",
+    "warmstart": true
+  }
+}

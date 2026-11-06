@@ -1,0 +1,59 @@
+% Panel A C-PHAST: coupling_v1 staged-local midpoint results, independently rescored.
+% Panel A pHNN: independently checked local_comparison_audit/audit.json.
+% Panel B generated from three_variant_20261007/results/analysis.json; protocols remain separate.
+\begin{table}[!htbp]
+\centering\small
+\caption{\textbf{Nonlinear composition with fixed learned laws under two training settings.}
+The first three error columns are voltage and current RMSE; peak error is the
+absolute error in the largest sampled absolute line current. All exclude time
+zero. Panel A averages per-trajectory errors within each fit; panel B averages
+the five fit means after additional source-network calibration. C-PHAST uses
+explicit-midpoint coupling in A and Euler coupling in B. Each fit has
+16 starting states and two candidates (32 trajectories). Ordering counts
+correct orderings among valid, reference-resolved pairs; reference gaps at most
+0.002\,mA are unresolved. Bold marks lower errors only within complete panel-A
+comparisons. The panels do not support a pooled ranking.}
+\label{tab:nonlinear-composition-comparison}
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{Fit / method} & \shortstack{\textbf{Voltage}\\(mV)} & \shortstack{\textbf{DGU current}\\(mA)} & \shortstack{\textbf{Line current}\\(mA)} & \shortstack{\textbf{Peak error}\\(mA)} & \shortstack{\textbf{Qualified}\\\textbf{branches}} & \shortstack{\textbf{Correct}\\\textbf{orderings}} \\
+\midrule
+\multicolumn{7}{@{}l}{\textbf{A. Component-only training: five separate fits}} \\
+\midrule
+1 / Compositional pHNN & 13.02 & 21.13 & 15.15 & 8.929 & 32/32 & 16/16 \\
+1 / C-PHAST & \textbf{0.1237} & \textbf{0.04041} & \textbf{0.1337} & \textbf{0.05838} & 32/32 & 16/16 \\
+\addlinespace[2pt]
+2 / Compositional pHNN & 12.48 & 20.5 & 15.13 & 8.036 & 32/32 & 16/16 \\
+2 / C-PHAST & \textbf{0.2512} & \textbf{0.08510} & \textbf{0.2744} & \textbf{0.09036} & 32/32 & 16/16 \\
+\addlinespace[2pt]
+3 / Compositional pHNN$^{\dagger}$ & 8.033 & 11.57 & 8.544 & 5.109 & 22/32 & 11/11 \\
+3 / C-PHAST & 0.3859 & 0.1393 & 0.3652 & 0.3918 & 32/32 & 16/16 \\
+\addlinespace[2pt]
+4 / Compositional pHNN & 10.43 & 16.01 & 14.48 & 6.92 & 32/32 & 16/16 \\
+4 / C-PHAST & \textbf{0.1388} & \textbf{0.05030} & \textbf{0.1610} & \textbf{0.1068} & 32/32 & 16/16 \\
+\addlinespace[2pt]
+5 / Compositional pHNN & 11.19 & 17.68 & 14.65 & 7.842 & 32/32 & 15/16 \\
+5 / C-PHAST & \textbf{0.2122} & \textbf{0.07449} & \textbf{0.1624} & \textbf{0.08842} & 32/32 & 16/16 \\
+\midrule
+\multicolumn{7}{@{}l}{\textbf{B. Additional source-network calibration: means across five fits}} \\
+\midrule
+\textcolor{black!60}{N-PHDAE, uncorrected$^{\ddagger}$} & \textcolor{black!60}{0.4123} & \textcolor{black!60}{0.1665} & \textcolor{black!60}{0.3549} & \textcolor{black!60}{0.2763} & \textcolor{black!60}{0/160} & \textcolor{black!60}{--} \\
+N-PHDAE, corrected & 0.4116 & 0.166 & 0.3549 & 0.2763 & 160/160 & 80/80 \\
+C-PHAST & 0.1479 & 0.0494 & 0.2538 & 0.2663 & 160/160 & 80/80 \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\begin{minipage}{\linewidth}\footnotesize
+$^{\dagger}$The compositional pHNN fit-3 errors use only 22 successful trajectories; ten
+initialization failures exclude five of its 16 candidate pairs. This row is
+conditional, not a paired comparison with the complete C-PHAST fit. No panel-A
+five-fit aggregate is reported.
+$^{\ddagger}$The gray row summarizes finite but algebraically unqualified
+N-PHDAE trajectories; its 80/80 finite-path orderings are diagnostic and are
+not counted as qualified orderings. In panel B, the prespecified peak-current
+improvement criterion is \emph{not met}, and both qualified methods order
+80/80 pairs correctly.
+\end{minipage}
+\end{table}

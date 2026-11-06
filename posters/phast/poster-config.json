@@ -1,0 +1,11 @@
+{
+  "format": "responsive live poster with A1 landscape print fallback",
+  "columns": [
+    ["phast-question", "phast-method", "phast-contracts"],
+    ["phast-live"],
+    ["phast-phase", "phast-suite"],
+    ["phast-result", "phast-identification", "phast-scope"]
+  ],
+  "liveAsset": "assets/phast_monolithic_demo.gif",
+  "staticFallback": "assets/hero_windy_cartpole.png"
+}

@@ -1,0 +1,4814 @@
+{
+  "schema_version": 1,
+  "status_label": "Known-law certificate / sampled horizon",
+  "scope": "Analytic known-law sampled-time certificate; no learned calibration or observer claim",
+  "controls": {
+    "radii": [
+      0,
+      0.001,
+      0.01,
+      0.05,
+      0.2,
+      1
+    ],
+    "resistances_ohm": [
+      1,
+      1.1
+    ],
+    "current_limits_a": [
+      0.25,
+      0.5,
+      1,
+      2
+    ]
+  },
+  "defaults": {
+    "initial_radius": 0.05,
+    "resistance_ohm": 1.1,
+    "current_limit_a": 1
+  },
+  "protocol": {
+    "horizon_steps": 100,
+    "dt_s": 0.01,
+    "horizon_s": 1.0,
+    "initial_state": [
+      22.0,
+      2.0,
+      24.0,
+      2.0,
+      26.0,
+      2.0,
+      0.0,
+      0.0
+    ],
+    "state_order": [
+      "V1",
+      "I1",
+      "V2",
+      "I2",
+      "V3",
+      "I3",
+      "Ie1",
+      "Ie2"
+    ],
+    "score_units": "dimensionless",
+    "current_units": "A",
+    "radius_units": "V on voltage coordinates; A on current coordinates",
+    "interval_precision_decimal": 50,
+    "diagnostic_candidate_vertex_rollouts": 11529,
+    "reference_ode_vs_matrix_exp_max_error": 1.5027978861326119e-12,
+    "envelope_kind": "Saved predictor-centered symmetric consequence envelopes",
+    "regret_scope": "Saved selected candidate versus the best candidate in the same retained set only",
+    "limitations": [
+      "Known laws and a supplied initial-state box; no learned-model certification.",
+      "Fixed graph, sampled horizon only; no intersample or repeated-execution guarantee.",
+      "Current limits are diagnostics, not hardware ratings. Unresolved does not mean infeasible."
+    ]
+  },
+  "provenance": {
+    "export_method": "Lossless extraction of saved endpoints and outcomes; no interpolation or reruns",
+    "sources": {
+      "validation": {
+        "path": "paper/docs/research/certification/E2E_20261005/results/validation.json",
+        "sha256": "430cc7f1d281143fcc1005686cc246b0dec06af3ec67769455b666229ae49406"
+      },
+      "summary": {
+        "path": "paper/docs/research/certification/E2E_20261005/results/summary.csv",
+        "sha256": "7adb69e04f11f0b50bc4ea51bde284775730b5e99033b62c67fba37e936711e8"
+      },
+      "protocol": {
+        "path": "paper/docs/research/certification/E2E_20261005/PROTOCOL.md",
+        "sha256": "7c870b2f192f15a7087bab714e838616179b24594e9c83ebdba981a904876c91"
+      },
+      "producer": {
+        "path": "paper/docs/research/certification/E2E_20261005/run_validation.py",
+        "sha256": "61d12a791b9351979c37b8029ecf9bb441520bfd6b010b993a0e4da9ceda9de2"
+      },
+      "manuscript": {
+        "path": "paper/sec/decision_certificate_validation.tex",
+        "sha256": "2915a60fe5101255fe9cca99eae7ea77e4fa07c8c128741b468a74b2d5a5b735"
+      }
+    },
+    "protocol_sha256": "7c870b2f192f15a7087bab714e838616179b24594e9c83ebdba981a904876c91",
+    "saved_validation_status": "passed"
+  },
+  "candidates": [
+    {
+      "id": 0,
+      "label": "C1",
+      "common_offset_v": -2.0,
+      "spatial_tilt_v": -1.5,
+      "source_voltages_v": [
+        25.5,
+        24.0,
+        22.5
+      ]
+    },
+    {
+      "id": 1,
+      "label": "C2",
+      "common_offset_v": -2.0,
+      "spatial_tilt_v": 0.0,
+      "source_voltages_v": [
+        24.0,
+        24.0,
+        24.0
+      ]
+    },
+    {
+      "id": 2,
+      "label": "C3",
+      "common_offset_v": -2.0,
+      "spatial_tilt_v": 1.5,
+      "source_voltages_v": [
+        22.5,
+        24.0,
+        25.5
+      ]
+    },
+    {
+      "id": 3,
+      "label": "C4",
+      "common_offset_v": 0.0,
+      "spatial_tilt_v": -1.5,
+      "source_voltages_v": [
+        27.5,
+        26.0,
+        24.5
+      ]
+    },
+    {
+      "id": 4,
+      "label": "C5",
+      "common_offset_v": 0.0,
+      "spatial_tilt_v": 0.0,
+      "source_voltages_v": [
+        26.0,
+        26.0,
+        26.0
+      ]
+    },
+    {
+      "id": 5,
+      "label": "C6",
+      "common_offset_v": 0.0,
+      "spatial_tilt_v": 1.5,
+      "source_voltages_v": [
+        24.5,
+        26.0,
+        27.5
+      ]
+    },
+    {
+      "id": 6,
+      "label": "C7",
+      "common_offset_v": 2.0,
+      "spatial_tilt_v": -1.5,
+      "source_voltages_v": [
+        29.5,
+        28.0,
+        26.5
+      ]
+    },
+    {
+      "id": 7,
+      "label": "C8",
+      "common_offset_v": 2.0,
+      "spatial_tilt_v": 0.0,
+      "source_voltages_v": [
+        28.0,
+        28.0,
+        28.0
+      ]
+    },
+    {
+      "id": 8,
+      "label": "C9",
+      "common_offset_v": 2.0,
+      "spatial_tilt_v": 1.5,
+      "source_voltages_v": [
+        26.5,
+        28.0,
+        29.5
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "resistance_ohm": 1,
+      "initial_radius": 0,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.1549661696162614,
+          "predicted_current_a": 0.8011446597253097,
+          "score_interval": [
+            1.1546331382725306,
+            1.155299200959992
+          ],
+          "current_interval_a": [
+            0.8005297256781587,
+            0.8017595937724605
+          ],
+          "reference_score_interval": [
+            1.1546331382725306,
+            1.154633138272531
+          ],
+          "reference_current_interval_a": [
+            0.8017595937724603,
+            0.8017595937724605
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.42389713044831695,
+          "predicted_current_a": 0.8945769250555405,
+          "score_interval": [
+            0.4237049024032768,
+            0.42408935849335705
+          ],
+          "current_interval_a": [
+            0.8938263500541175,
+            0.8953275000569635
+          ],
+          "reference_score_interval": [
+            0.4237049024032768,
+            0.4237049024032769
+          ],
+          "reference_current_interval_a": [
+            0.8953275000569633,
+            0.8953275000569635
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.12003739565643415,
+          "predicted_current_a": 1.0288101962910248,
+          "score_interval": [
+            0.11999691547644901,
+            0.12007787583641927
+          ],
+          "current_interval_a": [
+            1.0279355782939343,
+            1.029684814288115
+          ],
+          "reference_score_interval": [
+            0.11999691547644901,
+            0.11999691547644904
+          ],
+          "reference_current_interval_a": [
+            1.0296848142881145,
+            1.029684814288115
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 1.0453414257565374,
+          "predicted_current_a": 0.8011446597253182,
+          "score_interval": [
+            1.0450191990549544,
+            1.0456636524581202
+          ],
+          "current_interval_a": [
+            0.8005297256781758,
+            0.8017595937724605
+          ],
+          "reference_score_interval": [
+            1.0450191990549544,
+            1.0450191990549549
+          ],
+          "reference_current_interval_a": [
+            0.8017595937724603,
+            0.8017595937724605
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.3142723865886295,
+          "predicted_current_a": 0.8945769250555274,
+          "score_interval": [
+            0.3140909631857005,
+            0.3144538099915584
+          ],
+          "current_interval_a": [
+            0.8938263500540913,
+            0.8953275000569635
+          ],
+          "reference_score_interval": [
+            0.3140909631857005,
+            0.3140909631857006
+          ],
+          "reference_current_interval_a": [
+            0.8953275000569633,
+            0.8953275000569635
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.010412651796712212,
+          "predicted_current_a": 1.028810196291012,
+          "score_interval": [
+            0.010382976258872769,
+            0.010442327334551653
+          ],
+          "current_interval_a": [
+            1.0279355782939086,
+            1.029684814288115
+          ],
+          "reference_score_interval": [
+            0.010382976258872769,
+            0.010382976258872773
+          ],
+          "reference_current_interval_a": [
+            1.0296848142881145,
+            1.029684814288115
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.1549435091802924,
+          "predicted_current_a": 0.8011446597253105,
+          "score_interval": [
+            1.1546331382725306,
+            1.155253880088054
+          ],
+          "current_interval_a": [
+            0.8005297256781603,
+            0.8017595937724605
+          ],
+          "reference_score_interval": [
+            1.1546331382725306,
+            1.154633138272531
+          ],
+          "reference_current_interval_a": [
+            0.8017595937724603,
+            0.8017595937724605
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.4238744700123036,
+          "predicted_current_a": 0.89457692505553,
+          "score_interval": [
+            0.4237049024032768,
+            0.42404403762133036
+          ],
+          "current_interval_a": [
+            0.8938263500540964,
+            0.8953275000569635
+          ],
+          "reference_score_interval": [
+            0.4237049024032768,
+            0.4237049024032769
+          ],
+          "reference_current_interval_a": [
+            0.8953275000569633,
+            0.8953275000569635
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.12001473522040221,
+          "predicted_current_a": 1.028810196291033,
+          "score_interval": [
+            0.11999691547644901,
+            0.12003255496435539
+          ],
+          "current_interval_a": [
+            1.0279355782939508,
+            1.029684814288115
+          ],
+          "reference_score_interval": [
+            0.11999691547644901,
+            0.11999691547644904
+          ],
+          "reference_current_interval_a": [
+            1.0296848142881145,
+            1.029684814288115
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.0,
+          "current_limit": 0.25,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.00033303134373043107,
+          "max_peak_radius": 0.0008746179971030702,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.0,
+          "current_limit": 0.5,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.00033303134373043107,
+          "max_peak_radius": 0.0008746179971030702,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.0,
+          "current_limit": 1.0,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 3,
+          "unresolved": 0,
+          "selected": 4,
+          "regret_bound": 0.0005144547466593067,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.00033303134373043107,
+          "max_peak_radius": 0.0008746179971030702,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.0,
+          "current_limit": 2.0,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.0003627068815698706,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.00033303134373043107,
+          "max_peak_radius": 0.0008746179971030702,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1,
+      "initial_radius": 0.001,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.1549661696162614,
+          "predicted_current_a": 0.8011446597253097,
+          "score_interval": [
+            1.1507265403766307,
+            1.159205798855892
+          ],
+          "current_interval_a": [
+            0.7991350489244299,
+            0.8031542705261894
+          ],
+          "reference_score_interval": [
+            1.1507265403766307,
+            1.1585516383720507
+          ],
+          "reference_current_interval_a": [
+            0.8003649170187316,
+            0.8031542705261894
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.42389713044831695,
+          "predicted_current_a": 0.8945769250555405,
+          "score_interval": [
+            0.4211545658783788,
+            0.42663969501825505
+          ],
+          "current_interval_a": [
+            0.8924835065001071,
+            0.8966703436109739
+          ],
+          "reference_score_interval": [
+            0.4211545658783788,
+            0.4262671411317944
+          ],
+          "reference_current_interval_a": [
+            0.8939846565029529,
+            0.8966703436109739
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.12003739565643415,
+          "predicted_current_a": 1.0288101962910248,
+          "score_interval": [
+            0.11880284032255309,
+            0.1212719509903152
+          ],
+          "current_interval_a": [
+            1.0266148173103673,
+            1.031005575271682
+          ],
+          "reference_score_interval": [
+            0.11880284032255309,
+            0.1212028928339645
+          ],
+          "reference_current_interval_a": [
+            1.0283640533045475,
+            1.031005575271682
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 1.0453414257565374,
+          "predicted_current_a": 0.8011446597253182,
+          "score_interval": [
+            1.041998710004651,
+            1.0486841415084236
+          ],
+          "current_interval_a": [
+            0.799135048924447,
+            0.8031542705261894
+          ],
+          "reference_score_interval": [
+            1.041998710004651,
+            1.0480489773780772
+          ],
+          "reference_current_interval_a": [
+            0.8003649170187316,
+            0.8031542705261894
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.3142723865886295,
+          "predicted_current_a": 0.8945769250555274,
+          "score_interval": [
+            0.31242673550639927,
+            0.31611803767085966
+          ],
+          "current_interval_a": [
+            0.8924835065000809,
+            0.8966703436109739
+          ],
+          "reference_score_interval": [
+            0.31242673550639927,
+            0.315764480137821
+          ],
+          "reference_current_interval_a": [
+            0.8939846565029529,
+            0.8966703436109739
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.010412651796712212,
+          "predicted_current_a": 1.028810196291012,
+          "score_interval": [
+            0.010075009950573584,
+            0.010750293642850838
+          ],
+          "current_interval_a": [
+            1.0266148173103415,
+            1.031005575271682
+          ],
+          "reference_score_interval": [
+            0.010075009950573584,
+            0.010700231839991076
+          ],
+          "reference_current_interval_a": [
+            1.0283640533045475,
+            1.031005575271682
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.1549435091802924,
+          "predicted_current_a": 0.8011446597253105,
+          "score_interval": [
+            1.1507265403766307,
+            1.159160477983954
+          ],
+          "current_interval_a": [
+            0.7991350489244314,
+            0.8031542705261894
+          ],
+          "reference_score_interval": [
+            1.1507265403766307,
+            1.1585516383720507
+          ],
+          "reference_current_interval_a": [
+            0.8003649170187316,
+            0.8031542705261894
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.4238744700123036,
+          "predicted_current_a": 0.89457692505553,
+          "score_interval": [
+            0.4211545658783788,
+            0.42659437414622836
+          ],
+          "current_interval_a": [
+            0.892483506500086,
+            0.8966703436109739
+          ],
+          "reference_score_interval": [
+            0.4211545658783788,
+            0.4262671411317944
+          ],
+          "reference_current_interval_a": [
+            0.8939846565029529,
+            0.8966703436109739
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.12001473522040221,
+          "predicted_current_a": 1.028810196291033,
+          "score_interval": [
+            0.11880284032255309,
+            0.12122663011825131
+          ],
+          "current_interval_a": [
+            1.0266148173103837,
+            1.031005575271682
+          ],
+          "reference_score_interval": [
+            0.11880284032255309,
+            0.1212028928339645
+          ],
+          "reference_current_interval_a": [
+            1.0283640533045475,
+            1.031005575271682
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.001,
+          "current_limit": 0.25,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.004239629239630478,
+          "max_peak_radius": 0.002195378980670108,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.001,
+          "current_limit": 0.5,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.004239629239630478,
+          "max_peak_radius": 0.002195378980670108,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.001,
+          "current_limit": 1.0,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 3,
+          "unresolved": 0,
+          "selected": 4,
+          "regret_bound": 0.0060852803218605965,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.004239629239630478,
+          "max_peak_radius": 0.002195378980670108,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.001,
+          "current_limit": 2.0,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.004577271085769103,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.004239629239630478,
+          "max_peak_radius": 0.002195378980670108,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1,
+      "initial_radius": 0.01,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.1549661696162614,
+          "predicted_current_a": 0.8011446597253097,
+          "score_interval": [
+            1.1155138661228485,
+            1.194418473109674
+          ],
+          "current_interval_a": [
+            0.7865829581408704,
+            0.8157063613097488
+          ],
+          "reference_score_interval": [
+            1.1160330999041432,
+            1.194418473109674
+          ],
+          "reference_current_interval_a": [
+            0.7878128262351721,
+            0.8157063613097488
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.42389713044831695,
+          "predicted_current_a": 0.8945769250555405,
+          "score_interval": [
+            0.3978666373662345,
+            0.44992762353039933
+          ],
+          "current_interval_a": [
+            0.8803979145140136,
+            0.9087559355970674
+          ],
+          "reference_score_interval": [
+            0.3986674776775843,
+            0.44992762353039933
+          ],
+          "reference_current_interval_a": [
+            0.8819395048459328,
+            0.9087559355970674
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.12003739565643415,
+          "predicted_current_a": 1.0288101962910248,
+          "score_interval": [
+            0.10741776841931737,
+            0.1326570228935509
+          ],
+          "current_interval_a": [
+            1.014727968458264,
+            1.0428924241237854
+          ],
+          "reference_score_interval": [
+            0.10851973500635528,
+            0.1326570228935509
+          ],
+          "reference_current_interval_a": [
+            1.0164772044524442,
+            1.0428924241237854
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 1.0453414257565374,
+          "predicted_current_a": 0.8011446597253182,
+          "score_interval": [
+            1.0147655353849485,
+            1.0759173161281261
+          ],
+          "current_interval_a": [
+            0.7865829581408875,
+            0.8157063613097488
+          ],
+          "reference_score_interval": [
+            1.0150500092636947,
+            1.0759173161281261
+          ],
+          "reference_current_interval_a": [
+            0.7878128262351721,
+            0.8157063613097488
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.3142723865886295,
+          "predicted_current_a": 0.8945769250555274,
+          "score_interval": [
+            0.29711830662840744,
+            0.3314264665488515
+          ],
+          "current_interval_a": [
+            0.8803979145139874,
+            0.9087559355970674
+          ],
+          "reference_score_interval": [
+            0.29768438703713573,
+            0.3314264665488515
+          ],
+          "reference_current_interval_a": [
+            0.8819395048459328,
+            0.9087559355970674
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.010412651796712212,
+          "predicted_current_a": 1.028810196291012,
+          "score_interval": [
+            0.0066694376814214066,
+            0.014155865912003017
+          ],
+          "current_interval_a": [
+            1.0147279684582382,
+            1.0428924241237854
+          ],
+          "reference_score_interval": [
+            0.00753664436590674,
+            0.014155865912003017
+          ],
+          "reference_current_interval_a": [
+            1.0164772044524442,
+            1.0428924241237854
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.1549435091802924,
+          "predicted_current_a": 0.8011446597253105,
+          "score_interval": [
+            1.1154685452509105,
+            1.194418473109674
+          ],
+          "current_interval_a": [
+            0.786582958140872,
+            0.8157063613097488
+          ],
+          "reference_score_interval": [
+            1.1160330999041432,
+            1.194418473109674
+          ],
+          "reference_current_interval_a": [
+            0.7878128262351721,
+            0.8157063613097488
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.4238744700123036,
+          "predicted_current_a": 0.89457692505553,
+          "score_interval": [
+            0.3978213164942078,
+            0.44992762353039933
+          ],
+          "current_interval_a": [
+            0.8803979145139925,
+            0.9087559355970674
+          ],
+          "reference_score_interval": [
+            0.3986674776775843,
+            0.44992762353039933
+          ],
+          "reference_current_interval_a": [
+            0.8819395048459328,
+            0.9087559355970674
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.12001473522040221,
+          "predicted_current_a": 1.028810196291033,
+          "score_interval": [
+            0.10737244754725349,
+            0.1326570228935509
+          ],
+          "current_interval_a": [
+            1.0147279684582804,
+            1.0428924241237854
+          ],
+          "reference_score_interval": [
+            0.10851973500635528,
+            0.1326570228935509
+          ],
+          "reference_current_interval_a": [
+            1.0164772044524442,
+            1.0428924241237854
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.01,
+          "current_limit": 0.25,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.039474963929381594,
+          "max_peak_radius": 0.014561701584439115,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.01,
+          "current_limit": 0.5,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.039474963929381594,
+          "max_peak_radius": 0.014561701584439115,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.01,
+          "current_limit": 1.0,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 3,
+          "unresolved": 0,
+          "selected": 4,
+          "regret_bound": 0.05662904388960355,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.039474963929381594,
+          "max_peak_radius": 0.014561701584439115,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.01,
+          "current_limit": 2.0,
+          "ranked_pairs": 33,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.0432181780446724,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.039474963929381594,
+          "max_peak_radius": 0.014561701584439115,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1,
+      "initial_radius": 0.05,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.1549661696162614,
+          "predicted_current_a": 0.8011446597253097,
+          "score_interval": [
+            0.9430317747310051,
+            1.3669005645015178
+          ],
+          "current_interval_a": [
+            0.7307958879917174,
+            0.8714934314589019
+          ],
+          "reference_score_interval": [
+            0.9716306954936635,
+            1.3669005645015178
+          ],
+          "reference_current_interval_a": [
+            0.7321200211130572,
+            0.8714934314589019
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.42389713044831695,
+          "predicted_current_a": 0.8945769250555405,
+          "score_interval": [
+            0.2796350008144732,
+            0.5681592600821607
+          ],
+          "current_interval_a": [
+            0.8265905615390118,
+            0.9625632885720692
+          ],
+          "reference_score_interval": [
+            0.30846870891865047,
+            0.5681592600821607
+          ],
+          "reference_current_interval_a": [
+            0.8285291284344414,
+            0.9625632885720692
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.12003739565643415,
+          "predicted_current_a": 1.0288101962910248,
+          "score_interval": [
+            0.0434365867076384,
+            0.1966382046052299
+          ],
+          "current_interval_a": [
+            0.9618975291155826,
+            1.095722863466467
+          ],
+          "reference_score_interval": [
+            0.07220999472886748,
+            0.1966382046052299
+          ],
+          "reference_current_interval_a": [
+            0.9636467651097629,
+            1.0957228634664669
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 1.0453414257565374,
+          "predicted_current_a": 0.8011446597253182,
+          "score_interval": [
+            0.8778323150489915,
+            1.2128505364640834
+          ],
+          "current_interval_a": [
+            0.7307958879917344,
+            0.8714934314589019
+          ],
+          "reference_score_interval": [
+            0.9003764385337576,
+            1.2128505364640834
+          ],
+          "reference_current_interval_a": [
+            0.7321200211130572,
+            0.8714934314589019
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.3142723865886295,
+          "predicted_current_a": 0.8945769250555274,
+          "score_interval": [
+            0.21443554113253271,
+            0.41410923204472627
+          ],
+          "current_interval_a": [
+            0.8265905615389856,
+            0.9625632885720692
+          ],
+          "reference_score_interval": [
+            0.23721445195874455,
+            0.41410923204472627
+          ],
+          "reference_current_interval_a": [
+            0.8285291284344414,
+            0.9625632885720692
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.010412651796712212,
+          "predicted_current_a": 1.028810196291012,
+          "score_interval": [
+            -0.021762872974371062,
+            0.04258817656779549
+          ],
+          "current_interval_a": [
+            0.9618975291155568,
+            1.095722863466467
+          ],
+          "reference_score_interval": [
+            0.0009557377689615496,
+            0.04258817656779548
+          ],
+          "reference_current_interval_a": [
+            0.9636467651097629,
+            1.0957228634664669
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.1549435091802924,
+          "predicted_current_a": 0.8011446597253105,
+          "score_interval": [
+            0.9429864538590671,
+            1.3669005645015178
+          ],
+          "current_interval_a": [
+            0.7307958879917189,
+            0.8714934314589019
+          ],
+          "reference_score_interval": [
+            0.9716306954936635,
+            1.3669005645015178
+          ],
+          "reference_current_interval_a": [
+            0.7321200211130572,
+            0.8714934314589019
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.4238744700123036,
+          "predicted_current_a": 0.89457692505553,
+          "score_interval": [
+            0.2795896799424465,
+            0.5681592600821607
+          ],
+          "current_interval_a": [
+            0.8265905615389907,
+            0.9625632885720692
+          ],
+          "reference_score_interval": [
+            0.30846870891865047,
+            0.5681592600821607
+          ],
+          "reference_current_interval_a": [
+            0.8285291284344414,
+            0.9625632885720692
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.12001473522040221,
+          "predicted_current_a": 1.028810196291033,
+          "score_interval": [
+            0.04339126583557452,
+            0.1966382046052299
+          ],
+          "current_interval_a": [
+            0.961897529115599,
+            1.095722863466467
+          ],
+          "reference_score_interval": [
+            0.07220999472886748,
+            0.1966382046052299
+          ],
+          "reference_current_interval_a": [
+            0.9636467651097629,
+            1.0957228634664669
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.05,
+          "current_limit": 0.25,
+          "ranked_pairs": 29,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.21195705532122522,
+          "max_peak_radius": 0.07034877173359219,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.05,
+          "current_limit": 0.5,
+          "ranked_pairs": 29,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.21195705532122522,
+          "max_peak_radius": 0.07034877173359219,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.05,
+          "current_limit": 1.0,
+          "ranked_pairs": 29,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 0,
+          "unresolved": 3,
+          "selected": 4,
+          "regret_bound": 0.311793900777322,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.21195705532122522,
+          "max_peak_radius": 0.07034877173359219,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "unresolved",
+            "feasible",
+            "feasible",
+            "unresolved",
+            "feasible",
+            "feasible",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.05,
+          "current_limit": 2.0,
+          "ranked_pairs": 29,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.2441325800923085,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.21195705532122522,
+          "max_peak_radius": 0.07034877173359219,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1,
+      "initial_radius": 0.2,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.1549661696162614,
+          "predicted_current_a": 0.8011446597253097,
+          "score_interval": [
+            0.10611821539497267,
+            2.2038141238375504
+          ],
+          "current_interval_a": [
+            0.5212708992630696,
+            1.0810184201875497
+          ],
+          "reference_score_interval": [
+            0.5538537186402934,
+            2.2038141238375504
+          ],
+          "reference_current_interval_a": [
+            0.5237473992510284,
+            1.0810184201875497
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.42389713044831695,
+          "predicted_current_a": 0.8945769250555405,
+          "score_interval": [
+            -0.35383935287125046,
+            1.2016336137678845
+          ],
+          "current_interval_a": [
+            0.6230963917963113,
+            1.1660574583147698
+          ],
+          "reference_score_interval": [
+            0.09082865158119179,
+            1.2016336137678845
+          ],
+          "reference_current_interval_a": [
+            0.6310799349395426,
+            1.1660574583147698
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.12003739565643415,
+          "predicted_current_a": 1.0288101962910248,
+          "score_interval": [
+            -0.3865985613277766,
+            0.6266733526406449
+          ],
+          "current_interval_a": [
+            0.7637833815805268,
+            1.2938370110015227
+          ],
+          "reference_score_interval": [
+            0.012374594900403152,
+            0.6266733526406448
+          ],
+          "reference_current_interval_a": [
+            0.7655326175747073,
+            1.2938370110015227
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 1.0453414257565374,
+          "predicted_current_a": 0.8011446597253182,
+          "score_interval": [
+            0.17422702217253358,
+            1.9164558293405414
+          ],
+          "current_interval_a": [
+            0.5212708992630867,
+            1.0810184201875497
+          ],
+          "reference_score_interval": [
+            0.5414791237398903,
+            1.9164558293405414
+          ],
+          "reference_current_interval_a": [
+            0.5237473992510284,
+            1.0810184201875497
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.3142723865886295,
+          "predicted_current_a": 0.8945769250555274,
+          "score_interval": [
+            -0.2857305460936166,
+            0.9142753192708756
+          ],
+          "current_interval_a": [
+            0.6230963917962851,
+            1.1660574583147698
+          ],
+          "reference_score_interval": [
+            0.07845405668078864,
+            0.9142753192708755
+          ],
+          "reference_current_interval_a": [
+            0.6310799349395426,
+            1.1660574583147698
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.010412651796712212,
+          "predicted_current_a": 1.028810196291012,
+          "score_interval": [
+            -0.3184897545502116,
+            0.33931505814363605
+          ],
+          "current_interval_a": [
+            0.7637833815805011,
+            1.2938370110015227
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            0.33931505814363605
+          ],
+          "reference_current_interval_a": [
+            0.7655326175747073,
+            1.2938370110015227
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.1549435091802924,
+          "predicted_current_a": 0.8011446597253105,
+          "score_interval": [
+            0.10607289452303469,
+            2.2038141238375504
+          ],
+          "current_interval_a": [
+            0.5212708992630711,
+            1.0810184201875497
+          ],
+          "reference_score_interval": [
+            0.5538537186402934,
+            2.2038141238375504
+          ],
+          "reference_current_interval_a": [
+            0.5237473992510284,
+            1.0810184201875497
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.4238744700123036,
+          "predicted_current_a": 0.89457692505553,
+          "score_interval": [
+            -0.3538846737432772,
+            1.2016336137678845
+          ],
+          "current_interval_a": [
+            0.6230963917962902,
+            1.1660574583147698
+          ],
+          "reference_score_interval": [
+            0.09082865158119179,
+            1.2016336137678845
+          ],
+          "reference_current_interval_a": [
+            0.6310799349395426,
+            1.1660574583147698
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.12001473522040221,
+          "predicted_current_a": 1.028810196291033,
+          "score_interval": [
+            -0.38664388219984047,
+            0.6266733526406449
+          ],
+          "current_interval_a": [
+            0.7637833815805433,
+            1.2938370110015227
+          ],
+          "reference_score_interval": [
+            0.012374594900403152,
+            0.6266733526406448
+          ],
+          "reference_current_interval_a": [
+            0.7655326175747073,
+            1.2938370110015227
+          ]
+        }
+      ],
+      "ranked_pairs": [],
+      "outcomes": [
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.2,
+          "current_limit": 0.25,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 1.0488706146572577,
+          "max_peak_radius": 0.27987376046223994,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.2,
+          "current_limit": 0.5,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 1.0488706146572577,
+          "max_peak_radius": 0.27987376046223994,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.2,
+          "current_limit": 1.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 1.0488706146572577,
+          "max_peak_radius": 0.27987376046223994,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 0.2,
+          "current_limit": 2.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 1.3777730210041816,
+          "diagnostic_max_vertex_regret": 0.01783238343400724,
+          "max_score_radius": 1.0488706146572577,
+          "max_peak_radius": 0.27987376046223994,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1,
+      "initial_radius": 1,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.1549661696162614,
+          "predicted_current_a": 0.8011446597253097,
+          "score_interval": [
+            -9.426906544173702,
+            11.736838883406225
+          ],
+          "current_interval_a": [
+            -0.6011514034947962,
+            2.2034407229454156
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            11.736838883406223
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.2034407229454156
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.42389713044831695,
+          "predicted_current_a": 0.8945769250555405,
+          "score_interval": [
+            -8.80185501563828,
+            9.649649276534912
+          ],
+          "current_interval_a": [
+            -0.4840356929221407,
+            2.273189543033222
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            9.649649276534912
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.273189543033222
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.12003739565643415,
+          "predicted_current_a": 1.0288101962910248,
+          "score_interval": [
+            -7.749605127293158,
+            7.9896799186060266
+          ],
+          "current_interval_a": [
+            -0.30011877247332946,
+            2.357739165055379
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            7.989679918606026
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.357739165055379
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 1.0453414257565374,
+          "predicted_current_a": 0.8011446597253182,
+          "score_interval": [
+            -8.64782031627841,
+            10.738503167791485
+          ],
+          "current_interval_a": [
+            -0.6011514034947792,
+            2.203440722945416
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            10.738503167791485
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.2034407229454156
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.3142723865886295,
+          "predicted_current_a": 0.8945769250555274,
+          "score_interval": [
+            -8.022768787742915,
+            8.651313560920174
+          ],
+          "current_interval_a": [
+            -0.4840356929221669,
+            2.273189543033222
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            8.651313560920173
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.273189543033222
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.010412651796712212,
+          "predicted_current_a": 1.028810196291012,
+          "score_interval": [
+            -6.970518899397863,
+            6.991344202991287
+          ],
+          "current_interval_a": [
+            -0.3001187724733552,
+            2.357739165055379
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            6.991344202991287
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.357739165055379
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.1549435091802924,
+          "predicted_current_a": 0.8011446597253105,
+          "score_interval": [
+            -9.42695186504564,
+            11.736838883406225
+          ],
+          "current_interval_a": [
+            -0.6011514034947948,
+            2.203440722945416
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            11.736838883406223
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.2034407229454156
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.4238744700123036,
+          "predicted_current_a": 0.89457692505553,
+          "score_interval": [
+            -8.801900336510306,
+            9.649649276534912
+          ],
+          "current_interval_a": [
+            -0.4840356929221617,
+            2.273189543033222
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            9.649649276534912
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.273189543033222
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.12001473522040221,
+          "predicted_current_a": 1.028810196291033,
+          "score_interval": [
+            -7.749650448165221,
+            7.9896799186060266
+          ],
+          "current_interval_a": [
+            -0.30011877247331303,
+            2.357739165055379
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            7.989679918606026
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.357739165055379
+          ]
+        }
+      ],
+      "ranked_pairs": [],
+      "outcomes": [
+        {
+          "resistance": 1.0,
+          "initial_radius": 1.0,
+          "current_limit": 0.25,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.581895374225931,
+          "max_peak_radius": 1.4022960632201058,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 1.0,
+          "current_limit": 0.5,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.581895374225931,
+          "max_peak_radius": 1.4022960632201058,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 1.0,
+          "current_limit": 1.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.581895374225931,
+          "max_peak_radius": 1.4022960632201058,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.0,
+          "initial_radius": 1.0,
+          "current_limit": 2.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.581895374225931,
+          "max_peak_radius": 1.4022960632201058,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1.1,
+      "initial_radius": 0,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.110293464132729,
+          "predicted_current_a": 0.8043624201669534,
+          "score_interval": [
+            1.0659537899929266,
+            1.154633138272531
+          ],
+          "current_interval_a": [
+            0.8017595937724603,
+            0.8069652465614463
+          ],
+          "reference_score_interval": [
+            1.1546331382725306,
+            1.154633138272531
+          ],
+          "reference_current_interval_a": [
+            0.8017595937724603,
+            0.8017595937724605
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.4221947034779887,
+          "predicted_current_a": 0.8976137056104211,
+          "score_interval": [
+            0.42068450455270046,
+            0.4237049024032769
+          ],
+          "current_interval_a": [
+            0.8953275000569633,
+            0.8998999111638788
+          ],
+          "reference_score_interval": [
+            0.4237049024032768,
+            0.4237049024032769
+          ],
+          "reference_current_interval_a": [
+            0.8953275000569633,
+            0.8953275000569635
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.13641037709180043,
+          "predicted_current_a": 1.0296977958127647,
+          "score_interval": [
+            0.11999691547644901,
+            0.15282383870715183
+          ],
+          "current_interval_a": [
+            1.0296848142881145,
+            1.0297107773374146
+          ],
+          "reference_score_interval": [
+            0.11999691547644901,
+            0.11999691547644904
+          ],
+          "reference_current_interval_a": [
+            1.0296848142881145,
+            1.029684814288115
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 0.984695279587998,
+          "predicted_current_a": 0.8043624201669666,
+          "score_interval": [
+            0.924371360121041,
+            1.0450191990549549
+          ],
+          "current_interval_a": [
+            0.8017595937724603,
+            0.8069652465614727
+          ],
+          "reference_score_interval": [
+            1.0450191990549544,
+            1.0450191990549549
+          ],
+          "reference_current_interval_a": [
+            0.8017595937724603,
+            0.8017595937724605
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.2965965189332863,
+          "predicted_current_a": 0.8976137056104199,
+          "score_interval": [
+            0.27910207468087195,
+            0.3140909631857006
+          ],
+          "current_interval_a": [
+            0.8953275000569633,
+            0.8998999111638764
+          ],
+          "reference_score_interval": [
+            0.3140909631857005,
+            0.3140909631857006
+          ],
+          "reference_current_interval_a": [
+            0.8953275000569633,
+            0.8953275000569635
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.01081219254706408,
+          "predicted_current_a": 1.0296977958127544,
+          "score_interval": [
+            0.010382976258872769,
+            0.011241408835255389
+          ],
+          "current_interval_a": [
+            1.0296848142881145,
+            1.0297107773373941
+          ],
+          "reference_score_interval": [
+            0.010382976258872769,
+            0.010382976258872773
+          ],
+          "reference_current_interval_a": [
+            1.0296848142881145,
+            1.029684814288115
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.068407250663134,
+          "predicted_current_a": 0.8043624201669533,
+          "score_interval": [
+            0.9821813630537367,
+            1.154633138272531
+          ],
+          "current_interval_a": [
+            0.8017595937724603,
+            0.8069652465614461
+          ],
+          "reference_score_interval": [
+            1.1546331382725306,
+            1.154633138272531
+          ],
+          "reference_current_interval_a": [
+            0.8017595937724603,
+            0.8017595937724605
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.38030849000836986,
+          "predicted_current_a": 0.8976137056104133,
+          "score_interval": [
+            0.33691207761346276,
+            0.4237049024032769
+          ],
+          "current_interval_a": [
+            0.8953275000569633,
+            0.8998999111638633
+          ],
+          "reference_score_interval": [
+            0.4237049024032768,
+            0.4237049024032769
+          ],
+          "reference_current_interval_a": [
+            0.8953275000569633,
+            0.8953275000569635
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.0945241636221543,
+          "predicted_current_a": 1.0296977958127578,
+          "score_interval": [
+            0.06905141176785953,
+            0.11999691547644904
+          ],
+          "current_interval_a": [
+            1.0296848142881145,
+            1.0297107773374008
+          ],
+          "reference_score_interval": [
+            0.11999691547644901,
+            0.11999691547644904
+          ],
+          "reference_current_interval_a": [
+            1.0296848142881145,
+            1.029684814288115
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.0,
+          "current_limit": 0.25,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.08622588760939708,
+          "max_peak_radius": 0.0026028263945060454,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.0,
+          "current_limit": 0.5,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.08622588760939708,
+          "max_peak_radius": 0.0026028263945060454,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.0,
+          "current_limit": 1.0,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 3,
+          "unresolved": 0,
+          "selected": 4,
+          "regret_bound": 0.10372033186181139,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.08622588760939708,
+          "max_peak_radius": 0.0026028263945060454,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.0,
+          "current_limit": 2.0,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.08665510389758839,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.08622588760939708,
+          "max_peak_radius": 0.0026028263945060454,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1.1,
+      "initial_radius": 0.001,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.110293464132729,
+          "predicted_current_a": 0.8043624201669534,
+          "score_interval": [
+            1.062035289893407,
+            1.1585516383720507
+          ],
+          "current_interval_a": [
+            0.8003649170187316,
+            0.808359923315175
+          ],
+          "reference_score_interval": [
+            1.1507265403766307,
+            1.1585516383720507
+          ],
+          "reference_current_interval_a": [
+            0.8003649170187316,
+            0.8031542705261894
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.4221947034779887,
+          "predicted_current_a": 0.8976137056104211,
+          "score_interval": [
+            0.41812226582418294,
+            0.4262671411317944
+          ],
+          "current_interval_a": [
+            0.8939846565029529,
+            0.9012427547178892
+          ],
+          "reference_score_interval": [
+            0.4211545658783788,
+            0.4262671411317944
+          ],
+          "reference_current_interval_a": [
+            0.8939846565029529,
+            0.8966703436109739
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.13641037709180043,
+          "predicted_current_a": 1.0296977958127647,
+          "score_interval": [
+            0.11880284032255309,
+            0.15401791386104777
+          ],
+          "current_interval_a": [
+            1.0283640533045475,
+            1.0310315383209816
+          ],
+          "reference_score_interval": [
+            0.11880284032255309,
+            0.1212028928339645
+          ],
+          "reference_current_interval_a": [
+            1.0283640533045475,
+            1.031005575271682
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 0.984695279587998,
+          "predicted_current_a": 0.8043624201669666,
+          "score_interval": [
+            0.9213415817979186,
+            1.0480489773780772
+          ],
+          "current_interval_a": [
+            0.8003649170187316,
+            0.8083599233152015
+          ],
+          "reference_score_interval": [
+            1.041998710004651,
+            1.0480489773780772
+          ],
+          "reference_current_interval_a": [
+            0.8003649170187316,
+            0.8031542705261894
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.2965965189332863,
+          "predicted_current_a": 0.8976137056104199,
+          "score_interval": [
+            0.2774285577287516,
+            0.315764480137821
+          ],
+          "current_interval_a": [
+            0.8939846565029529,
+            0.9012427547178867
+          ],
+          "reference_score_interval": [
+            0.31242673550639927,
+            0.315764480137821
+          ],
+          "reference_current_interval_a": [
+            0.8939846565029529,
+            0.8966703436109739
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.01081219254706408,
+          "predicted_current_a": 1.0296977958127544,
+          "score_interval": [
+            0.010075009950573584,
+            0.011549375143554573
+          ],
+          "current_interval_a": [
+            1.0283640533045475,
+            1.0310315383209612
+          ],
+          "reference_score_interval": [
+            0.010075009950573584,
+            0.010700231839991076
+          ],
+          "reference_current_interval_a": [
+            1.0283640533045475,
+            1.031005575271682
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.068407250663134,
+          "predicted_current_a": 0.8043624201669533,
+          "score_interval": [
+            0.978262862954217,
+            1.1585516383720507
+          ],
+          "current_interval_a": [
+            0.8003649170187316,
+            0.8083599233151748
+          ],
+          "reference_score_interval": [
+            1.1507265403766307,
+            1.1585516383720507
+          ],
+          "reference_current_interval_a": [
+            0.8003649170187316,
+            0.8031542705261894
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.38030849000836986,
+          "predicted_current_a": 0.8976137056104133,
+          "score_interval": [
+            0.33434983888494524,
+            0.4262671411317944
+          ],
+          "current_interval_a": [
+            0.8939846565029529,
+            0.9012427547178736
+          ],
+          "reference_score_interval": [
+            0.4211545658783788,
+            0.4262671411317944
+          ],
+          "reference_current_interval_a": [
+            0.8939846565029529,
+            0.8966703436109739
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.0945241636221543,
+          "predicted_current_a": 1.0296977958127578,
+          "score_interval": [
+            0.06784543441034407,
+            0.12120289283396452
+          ],
+          "current_interval_a": [
+            1.0283640533045475,
+            1.0310315383209678
+          ],
+          "reference_score_interval": [
+            0.11880284032255309,
+            0.1212028928339645
+          ],
+          "reference_current_interval_a": [
+            1.0283640533045475,
+            1.031005575271682
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.001,
+          "current_limit": 0.25,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.09014438770891667,
+          "max_peak_radius": 0.003997503148234873,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.001,
+          "current_limit": 0.5,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.09014438770891667,
+          "max_peak_radius": 0.003997503148234873,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.001,
+          "current_limit": 1.0,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 3,
+          "unresolved": 0,
+          "selected": 4,
+          "regret_bound": 0.10931234891345135,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.09014438770891667,
+          "max_peak_radius": 0.003997503148234873,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.001,
+          "current_limit": 2.0,
+          "ranked_pairs": 32,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.09088157030540717,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.09014438770891667,
+          "max_peak_radius": 0.003997503148234873,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1.1,
+      "initial_radius": 0.01,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.110293464132729,
+          "predicted_current_a": 0.8043624201669534,
+          "score_interval": [
+            1.0261684551557835,
+            1.194418473109674
+          ],
+          "current_interval_a": [
+            0.7878128262351721,
+            0.8209120140987345
+          ],
+          "reference_score_interval": [
+            1.1160330999041432,
+            1.194418473109674
+          ],
+          "reference_current_interval_a": [
+            0.7878128262351721,
+            0.8157063613097488
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.4221947034779887,
+          "predicted_current_a": 0.8976137056104211,
+          "score_interval": [
+            0.394461783425578,
+            0.44992762353039933
+          ],
+          "current_interval_a": [
+            0.8819395048459328,
+            0.9132879063749093
+          ],
+          "reference_score_interval": [
+            0.3986674776775843,
+            0.44992762353039933
+          ],
+          "reference_current_interval_a": [
+            0.8819395048459328,
+            0.9087559355970674
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.13641037709180043,
+          "predicted_current_a": 1.0296977958127647,
+          "score_interval": [
+            0.10851973500635528,
+            0.16430101917724557
+          ],
+          "current_interval_a": [
+            1.0164772044524442,
+            1.042918387173085
+          ],
+          "reference_score_interval": [
+            0.10851973500635528,
+            0.1326570228935509
+          ],
+          "reference_current_interval_a": [
+            1.0164772044524442,
+            1.0428924241237854
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 0.984695279587998,
+          "predicted_current_a": 0.8043624201669666,
+          "score_interval": [
+            0.8934732430478697,
+            1.0759173161281264
+          ],
+          "current_interval_a": [
+            0.7878128262351721,
+            0.8209120140987609
+          ],
+          "reference_score_interval": [
+            1.0150500092636947,
+            1.0759173161281261
+          ],
+          "reference_current_interval_a": [
+            0.7878128262351721,
+            0.8157063613097488
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.2965965189332863,
+          "predicted_current_a": 0.8976137056104199,
+          "score_interval": [
+            0.2617665713177211,
+            0.3314264665488515
+          ],
+          "current_interval_a": [
+            0.8819395048459328,
+            0.9132879063749069
+          ],
+          "reference_score_interval": [
+            0.29768438703713573,
+            0.3314264665488515
+          ],
+          "reference_current_interval_a": [
+            0.8819395048459328,
+            0.9087559355970674
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.01081219254706408,
+          "predicted_current_a": 1.0296977958127544,
+          "score_interval": [
+            0.007468519182125142,
+            0.014155865912003017
+          ],
+          "current_interval_a": [
+            1.0164772044524442,
+            1.0429183871730645
+          ],
+          "reference_score_interval": [
+            0.00753664436590674,
+            0.014155865912003017
+          ],
+          "reference_current_interval_a": [
+            1.0164772044524442,
+            1.0428924241237854
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.068407250663134,
+          "predicted_current_a": 0.8043624201669533,
+          "score_interval": [
+            0.9423960282165936,
+            1.194418473109674
+          ],
+          "current_interval_a": [
+            0.7878128262351721,
+            0.8209120140987343
+          ],
+          "reference_score_interval": [
+            1.1160330999041432,
+            1.194418473109674
+          ],
+          "reference_current_interval_a": [
+            0.7878128262351721,
+            0.8157063613097488
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.38030849000836986,
+          "predicted_current_a": 0.8976137056104133,
+          "score_interval": [
+            0.31068935648634033,
+            0.4499276235303994
+          ],
+          "current_interval_a": [
+            0.8819395048459328,
+            0.9132879063748938
+          ],
+          "reference_score_interval": [
+            0.3986674776775843,
+            0.44992762353039933
+          ],
+          "reference_current_interval_a": [
+            0.8819395048459328,
+            0.9087559355970674
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.0945241636221543,
+          "predicted_current_a": 1.0296977958127578,
+          "score_interval": [
+            0.056391304350757676,
+            0.1326570228935509
+          ],
+          "current_interval_a": [
+            1.0164772044524442,
+            1.0429183871730712
+          ],
+          "reference_score_interval": [
+            0.10851973500635528,
+            0.1326570228935509
+          ],
+          "reference_current_interval_a": [
+            1.0164772044524442,
+            1.0428924241237854
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.01,
+          "current_limit": 0.25,
+          "ranked_pairs": 30,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.12601122244654012,
+          "max_peak_radius": 0.016549593931794317,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.01,
+          "current_limit": 0.5,
+          "ranked_pairs": 30,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.12601122244654012,
+          "max_peak_radius": 0.016549593931794317,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.01,
+          "current_limit": 1.0,
+          "ranked_pairs": 30,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 3,
+          "unresolved": 0,
+          "selected": 4,
+          "regret_bound": 0.16084117006210527,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.12601122244654012,
+          "max_peak_radius": 0.016549593931794317,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible",
+            "feasible",
+            "feasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.01,
+          "current_limit": 2.0,
+          "ranked_pairs": 30,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.12935489581147908,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.12601122244654012,
+          "max_peak_radius": 0.016549593931794317,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1.1,
+      "initial_radius": 0.05,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.110293464132729,
+          "predicted_current_a": 0.8043624201669534,
+          "score_interval": [
+            0.85368636376394,
+            1.3669005645015178
+          ],
+          "current_interval_a": [
+            0.7321200211130572,
+            0.8766048192208494
+          ],
+          "reference_score_interval": [
+            0.9716306954936635,
+            1.3669005645015178
+          ],
+          "reference_current_interval_a": [
+            0.7321200211130572,
+            0.8714934314589019
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.4221947034779887,
+          "predicted_current_a": 0.8976137056104211,
+          "score_interval": [
+            0.2762301468738167,
+            0.5681592600821607
+          ],
+          "current_interval_a": [
+            0.8285291284344414,
+            0.9666982827864007
+          ],
+          "reference_score_interval": [
+            0.30846870891865047,
+            0.5681592600821607
+          ],
+          "reference_current_interval_a": [
+            0.8285291284344414,
+            0.9625632885720692
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.13641037709180043,
+          "predicted_current_a": 1.0296977958127647,
+          "score_interval": [
+            0.07220999472886748,
+            0.2006107594547334
+          ],
+          "current_interval_a": [
+            0.9636467651097629,
+            1.0957488265157664
+          ],
+          "reference_score_interval": [
+            0.07220999472886748,
+            0.1966382046052299
+          ],
+          "reference_current_interval_a": [
+            0.9636467651097629,
+            1.0957228634664669
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 0.984695279587998,
+          "predicted_current_a": 0.8043624201669666,
+          "score_interval": [
+            0.7565400227119126,
+            1.2128505364640834
+          ],
+          "current_interval_a": [
+            0.7321200211130572,
+            0.8766048192208759
+          ],
+          "reference_score_interval": [
+            0.9003764385337576,
+            1.2128505364640834
+          ],
+          "reference_current_interval_a": [
+            0.7321200211130572,
+            0.8714934314589019
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.2965965189332863,
+          "predicted_current_a": 0.8976137056104199,
+          "score_interval": [
+            0.17908380582184635,
+            0.41410923204472627
+          ],
+          "current_interval_a": [
+            0.8285291284344414,
+            0.9666982827863982
+          ],
+          "reference_score_interval": [
+            0.23721445195874455,
+            0.41410923204472627
+          ],
+          "reference_current_interval_a": [
+            0.8285291284344414,
+            0.9625632885720692
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.01081219254706408,
+          "predicted_current_a": 1.0296977958127544,
+          "score_interval": [
+            -0.020963791473667327,
+            0.04258817656779549
+          ],
+          "current_interval_a": [
+            0.9636467651097629,
+            1.095748826515746
+          ],
+          "reference_score_interval": [
+            0.0009557377689615496,
+            0.04258817656779548
+          ],
+          "reference_current_interval_a": [
+            0.9636467651097629,
+            1.0957228634664669
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.068407250663134,
+          "predicted_current_a": 0.8043624201669533,
+          "score_interval": [
+            0.7699139368247501,
+            1.3669005645015178
+          ],
+          "current_interval_a": [
+            0.7321200211130572,
+            0.8766048192208492
+          ],
+          "reference_score_interval": [
+            0.9716306954936635,
+            1.3669005645015178
+          ],
+          "reference_current_interval_a": [
+            0.7321200211130572,
+            0.8714934314589019
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.38030849000836986,
+          "predicted_current_a": 0.8976137056104133,
+          "score_interval": [
+            0.19245771993457905,
+            0.5681592600821607
+          ],
+          "current_interval_a": [
+            0.8285291284344414,
+            0.9666982827863851
+          ],
+          "reference_score_interval": [
+            0.30846870891865047,
+            0.5681592600821607
+          ],
+          "reference_current_interval_a": [
+            0.8285291284344414,
+            0.9625632885720692
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.0945241636221543,
+          "predicted_current_a": 1.0296977958127578,
+          "score_interval": [
+            -0.0075898773609213025,
+            0.1966382046052299
+          ],
+          "current_interval_a": [
+            0.9636467651097629,
+            1.0957488265157527
+          ],
+          "reference_score_interval": [
+            0.07220999472886748,
+            0.1966382046052299
+          ],
+          "reference_current_interval_a": [
+            0.9636467651097629,
+            1.0957228634664669
+          ]
+        }
+      ],
+      "ranked_pairs": [
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          6
+        ]
+      ],
+      "outcomes": [
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.05,
+          "current_limit": 0.25,
+          "ranked_pairs": 24,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.29849331383838373,
+          "max_peak_radius": 0.07224239905390926,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.05,
+          "current_limit": 0.5,
+          "ranked_pairs": 24,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 0.29849331383838373,
+          "max_peak_radius": 0.07224239905390926,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.05,
+          "current_limit": 1.0,
+          "ranked_pairs": 24,
+          "total_pairs": 36,
+          "safe": 6,
+          "unsafe": 0,
+          "unresolved": 3,
+          "selected": 4,
+          "regret_bound": 0.4160060269498237,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.29849331383838373,
+          "max_peak_radius": 0.07224239905390926,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "unresolved",
+            "feasible",
+            "feasible",
+            "unresolved",
+            "feasible",
+            "feasible",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.05,
+          "current_limit": 2.0,
+          "ranked_pairs": 24,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 0.3302692978591152,
+          "diagnostic_max_vertex_regret": 0.0,
+          "max_score_radius": 0.29849331383838373,
+          "max_peak_radius": 0.07224239905390926,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1.1,
+      "initial_radius": 0.2,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.110293464132729,
+          "predicted_current_a": 0.8043624201669534,
+          "score_interval": [
+            0.016772804427907625,
+            2.2038141238375504
+          ],
+          "current_interval_a": [
+            0.5237473992510284,
+            1.0849774410828783
+          ],
+          "reference_score_interval": [
+            0.5538537186402934,
+            2.2038141238375504
+          ],
+          "reference_current_interval_a": [
+            0.5237473992510284,
+            1.0810184201875497
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.4221947034779887,
+          "predicted_current_a": 0.8976137056104211,
+          "score_interval": [
+            -0.357244206811907,
+            1.2016336137678845
+          ],
+          "current_interval_a": [
+            0.6291699529060724,
+            1.1660574583147698
+          ],
+          "reference_score_interval": [
+            0.09082865158119179,
+            1.2016336137678845
+          ],
+          "reference_current_interval_a": [
+            0.6310799349395426,
+            1.1660574583147698
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.13641037709180043,
+          "predicted_current_a": 1.0296977958127647,
+          "score_interval": [
+            -0.35385259845704403,
+            0.6266733526406449
+          ],
+          "current_interval_a": [
+            0.7655326175747073,
+            1.293862974050822
+          ],
+          "reference_score_interval": [
+            0.012374594900403152,
+            0.6266733526406448
+          ],
+          "reference_current_interval_a": [
+            0.7655326175747073,
+            1.2938370110015227
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 0.984695279587998,
+          "predicted_current_a": 0.8043624201669666,
+          "score_interval": [
+            0.05293472983545466,
+            1.9164558293405414
+          ],
+          "current_interval_a": [
+            0.5237473992510284,
+            1.0849774410829047
+          ],
+          "reference_score_interval": [
+            0.5414791237398903,
+            1.9164558293405414
+          ],
+          "reference_current_interval_a": [
+            0.5237473992510284,
+            1.0810184201875497
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.2965965189332863,
+          "predicted_current_a": 0.8976137056104199,
+          "score_interval": [
+            -0.3210822814043029,
+            0.9142753192708756
+          ],
+          "current_interval_a": [
+            0.6291699529060699,
+            1.1660574583147698
+          ],
+          "reference_score_interval": [
+            0.07845405668078864,
+            0.9142753192708755
+          ],
+          "reference_current_interval_a": [
+            0.6310799349395426,
+            1.1660574583147698
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.01081219254706408,
+          "predicted_current_a": 1.0296977958127544,
+          "score_interval": [
+            -0.3176906730495079,
+            0.33931505814363605
+          ],
+          "current_interval_a": [
+            0.7655326175747073,
+            1.2938629740508016
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            0.33931505814363605
+          ],
+          "reference_current_interval_a": [
+            0.7655326175747073,
+            1.2938370110015227
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.068407250663134,
+          "predicted_current_a": 0.8043624201669533,
+          "score_interval": [
+            -0.06699962251128234,
+            2.2038141238375504
+          ],
+          "current_interval_a": [
+            0.5237473992510284,
+            1.084977441082878
+          ],
+          "reference_score_interval": [
+            0.5538537186402934,
+            2.2038141238375504
+          ],
+          "reference_current_interval_a": [
+            0.5237473992510284,
+            1.0810184201875497
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.38030849000836986,
+          "predicted_current_a": 0.8976137056104133,
+          "score_interval": [
+            -0.4410166337511447,
+            1.2016336137678845
+          ],
+          "current_interval_a": [
+            0.6291699529060568,
+            1.1660574583147698
+          ],
+          "reference_score_interval": [
+            0.09082865158119179,
+            1.2016336137678845
+          ],
+          "reference_current_interval_a": [
+            0.6310799349395426,
+            1.1660574583147698
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.0945241636221543,
+          "predicted_current_a": 1.0296977958127578,
+          "score_interval": [
+            -0.43762502539633635,
+            0.6266733526406449
+          ],
+          "current_interval_a": [
+            0.7655326175747073,
+            1.2938629740508083
+          ],
+          "reference_score_interval": [
+            0.012374594900403152,
+            0.6266733526406448
+          ],
+          "reference_current_interval_a": [
+            0.7655326175747073,
+            1.2938370110015227
+          ]
+        }
+      ],
+      "ranked_pairs": [],
+      "outcomes": [
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.2,
+          "current_limit": 0.25,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 1.1354068731744162,
+          "max_peak_radius": 0.280615020915938,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.2,
+          "current_limit": 0.5,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 9,
+          "unresolved": 0,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 1.1354068731744162,
+          "max_peak_radius": 0.280615020915938,
+          "candidate_statuses": [
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible",
+            "infeasible"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.2,
+          "current_limit": 1.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 1.1354068731744162,
+          "max_peak_radius": 0.280615020915938,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 0.2,
+          "current_limit": 2.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 9,
+          "unsafe": 0,
+          "unresolved": 0,
+          "selected": 5,
+          "regret_bound": 1.4639097387709883,
+          "diagnostic_max_vertex_regret": 0.01783238343400724,
+          "max_score_radius": 1.1354068731744162,
+          "max_peak_radius": 0.280615020915938,
+          "candidate_statuses": [
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible",
+            "feasible"
+          ]
+        }
+      ]
+    },
+    {
+      "resistance_ohm": 1.1,
+      "initial_radius": 1,
+      "candidates": [
+        {
+          "id": 0,
+          "predicted_score": 1.110293464132729,
+          "predicted_current_a": 0.8043624201669534,
+          "score_interval": [
+            -9.516251955140769,
+            11.736838883406225
+          ],
+          "current_interval_a": [
+            -0.5947158826115089,
+            2.2034407229454156
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            11.736838883406223
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.2034407229454156
+          ]
+        },
+        {
+          "id": 1,
+          "predicted_score": 0.4221947034779887,
+          "predicted_current_a": 0.8976137056104211,
+          "score_interval": [
+            -8.805259869578935,
+            9.649649276534912
+          ],
+          "current_interval_a": [
+            -0.4779621318123796,
+            2.273189543033222
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            9.649649276534912
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.273189543033222
+          ]
+        },
+        {
+          "id": 2,
+          "predicted_score": 0.13641037709180043,
+          "predicted_current_a": 1.0296977958127647,
+          "score_interval": [
+            -7.716859164422425,
+            7.9896799186060266
+          ],
+          "current_interval_a": [
+            -0.2983435734298497,
+            2.357739165055379
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            7.989679918606026
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.357739165055379
+          ]
+        },
+        {
+          "id": 3,
+          "predicted_score": 0.984695279587998,
+          "predicted_current_a": 0.8043624201669666,
+          "score_interval": [
+            -8.76911260861549,
+            10.738503167791487
+          ],
+          "current_interval_a": [
+            -0.5947158826114826,
+            2.203440722945416
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            10.738503167791485
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.2034407229454156
+          ]
+        },
+        {
+          "id": 4,
+          "predicted_score": 0.2965965189332863,
+          "predicted_current_a": 0.8976137056104199,
+          "score_interval": [
+            -8.058120523053603,
+            8.651313560920174
+          ],
+          "current_interval_a": [
+            -0.47796213181238195,
+            2.273189543033222
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            8.651313560920173
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.273189543033222
+          ]
+        },
+        {
+          "id": 5,
+          "predicted_score": 0.01081219254706408,
+          "predicted_current_a": 1.0296977958127544,
+          "score_interval": [
+            -6.969719817897159,
+            6.991344202991287
+          ],
+          "current_interval_a": [
+            -0.2983435734298701,
+            2.357739165055379
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            6.991344202991287
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.357739165055379
+          ]
+        },
+        {
+          "id": 6,
+          "predicted_score": 1.068407250663134,
+          "predicted_current_a": 0.8043624201669533,
+          "score_interval": [
+            -9.600024382079956,
+            11.736838883406225
+          ],
+          "current_interval_a": [
+            -0.5947158826115092,
+            2.203440722945416
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            11.736838883406223
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.2034407229454156
+          ]
+        },
+        {
+          "id": 7,
+          "predicted_score": 0.38030849000836986,
+          "predicted_current_a": 0.8976137056104133,
+          "score_interval": [
+            -8.889032296518174,
+            9.649649276534914
+          ],
+          "current_interval_a": [
+            -0.47796213181239516,
+            2.273189543033222
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            9.649649276534912
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.273189543033222
+          ]
+        },
+        {
+          "id": 8,
+          "predicted_score": 0.0945241636221543,
+          "predicted_current_a": 1.0296977958127578,
+          "score_interval": [
+            -7.800631591361718,
+            7.9896799186060266
+          ],
+          "current_interval_a": [
+            -0.29834357342986345,
+            2.357739165055379
+          ],
+          "reference_score_interval": [
+            -5e-324,
+            7.989679918606026
+          ],
+          "reference_current_interval_a": [
+            -5e-324,
+            2.357739165055379
+          ]
+        }
+      ],
+      "ranked_pairs": [],
+      "outcomes": [
+        {
+          "resistance": 1.1,
+          "initial_radius": 1.0,
+          "current_limit": 0.25,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.66843163274309,
+          "max_peak_radius": 1.3990783027784623,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 1.0,
+          "current_limit": 0.5,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.66843163274309,
+          "max_peak_radius": 1.3990783027784623,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 1.0,
+          "current_limit": 1.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.66843163274309,
+          "max_peak_radius": 1.3990783027784623,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        },
+        {
+          "resistance": 1.1,
+          "initial_radius": 1.0,
+          "current_limit": 2.0,
+          "ranked_pairs": 0,
+          "total_pairs": 36,
+          "safe": 0,
+          "unsafe": 0,
+          "unresolved": 9,
+          "selected": null,
+          "regret_bound": null,
+          "diagnostic_max_vertex_regret": null,
+          "max_score_radius": 10.66843163274309,
+          "max_peak_radius": 1.3990783027784623,
+          "candidate_statuses": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "unresolved"
+          ]
+        }
+      ]
+    }
+  ]
+}

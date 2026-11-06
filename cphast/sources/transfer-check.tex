@@ -1,0 +1,40 @@
+\paragraph{Empirical grounding of the probabilistic transfer bound.}
+We evaluate Theorem~\ref{thm:prob-transfer} on the affine damped oscillator with
+$k=2$, $d=3$, and step size $0.05$. The numerical metric used for this coverage
+study is distinct from the exact witness in
+Remark~\ref{rem:certified-linear-contraction}; both use the same reported
+contraction factor. A stationary-gain, q-only Kalman
+observer uses $Q_\theta=10^{-6}I$ and $R=I$. Writing its gain as $K$ and
+position-observation matrix as $C$, the signed error evolves through
+\[
+ A_e=(I-KC)A,\qquad
+ \Sigma=(I-KC)Q_\theta(I-KC)^\top+KRK^\top.
+\]
+The implementation checks $\|A_e\|_M\le q$ before applying the recursion.
+Initialization is an independent draw from $\mathcal N(0,\Sigma)$, as are
+the subsequent injections; it is not drawn from the stationary posterior
+covariance. We use $N=3000$ independent rollouts of horizon $h=200$.
+The table reports coverage of
+$\max_{0\leq j\leq h}e_j$ and the ratio of the bound to its empirical
+$(1-\alpha)$-quantile.  The C.5-max columns use the simultaneous-max extension
+of Remark~\ref{rem:prob-transfer-concentration}, including both its
+$\sqrt{\log(h+1)}$ and $\sqrt{\log(1/\alpha)}$ terms. Every measured coverage was one,
+above the required Monte-Carlo lower band, but this is an empirical check and
+not a certificate.  The C.4 envelope is conservative: its ratio is
+$17$--$18\times$ on the oscillator.  Independent-refresh concentration is tighter,
+reducing this range to $6$--$7\times$, while retaining
+the same measured coverage; neither result supports a claim of tightness.
+
+\begin{center}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Deployment & $q$ & $\alpha$ & C.4 cov. & C.4 ratio & C.5-max cov. & C.5-max ratio \\
+\midrule
+damped oscillator, $d_{\rm base}=3$
+  & 0.977848100 & 0.10 & 1.000 & $18.35\times$ & 1.000 & $7.10\times$ \\
+  &             & 0.05 & 1.000 & $17.84\times$ & 1.000 & $6.75\times$ \\
+  &             & 0.01 & 1.000 & $16.99\times$ & 1.000 & $6.12\times$ \\
+\bottomrule
+\end{tabular}
+\end{center}
