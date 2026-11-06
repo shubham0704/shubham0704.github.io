@@ -9,8 +9,8 @@
   "artifacts": [
     {
       "path": "index.html",
-      "sha256": "514f1b12d4f9422941dcdf44e38670571d1c0c73c38dd02eefd006967d28510c",
-      "bytes": 40003
+      "sha256": "952d7c0ea73ab3333596b6a0f387fc924461611fa0b2fc055ae859394ae8eb28",
+      "bytes": 40110
     },
     {
       "path": "style.css",
