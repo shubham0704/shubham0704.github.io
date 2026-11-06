@@ -1,0 +1,329 @@
+\section{Real-Robot Logs and Physical-Consequence Prediction}
+\label{app:spot-data}
+
+Section~\ref{sec:results:spot-shadow} tests the consequence interface on real
+Spot-with-arm telemetry. Unlike the simulator branches in
+Appendix~\ref{app:robot-decision-interface}, each logged window contains only
+the future that was actually executed. We therefore specify the replay input
+contract before the prediction and objective-conditioned ranking results.
+
+The Spot-with-arm evidence uses logged ROS bags collected in a lab environment under human teleoperation.
+C-PHAST is evaluated as a shadow model: it observes telemetry and possible-next-behavior descriptors, predicts typed physical consequences, and writes objective-conditioned action cards beside the teleoperated run.
+The data are converted into overlapping windows with a two-second history and a five-second future horizon.
+Each row supervises the future that was actually executed in the log.
+Thus Spot serves as the real-robot telemetry-to-action-card forecast: the log supplies physical supervision for the executed future, while branch execution and matched-state alternative rollouts are tested by the Isaac experiments.
+Table~\ref{tab:spot-dataset-arxiv} gives the scale of this logged dataset and the history/future windows used by the reported result.
+Training episodes comprise static arm scanning (105 windows), fast traversal
+(130), slow traversal (258), and waypoint scanning (404). Testing uses a
+separate fast traversal (102) and trimmed yaw scan (71).
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Spot-with-arm window dataset.}
+Four complete bags supply training windows and two separate bags supply test windows, after filtering unusable or calibration-test segments. No bag crosses the split.}
+\label{tab:spot-dataset-arxiv}
+\begin{tabular}{@{}l r@{}}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+usable teleoperated episodes & 6 \\
+typed possible-next-behavior windows & 1,070 \\
+training windows & 897 \\
+held-out windows & 173 \\
+training / held-out bags & 4 / 2 \\
+history length & 2 s \\
+future-consequence horizon & 5 s \\
+window stride & 1 s \\
+reported query inputs & history + numeric behavior descriptors \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:experiment-scope-arxiv} distinguishes this real-log study from
+the cross-robot and recovery studies in
+Appendices~\ref{app:accuracy_transfer} and~\ref{app:robot-decision-interface}.
+The Spot row is real-robot evidence for telemetry-to-action-card prediction under logged replay; the Isaac transfer and push rows carry the branchable PHASTCore rollout evidence.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{\textbf{Benchmark roles and hierarchy for the shared query interface.}
+Each artifact stresses a different part of the C-PHAST claim: simulated branch execution, typed physical-critic scoring, or real robot telemetry-to-action-card forecasting.}
+\label{tab:experiment-scope-arxiv}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.14\linewidth}
+>{\raggedright\arraybackslash}p{0.18\linewidth}
+>{\raggedright\arraybackslash}p{0.34\linewidth}
+>{\centering\arraybackslash}p{0.08\linewidth}
+>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Experiment} & \textbf{Query mode} & \textbf{Hierarchy used} & \textbf{Real robot} & \textbf{Validated role} \\
+\midrule
+Isaac transfer & branchable q-only rollout & four 3-DOF leg PHASTCore rollout blocks (HAA/HFE/KFE); floating base excluded & no & cross-robot rollout accuracy and pH/compositional transfer \\
+Push critic & full-state rollout plus critic & separately trained body-plus-legs C-PHAST runtime; root/joint telemetry, contact/slip geometry, and terrain context condition candidate forecasts & no & typed branch scoring, early warning, and single-decision command selection in simulation \\
+Spot shadow mode & logged replay windows & interface blocks for base, leg support/contact, arm, camera/depth, and battery/power; target hierarchy for follow-up closed-loop hardware rollout & yes & real telemetry-to-action-card forecasting \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Consequence predictors.}
+\label{app:spot-models}
+The Spot hierarchy organizes telemetry and outputs, not compositional dynamics.
+Two direct predictors instantiate this interface. For objective-score evaluation,
+multioutput ridge regression maps 28 history summaries and ten numeric behavior
+descriptors to 38 consequence channels. Inputs and targets are standardized;
+regularized least squares uses strength 1.0 and an unpenalized intercept.
+Predicted channels are then aggregated into objective scores, rather than
+learning a different physical predictor for every objective.
+Panel B of Table~\ref{tab:spot-realworld-main} uses ridge regression throughout:
+its first four rows share the four-bag/two-bag split, including the comparator
+that predicts objective scores directly. The final row refits the consequence
+predictor on five bags and evaluates the sixth, recomputing standardization
+and factor scales within each training fold. Correlations are averaged equally
+over the six bags and five objectives.
+
+The energetic-channel evaluation uses a separate neural ensemble. Two-layer
+history and descriptor encoders use SiLU activations and layer normalization;
+a joint multilayer perceptron receives both embeddings and their elementwise
+product. Sigmoid outputs enforce bounded channels, while softplus enforces
+nonnegative channels. Training minimizes weighted mean-squared error on scaled
+consequence targets, with seven channels weighted by 1.5; predictions are
+averaged over seeds 42--46. The archived launch and retained producer defaults
+specify width 32, AdamW with
+learning rate 0.002 and weight decay 0.001, batch size 128, and at most 700
+epochs. Early stopping uses 20\% of training-partition windows and patience 80;
+these overlapping validation windows are not independent episodes. Model
+checkpoints, resolved run settings, and stopping epochs were not retained
+with the exported ensemble predictions, so exact retraining is unverified.
+Neither predictor uses a PHASTCore transition or transferred dynamics weights.
+
+The main subtlety is the Spot input contract.
+C-PHAST is not allowed to solve the task by memorizing primitive names: the reported model receives recent telemetry plus numeric behavior descriptors, not a one-hot primitive label.
+Table~\ref{tab:spot-input-contract-arxiv} separates four quantities that are easy to conflate: history observed before the query, behavior descriptors that a planner could provide, replay-only descriptor fields measured from the logged future, and consequence targets that must be predicted.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{\textbf{Spot input-contract audit.}
+The held-out-bag result tests the replay version of the planner-facing interface. A deployed confirm-to-execute planner would supply behavior descriptors from intended primitive parameters rather than measured future telemetry.}
+\label{tab:spot-input-contract-arxiv}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+\textbf{Quantity class} & \textbf{Examples in the Spot artifact} & \textbf{Use in this paper} \\
+\midrule
+Decision-time history & recent speed/contact, hand motion, gripper state, image/depth quality, TF/depth novelty summaries & observed before the query; valid model input \\
+Command-like behavior descriptors & commanded base speed and turn rate; gripper opening; primitive prototype descriptor & intended planner inputs; logged values are used as replay proxies \\
+Future-derived behavior descriptors & realized yaw change, realized hand speed, realized hand turn over the five-second future window & used only in logged replay; must be supplied by a primitive library or forecasted before live use \\
+Predicted consequence targets & work, support/contact, battery draw, collision/contact proxy, sensing quality, depth novelty, residual-like terms & unavailable before execution; predicted by the typed consequence model \\
+Visualization / metadata & behavior labels, episode type, trim markers & used for analysis and plots; not part of the main reported model input \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This contract gives two related query types.
+The held-out objective-score task is logged-window consequence prediction: each dataset row uses the executed teleoperation future as supervision.
+The same-history action-card query is a model query: it fixes one observed history and swaps in four prototype behavior descriptors, namely fast base loop, slow base loop, move-and-scan, and static arm scan, estimated from the training episodes.
+That query demonstrates objective switching from one state-history context; Isaac experiments provide matched-state branch execution when actual alternatives must be run.
+
+\paragraph{Consequences and objective scores.}
+For the objective-score experiment, the regression predictor estimates
+consequence channels from history summaries and behavior descriptors.
+Table~\ref{tab:spot-factors-arxiv} gives their definitions and decision roles.
+The predicted channels are aggregated and scaled to form a factor vector,
+reused for five objectives: efficient motion, safe motion, mapping, balanced
+operation, and inspection. This is the separation illustrated in
+Figure~\ref{fig:signals-to-action-cards}, with a direct consequence predictor
+rather than a latent dynamics rollout.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{\textbf{Spot observable-to-factor examples.}
+These definitions specify telemetry-derived targets and operational proxies
+for the direct consequence predictor; the objective scores use its predictions.
+Objective scores scale each planner-facing factor by its training-split 10--90 percentile range before applying objective weights.}
+\label{tab:spot-factors-arxiv}
+\begin{tabularx}{\linewidth}{@{}lXl@{}}
+\toprule
+\textbf{Factor family} & \textbf{Consequence definition} & \textbf{Decision role} \\
+\midrule
+Progress & future base path length in the horizontal plane & reward for traversal \\
+Joint work & $\sum_t\sum_j\max(\tau_{j,t}\dot q_{j,t},0)\Delta t$; absolute work replaces each positive part by $|\tau_{j,t}\dot q_{j,t}|$; both in joules & physical cost \\
+Battery draw & $\max(-\overline{I}_{\mathrm{battery}},0)$, where the bar averages the summed battery current over the future horizon, in amperes & discharge-current cost \\
+Support/contact & support-loss fraction, full-support fraction, contact-count deficit, foot/contact proxies & safety envelope and warning \\
+Wrench/load & mean force and torque norms from available wrench or effort channels & contact/load cost \\
+Collision/contact residual & hand or contact-envelope violation fraction; residual-like contact mismatch & veto or warning \\
+Motion/aggression & speed, yaw motion, commanded speed and turn magnitude & blur risk, support risk, and progress estimate \\
+Sensing quality & image frame/camera counts, sharpness, contrast, brightness, entropy, edge density & inspection quality \\
+Depth/TF novelty & valid depth fraction, point count, observed/new voxel counts, novelty fraction, coverage rate & map gain \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The reported Spot objectives apply soft weights to these factors
+(Table~\ref{tab:spot-objective-weights-arxiv}). A hard veto would require an
+explicit admission rule, rather than merely a larger penalty weight.
+
+The five objectives used in the Spot result are fixed linear consumers of the planner-factor vector.
+Efficient motion rewards progress while penalizing work, battery draw, command aggression, support loss, and collision.
+Safe motion places stronger penalties on support loss, collision, force, and aggressive commands.
+Mapping rewards progress, yaw/hand motion, image quality, and depth novelty while penalizing speed, work, battery draw, support loss, and collision.
+Balanced operation trades progress, sensing motion, energy, support, force, and collision.
+Inspection emphasizes image and depth quality, stable viewpoint changes, hand motion, and hand turn, with penalties for speed, near-depth risk, support loss, collision, and work.
+Changing objectives therefore changes the weights applied to the same typed factor vector rather than retraining the dynamics or consequence model.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{\textbf{Objective weights for Spot action cards.}
+After quantile scaling, each objective is a transparent weighting of typed planner factors.
+Positive entries reward a predicted consequence, while negative entries penalize cost or risk.}
+\label{tab:spot-objective-weights-arxiv}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Objective} & \textbf{Rewards} & \textbf{Penalties / veto pressure} & \textbf{Intended action card} \\
+\midrule
+Efficient &
+progress $+1.0$ &
+support loss $-1.0$, collision $-1.0$, command aggression $-0.8$, work $-0.5$, energy/progress $-0.4$, battery draw $-0.3$ &
+move if progress is worth the physical cost \\
+Safe &
+progress $+0.2$ &
+support loss $-2.0$, collision $-1.5$, force $-0.6$, command aggression $-0.5$ &
+stay inside the support/contact envelope \\
+Mapping &
+progress $+0.7$; yaw/hand motion $+0.6/+0.8$; image/depth novelty and quality $+0.3$--$+0.6$ &
+support loss $-1.0$, collision $-0.8$, speed $-0.5$, work/battery $-0.3$ &
+prefer informative viewpoints without unsafe motion \\
+Balanced &
+progress $+0.7$; yaw/hand motion $+0.3/+0.4$ &
+support loss $-1.2$, collision $-0.8$, force $-0.6$, work $-0.4$, energy/progress $-0.25$ &
+trade progress, sensing, and physical risk \\
+Inspection &
+image/depth quality $+0.4$--$+0.9$; hand motion $+1.0$; yaw motion $+0.8$; progress $+0.25$ &
+support loss $-1.2$, collision $-1.0$, speed $-0.8$, near-depth risk $-0.2$, work $-0.15$ &
+slow local scan with high visual/depth fidelity \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:spot-realworld-main} gives the compact real-robot evidence ledger in the main text.
+The appendix expands that ledger in five steps: Table~\ref{tab:spot-energetic-arxiv} reports direct energetic-target agreement, Table~\ref{tab:spot-objectives-arxiv} reports the held-out objective-score split, Table~\ref{tab:spot-lobo-arxiv} tests leave-one-episode-out generalization, Table~\ref{tab:spot-contract-arxiv} checks which query inputs carry signal, and Table~\ref{tab:spot-typed-direct-arxiv} compares typed readouts against direct scalar-objective training.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Direct energetic-target agreement on 173 held-out Spot windows.}
+Targets are computed from logged joint torque/velocity or battery telemetry and predicted by the five-seed typed query-model probe.
+They are telemetry-grounded physical quantities, not additional terms in the latent pH power identity.}
+\label{tab:spot-energetic-arxiv}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Target} & \textbf{Pearson} & $\mathbf{R^2}$ \\
+\midrule
+Positive joint work & 0.973 & 0.944 \\
+Absolute joint work & 0.975 & 0.947 \\
+Locomotion positive work & 0.971 & 0.939 \\
+Battery draw & 0.943 & 0.878 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Positive-work Pearson correlation is $0.975$ on the 102 traversal windows and
+$0.069$ on the 71 yaw-scan windows. Their RMSEs are similar (28.86 and 27.55\,J),
+but the yaw-scan targets vary much less; pooled agreement therefore does not
+establish strong within-episode tracking in both behaviors.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{\textbf{Held-out objective-score agreement on Spot logs.}
+All rows use recent history plus numeric behavior descriptors without primitive identity labels.
+Brackets give 2.5th--97.5th percentiles from 5,000 bootstrap resamples of
+individual prediction--target pairs, with the model and normalization fixed.
+Because windows overlap, these intervals describe variation within the two
+test episodes, not 95\% coverage for new-episode performance.
+Highest correlations are bold green; MAE scales differ across objectives.}
+\label{tab:spot-objectives-arxiv}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Objective} & \textbf{Pearson} & \textbf{Spearman} & \textbf{MAE} \\
+\midrule
+Efficient & $0.744$ [$0.682,0.803$] & $0.753$ [$0.681,0.811$] & 0.213 \\
+Safe & $0.907$ [$0.873,0.935$] & $0.875$ [$0.833,0.903$] & 0.106 \\
+Mapping & $0.919$ [$0.894,0.939$] & $0.900$ [$0.861,0.926$] & 0.370 \\
+Balanced & \goodcell{\textbf{$0.948$ [$0.931,0.962$]}} & \goodcell{\textbf{$0.939$ [$0.901,0.961$]}} & 0.140 \\
+Inspection & $0.884$ [$0.846,0.914$] & $0.836$ [$0.767,0.886$] & 0.540 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Leave-one-episode-out Spot stress test.}
+Each of six folds trains on five episodes and holds out the sixth; metrics
+are then averaged equally across episodes. Unlike the pooled fixed-split
+result, every episode is evaluated out of sample. Both protocols hold out
+complete episodes, but differ in coverage and aggregation.
+Highest correlations are bold green; MAE scales differ across objectives.}
+\label{tab:spot-lobo-arxiv}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Objective} & \textbf{Pearson} & \textbf{Spearman} & \textbf{MAE} \\
+\midrule
+Efficient & 0.538 & 0.412 & 0.324 \\
+Safe & 0.641 & 0.590 & 0.382 \\
+Mapping & \goodcell{\textbf{0.750}} & \goodcell{\textbf{0.617}} & 0.318 \\
+Balanced & 0.644 & 0.517 & 0.317 \\
+Inspection & 0.686 & 0.590 & 0.473 \\
+\midrule
+Mean & 0.652 & 0.545 & 0.363 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Query-input ablation.}
+Both current history and behavior descriptors carry signal; primitive identity alone does not.
+Best per metric is shown in \textbf{bold green}.}
+\label{tab:spot-contract-arxiv}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Inputs} & \textbf{Mean Pearson} & \textbf{Mean Spearman} & \textbf{Mean MAE} \\
+\midrule
+history only & 0.767 & 0.737 & 0.360 \\
+behavior descriptors only & 0.780 & 0.778 & 0.334 \\
+history + behavior descriptors & \goodcell{\textbf{0.880}} & \goodcell{\textbf{0.860}} & \goodcell{\textbf{0.274}} \\
+primitive label only & -0.120 & -0.054 & 0.740 \\
+history + descriptors + label & 0.854 & 0.844 & 0.313 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Typed readouts versus direct scalar objectives.}
+Typed consequences preserve scalar ranking quality while exposing the reason for the ranking.
+Best per metric is shown in \textbf{bold green}.}
+\label{tab:spot-typed-direct-arxiv}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Training target} & \textbf{Mean Pearson} & \textbf{Mean Spearman} & \textbf{Mean MAE} \\
+\midrule
+typed consequences then score & \goodcell{\textbf{0.880}} & 0.860 & \goodcell{\textbf{0.274}} \\
+direct scalar objective & 0.871 & \goodcell{\textbf{0.875}} & 0.330 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For a fixed observed history, the ranked future changes when the objective changes.
+In the representative query in Figure~\ref{fig:spot-real-query-context}, efficient and safe objectives choose a slow-loop candidate, while mapping, balanced, and inspection objectives choose a move-and-scan candidate.
+This is the operational reason to expose typed factors rather than a single learned score: a planner or operator can change the task objective while reusing the same consequence predictions.

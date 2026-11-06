@@ -1,0 +1,128 @@
+EXPANDED T1 WIRING TEST: BOTH NEW CANDIDATES VERIFIED NEGATIVE
+
+Decision
+--------
+The two remaining one-endpoint attachments do not beat branch0 at the frozen
+linear expected-energy gate. Both producer and independent interval checks
+establish strictly negative margins. This is not an inconclusive numerical
+certificate or a threshold failure near zero.
+
+All two planned new candidate cases completed. No rerun, training, parameter
+change, horizon change, state-direction reweighting or additional topology
+search was performed. The positive nonlinear-benefit stage was not attempted,
+as required when no candidate passes the strictly positive linear gate.
+
+Frozen comparison
+-----------------
+Checkpoint: nonlinear_dgu_20260930/results/full_v1/pair_01/staged/weights_100000.pt
+SHA256: 84930cb9a7020aa0021825c6a07100bce1b454c6b45b0a1ebcdf2ac9a7382542
+Protocol SHA256:
+a8ab251c87d3c1ea43d14f09582965cecf002350511bcddfce299ee9f450b0b3
+Freeze time: 2026-10-18T21:39:29.720929+00:00
+Global deadline: 2026-10-18T22:33:17Z, measured from setup start at21:33:17Z.
+
+Five identical learned DGUs, four unchanged line components and 14 physical
+states. Backbone edges are 0-1,1-2,2-3. Only the receiving endpoint of the
+fourth line changes; its other endpoint remains node4. Line resistance
+identities remain (0.3,0.4,0.5,0.4), with the original stored line masses.
+All 104 checkpoint entries are preserved without defaults. Every installed
+nonincidence model state entry matches across baseline and new candidates.
+
+T=2, zero input, no switch during a trajectory, same physical initial state.
+z=Q_star^(1/2)(x-x_star), z0=epsilon*xi, xi uniform on the unit sphere in R^14.
+The expectation is evaluated analytically from E[xi xi^T]=I/14, not Monte Carlo.
+
+Results
+-------
+delta_a=trace(W_a-W_0)/14, W_a=(I-exp(A_a*T)^T exp(A_a*T))/2.
+E[h_linear,0(T)-h_linear,a(T)]=epsilon^2*delta_a.
+Positive would favor the candidate; negative favors baseline branch0.
+
+Attachment   Status/source           Linear benefit coefficient
+0-4          Cached baseline         0
+1-4          NEW, verified negative  -0.000923576234490997502284830231939904226...
+2-4          Previous branch1        -0.001288791478772... (cached old result)
+3-4          NEW, verified negative  -0.000569584543736800526007409475109475277...
+
+Simple outward display intervals enclosing both new interval methods:
+  receiver1: [-0.000923576235, -0.000923576234]
+  receiver3: [-0.000569584544, -0.000569584543]
+Old receiver2 retained display interval: [-0.001288792, -0.001288791].
+Exact interval endpoints are serialized as integer mpf tuples in the JSONs;
+the displayed decimals above are not used by either checker.
+
+Thus receiver3 is less unfavorable than receiver1 or the old receiver2, but
+none improves on receiver0 for this local linear expected-energy task.
+Branch0 is best among these four placements with fixed backbone and inventory.
+This is not optimality over all possible rewiring or all nonlinear amplitudes.
+
+Independent verification
+------------------------
+Separate agent prepared and reviewed verifier/check.py before source freeze.
+It imports neither produce.py nor the old producer/checker implementations.
+Native H.grad_q/grad_p, damping and compute_delta provide its Jacobians.
+Maximum native Jacobian-versus-pH-formula error: 5.56e-17.
+Maximum quadrature-versus-exponential Gramian identity error: 3.89e-16.
+Independent quadrature margins:
+  receiver1: -0.0009235762344910034
+  receiver3: -0.0005695845437367937
+These floating comparisons are cross-checks, not the sign certificates.
+
+The sign certificates use independent full-time interval Taylor exponentials
+with explicit norm-tail bounds, while the producer uses interval scaling and
+squaring. Both independently computed intervals lie strictly below zero.
+The checker also re-establishes the common equilibrium, cached baseline W0,
+eta/gamma witness, explicit activation derivatives and common energy barrier.
+Every required cached conservative derivative/remainder bound dominates its
+independent counterpart. No merely recorded failed condition counts as a pass.
+Both implementations share native APIs and mpmath.iv. Arithmetic-library
+independence and proof-assistant formalization are not claimed.
+
+Meaning for T1
+--------------
+The prior small local decay certificate for branch0 remains valid and unchanged.
+The broader one-endpoint family supplies no positive leading-order average
+rewiring witness at the frozen horizon and isotropic energy population.
+No candidate nonlinear positive-benefit radius or common epsilon was selected.
+No quantitative nonlinear negative-benefit radius was computed either.
+The result does not show that each individual initial state is worse, that
+the entire nonlinear region is ordered, or that other graph families cannot
+improve energy dissipation. It does not diagnose an architecture limitation.
+
+This is a result for one frozen continuous learned model, not physical-plant
+validation, a live-switching guarantee, a numerical-integrator theorem,
+current-limit safety, a uniform uncertain-law claim or four-cost superadditivity.
+
+Prior-test distinction
+----------------------
+The same learned checkpoint was previously evaluated on a chain containing
+3-4 in partial_sensing_20260930/v3, but that task used evenly spaced line
+resistances between0.3 and0.5 and a forecasting objective. The known-law pHNN
+fixture also contained that edge. Neither was this exact matched local-energy
+comparison. Historical reconfiguration/refinement/midpoint/36-future studies
+used receiving buses0 and2; their graphs/results were not rerun or overwritten.
+
+Resources and preservation
+--------------------------
+Producer supervised process: 15.34 seconds; independent checker: 9.32 seconds.
+Both numerical stages completed before21:40:13Z, well inside the60-minute cap.
+No GPU, training, physical futures or timestep rollouts were used.
+The independent check confirmed all683 frozen inputs and84303 protected file
+records unchanged. POSTFLIGHT.json records the final full preservation sweep,
+including additions outside this sandbox and final artifact hashes.
+
+Artifacts
+---------
+PROTOCOL.json / FROZEN.json        Frozen contract, sources and protected inventory
+PROOF_SCOPE.txt                    Conditional argument and exact claim boundaries
+produce.py / producer_result.json  Producer implementation and both interval cases
+native_export.json                Authenticated shared laws and candidate metadata
+verifier/check.py                 Independent implementation frozen before outcomes
+verifier/PRELAUNCH.txt             Independent pre-evaluation review
+verifier/AUDIT.txt / AUDIT.json    Independent verdict and provenance
+verifier/native_check.json        Native Jacobians, quadrature and exact-law checks
+verifier/interval_check.json      Independent outward interval proof records
+*_execution.json / *.log          Both complete supervised attempts
+POSTFLIGHT.json                   Final protection check and elapsed time
+
+No paper, slides, checkpoint, previous results or library source was edited.

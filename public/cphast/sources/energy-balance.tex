@@ -1,0 +1,788 @@
+\section{Finite-Step Passivity Defect of the Structure-Preserving Rollout}
+\label{app:passivity-defect}
+
+The continuous-time interconnection satisfies the exact power balance $\dot{\Ham}=y^\top u-e^\top\Rmat\,e$ with $e=\nabla\Ham$ (Theorem~\ref{thm:power_preserving} for the internal coupling; the external ports and dissipation supply the remaining terms).
+This appendix quantifies how much of that balance survives one \emph{finite} structure-preserving step, closing the caveat that continuous-time passivity does not automatically become a finite-step, observed-coordinate guarantee.
+The rearranged residual $\Ham(x_{t+1})-\Ham(x_t)-(W^{\mathrm{port}}_t-D_t)$---i.e.\ $\Delta\Ham+\text{dissipation}-\text{port work}$, which by the theorem below is the $\BigO(\dt^3)$ defect---is the finite-step energy-balance residual, and it is what the energy ledger accounts each step, not $\Ham(x_{t+1})-\Ham(x_t)$ alone.
+
+\begin{theorem}[Finite-step energy-balance defect]
+\label{thm:passivity-defect}
+Let one canonical transition $x_t\mapsto x_{t+1}$ be produced by the second-order structure-preserving integrator (Strang splitting~\eqref{eq:strang-splitting} of the leapfrog conservative step and the metric-preserving Cayley coupling with the damping half-step~\eqref{eq:damping-half-step}) at timestep $\dt$, and account the boundary power terms by the trapezoidal rule (under the zero-order hold below the endpoint input is $u_t$ at both nodes)
+\begin{equation}
+W^{\mathrm{port}}_t=\tfrac{\dt}{2}\bigl(y_t^\top u_t+y_{t+1}^\top u_t\bigr),
+\qquad
+D_t=\tfrac{\dt}{2}\bigl(e_t^\top\Rmat\,e_t+e_{t+1}^\top\Rmat\,e_{t+1}\bigr)\ge 0 .
+\end{equation}
+Assume $\Ham\in C^3$ with bounded derivatives on a forward-invariant set containing the trajectory, that $s\mapsto P(x(s),u)$ has a bounded second derivative over the step (a direct hypothesis on the boundary power $P(x,u)=y^\top u-e^\top\Rmat e$, not inferred from Lipschitzness of the field alone), a zero-order-held input on $[t,t+\dt]$, and no mode/contact switch within the step. Assume moreover that the integrator is second order on the step; this holds for the leapfrog core with the damping half-step~\eqref{eq:damping-half-step} in the constant identity, scalar, or blockwise-scalar mass regime, and excludes a configuration-dependent $\Mmat(q)$, a configuration-dependent coupling $\hat{\Cmat}(q)$ (whose opening and closing coupling half-steps would otherwise use different generators $A(q_t)\neq A(q_{t+1})$ and break the second-order symmetry unless $A$ is evaluated at both endpoints), or a start-of-step-only state-dependent domain port. Then
+\begin{equation}
+\Ham(x_{t+1})-\Ham(x_t)=W^{\mathrm{port}}_t-D_t+\BigO(\dt^3).
+\label{eq:passivity-defect}
+\end{equation}
+Under q-only deployment, where the endpoints are replaced by observer/chart estimates $\hat{x}_t,\hat{x}_{t+1}$ with state errors $\eta_s=\lVert\hat{x}_s-x_s\rVert\le\epsilon_{\mathrm{obs}}+\epsilon_{\mathrm{chart}}$, the estimated-state defect obeys
+\begin{equation}
+\bigl|\Ham(\hat{x}_{t+1})-\Ham(\hat{x}_t)-(\widehat W^{\mathrm{port}}_t-\widehat D_t)\bigr|
+\;\le\; C\,\dt^3+\bigl(L_{\Ham}+\tfrac{\dt}{2}L_P\bigr)\,(\eta_t+\eta_{t+1}),
+\end{equation}
+where $\widehat W^{\mathrm{port}}_t,\widehat D_t$ are the trapezoidal terms evaluated at the estimates, $L_{\Ham}$ is a local Lipschitz constant of $\Ham$, and $L_P$ one of the boundary power $P$; the $\tfrac{\dt}{2}L_P$ contribution comes from perturbing the boundary-power quadrature and is absent from a naive $L_{\Ham}$-only bound.
+If instead the boundary terms are accounted by a first-order (left-endpoint) rule, the $\BigO(\dt^3)$ remainder in~\eqref{eq:passivity-defect} degrades to $\BigO(\dt^2)$; the third-order remainder therefore requires the second-order boundary quadrature \emph{together with} the stated smoothness, zero-order-hold, and no-switch conditions (these are sufficient, not merely necessary).
+\end{theorem}
+
+\begin{proof}
+Recall the exact power balance $\dot\Ham=P(x,u)$ with continuous port power $P(x,u)=y^\top u-e^\top\Rmat e$ and effort $e=\nabla\Ham$; the trapezoidal accounting of the theorem is $W^{\mathrm{port}}_t-D_t=\tfrac{\dt}{2}\bigl(P(x_t,u_t)+P(x_{t+1},u_t)\bigr)$ under the zero-order hold. We prove~\eqref{eq:passivity-defect} by writing its defect as a quadrature error plus a state-truncation error, each $\BigO(\dt^3)$; the left-endpoint degradation and the q-only bound then follow.
+
+\emph{Step 1 (exact balance).} Under the zero-order hold $u$ is constant on $[t,t+\dt]$, and integrating $\dot\Ham=P$ along the exact flow $x(\cdot)$ from $x(t)=x_t$ gives
+\[
+  \Ham\bigl(x(t{+}\dt)\bigr)-\Ham(x_t)=\int_t^{t+\dt} P\bigl(x(s),u\bigr)\,ds .
+\]
+
+\emph{Step 2 (quadrature error).} By hypothesis $s\mapsto P(x(s),u)$ has a bounded second derivative over the step, so the trapezoidal rule applied to the Step-1 integral has local error $\BigO(\dt^3)$:
+\[
+  \int_t^{t+\dt} P\,ds=\bigl(W^{\mathrm{port}}_t-D_t\bigr)+\BigO(\dt^3) .
+\]
+(The trapezoidal terminal node is the numerical $x_{t+1}$, which the ledger uses; replacing it by the exact $x(t{+}\dt)$ shifts the terminal power by $\tfrac{\dt}{2}L_P\cdot\BigO(\dt^3)=\BigO(\dt^4)$, absorbed in the remainder.)
+
+\emph{Step 3 (state-truncation error).} The numerical endpoint $x_{t+1}$ differs from the exact flow $x(t{+}\dt)$ only by the integrator's local truncation error, which is $\BigO(\dt^3)$ because the step is second-order and time-symmetric (Strang splitting of the conservative leapfrog step with the dissipative half-steps). Since $\nabla\Ham$ is bounded and Lipschitz on the forward-invariant set,
+\[
+  \Ham(x_{t+1})-\Ham\bigl(x(t{+}\dt)\bigr)=\nabla\Ham\cdot\BigO(\dt^3)=\BigO(\dt^3) .
+\]
+The Cayley conservative variant obeys the same bound: for a $G$-skew generator ($A^\top G+GA=0$) the Cayley transform is $G$-orthogonal, so it preserves $\lVert\cdot\rVert_G$ exactly while approximating $e^{\dt A}$ to $\BigO(\dt^3)$, leaving its local truncation error $\BigO(\dt^3)$.
+
+\emph{Step 4 (combine).} Adding and subtracting $\Ham(x(t{+}\dt))$ and using Step 1 splits the defect into exactly the two errors just bounded:
+\[
+  \Ham(x_{t+1})-\Ham(x_t)-\bigl(W^{\mathrm{port}}_t-D_t\bigr)
+  =\underbrace{\Ham(x_{t+1})-\Ham\bigl(x(t{+}\dt)\bigr)}_{\BigO(\dt^3),\ \text{Step 3}}
+  +\underbrace{\textstyle\int_t^{t+\dt}\! P\,ds-\bigl(W^{\mathrm{port}}_t-D_t\bigr)}_{\BigO(\dt^3),\ \text{Step 2}} .
+\]
+Both terms are $\BigO(\dt^3)$, which proves~\eqref{eq:passivity-defect}.
+
+\emph{Step 5 (left-endpoint rule).} With the first-order left-endpoint rule only Step 2 changes: its local error becomes $\BigO(\dt^2)$, so the quadrature term above is $\BigO(\dt^2)$ and the remainder degrades to $\BigO(\dt^2)$. The state-truncation term is unaffected; hence the third-order remainder needs the second-order boundary quadrature \emph{together with} the stated smoothness, zero-order-hold, and no-switch conditions.
+
+\emph{Step 6 (q-only deployment).} Replacing the endpoints by estimates $\hat x_t,\hat x_{t+1}$ with errors $\eta_s=\lVert\hat x_s-x_s\rVert$ perturbs the defect of Step 4 in two Lipschitz-controlled places: the energy difference $\Ham(\hat x_{t+1})-\Ham(\hat x_t)$ changes by at most $L_{\Ham}(\eta_t+\eta_{t+1})$, and the trapezoidal term $\widehat W^{\mathrm{port}}_t-\widehat D_t=\tfrac{\dt}{2}\bigl(P(\hat x_t,u_t)+P(\hat x_{t+1},u_t)\bigr)$ changes by at most $\tfrac{\dt}{2}L_P(\eta_t+\eta_{t+1})$. Writing the $\BigO(\dt^3)$ of Step 4 as $C\dt^3$ and adding these two perturbations gives the stated estimated-state bound; the $\tfrac{\dt}{2}L_P$ term is precisely the boundary-quadrature perturbation that an $L_{\Ham}$-only bound omits.
+\end{proof}
+
+\paragraph{Empirical validation.}
+We verify Theorem~\ref{thm:passivity-defect} directly on the implementation, evaluating the finite-step energy-balance residual on an analytically specified, \emph{untrained} (\textsc{known}-regime) system---a harmonic-oscillator pH block---advanced one step over a geometric $\dt$ sweep in double precision (single precision reaches its rounding floor before the scaling is resolved). Table~\ref{tab:c3-validation} reports the measured log--log slope of the one-step defect versus $\dt$.
+The conservative case isolates the symplectic remainder ($\BigO(\dt^3)$); the driven, damped case exercises the boundary-power quadrature, and the measured slope confirms both that a left-endpoint rule yields $\BigO(\dt^2)$ and that the trapezoidal accounting of~\eqref{eq:passivity-defect} restores $\BigO(\dt^3)$. The implementation uses the trapezoidal rule, so the logged residual is a genuine $\BigO(\dt^3)$ energy-balance defect. Because this defect can have either sign, $D_t\ge C\dt^3$ is a sufficient condition for the discrete passivity inequality $\Ham(x_{t+1})-\Ham(x_t)\le W^{\mathrm{port}}_t$. For estimated-state accounting, $\widehat D_t\ge C\dt^3+(L_{\Ham}+\tfrac{\dt}{2}L_P)(\eta_t+\eta_{t+1})$ is sufficient for $\Ham(\hat x_{t+1})-\Ham(\hat x_t)\le\widehat W^{\mathrm{port}}_t$. We draw no unconditional discrete-passivity conclusion for conservative steps or near zero dissipation---in a damping nullspace, or when the velocity scales with $\dt$---where the defect can dominate.
+
+\begin{table}[t]
+\centering\small
+\caption{\textbf{Finite-step defect scaling (measured).} Log--log slope of the one-step energy-balance residual versus $\dt$ on an untrained harmonic-oscillator pH block, double precision. Slopes match Theorem~\ref{thm:passivity-defect}. The trapezoidal driven slope is the resolved-regime value ($\dt\in[0.02,0.16]$; below $\dt{=}0.02$ the residual reaches the $\sim\!10^{-9}$ numerical floor).}
+\label{tab:c3-validation}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{System} & \textbf{Boundary-power rule} & \textbf{Measured slope} & \textbf{Theorem} \\
+\midrule
+conservative ($u{=}0,\,\Rmat{=}0$) & --- (no boundary terms) & $2.99$ & $\BigO(\dt^3)$ \\
+driven $+$ damped & left-endpoint (rectangle) & $1.98$ & $\BigO(\dt^2)$ \\
+driven $+$ damped & trapezoidal (implementation) & ${\approx}\,3.0\text{--}3.4$ & $\BigO(\dt^3)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Electrical midpoint composition.}
+The electrical transition in Equation~\eqref{eq:electrical-midpoint-network}
+uses explicit midpoint for the additive coupling and approximate implicit
+midpoint for the local conservative dynamics. Its energy accounting depends
+on the accuracy of both operations.
+
+\begin{proposition}[Electrical energy-balance defect with solver error]
+\label{prop:electrical-midpoint-defect}
+Fix the component laws, topology, and held inputs over one electrical step.
+Use the assembled Hamiltonian in Equation~\eqref{eq:electrical-midpoint-coupling}
+and the trapezoidal work and dissipation of
+Theorem~\ref{thm:passivity-defect}, evaluated with the electrical boundary
+ports and damping. Assume the split vector fields have bounded derivatives
+through order two on a common neighborhood containing the exact trajectory,
+all split stages, and solver iterates. Assume $\Ham$ and the net boundary
+power $P$ are Lipschitz there, with constants $L_{\Ham}$ and $L_P$, and
+$s\mapsto P(x(s),u_t)$ has bounded second derivative along the exact flow.
+There are no switches within the step.
+
+Let $x_{t+1}^{\mathrm{imp}}$ be the endpoint of the same split scheme with
+every local implicit-midpoint equation solved exactly, on its small-step
+solution branch, and define the full-step solver perturbation in Euclidean norm by
+\[
+ \varepsilon_{\mathrm{solve},t}
+ :=\lVert x_{t+1}-x_{t+1}^{\mathrm{imp}}\rVert.
+\]
+For sufficiently small $\Delta t$, a constant $C$ independent of $\Delta t$
+satisfies
+\begin{equation}
+\begin{aligned}
+ &\left|\Ham(x_{t+1})-\Ham(x_t)
+          -(W_t^{\mathrm{port}}-D_t)\right|\\
+ &\qquad\le C\Delta t^3
+       +\left(L_{\Ham}+\tfrac{\Delta t}{2}L_P\right)
+          \varepsilon_{\mathrm{solve},t}.
+\end{aligned}
+\label{eq:electrical-midpoint-defect}
+\end{equation}
+Thus a solver perturbation of order $\Delta t^3$ preserves the third-order
+local energy-accounting defect. The constant depends on the fixed component
+laws, topology, held input, and neighborhood bounds.
+\end{proposition}
+
+\begin{proof}
+The input translations are exact. The frozen-charge Cayley damping map,
+the exactly solved local implicit midpoint, and the explicit-midpoint
+coupling each approximate their respective subflows with local error
+$\BigO(\delta^3)$. Their Strang placement and the two fixed substeps therefore
+give $\lVert x_{t+1}^{\mathrm{imp}}-x(t+\Delta t)\rVert\le
+C_{\mathrm{st}}\Delta t^3$. This order argument does not require the
+explicit-midpoint map to be time symmetric or energy preserving.
+
+Internal coupling has zero continuous power, so the exact assembled flow
+obeys $\dot\Ham=P$. Integrating this balance and applying the trapezoidal
+rule at the exact endpoints incurs at most $C_P\Delta t^3$ error.
+Replacing the exact terminal state by the numerical endpoint changes
+terminal energy by at most $L_{\Ham}\lVert x_{t+1}-x(t+\Delta t)\rVert$
+and terminal boundary accounting by at most
+$\tfrac{\Delta t}{2}L_P\lVert x_{t+1}-x(t+\Delta t)\rVert$.
+Finally,
+\[
+ \lVert x_{t+1}-x(t+\Delta t)\rVert
+ \le C_{\mathrm{st}}\Delta t^3+\varepsilon_{\mathrm{solve},t}.
+\]
+Substitution proves Equation~\eqref{eq:electrical-midpoint-defect}.
+\end{proof}
+
+The solver term can be bounded from local equation residuals. For a
+conservative substep starting at $z$, write its vector field as $f_H$ and
+the returned state as $\tilde z$. Its implicit-midpoint residual is
+$r=\tilde z-z-\delta f_H((z+\tilde z)/2)$.
+If $f_H$ has Lipschitz constant $L_f$ with $\delta L_f/2<1$, comparison
+with the exact implicit solution gives a state error of at most
+$\lVert r\rVert/(1-\delta L_f/2)$. The Lipschitz constants of subsequent
+substeps propagate these local errors to $\varepsilon_{\mathrm{solve},t}$.
+
+The Picard routine in Equation~\eqref{eq:dgu-query-midpoint} starts with
+Euler and performs at least one correction. Its first correction is explicit
+midpoint; for any of the one to ten corrections, Taylor expansion gives
+\[
+ \tilde z=z+\delta f_H(z)
+       +\tfrac{\delta^2}{2}Df_H(z)f_H(z)+\BigO(\delta^3).
+\]
+The expansion holds uniformly over this bounded iteration count under the
+stated smoothness and small-step assumptions, in exact arithmetic. Hence
+finite Picard iteration need not destroy second order. The $10^{-6}$
+successive-iterate stopping threshold alone, however, is not a bound on
+the implicit-equation residual or a finite-step energy certificate.
+Neither the proposition nor this expansion asserts exact energy preservation;
+discrete passivity additionally requires dissipation to dominate the defect.
+
+%==============================================================================
+% Observer-aware deployment-transfer bound (C-1)
+%==============================================================================
+\section{Observer-Aware Deployment-Transfer Bound}
+\label{app:transfer-bound}
+
+Section~\ref{sec:guarantees} states the horizon bound~\eqref{eq:c1-mainbound}; here we give the hypotheses and proof. It is a comparison-map contraction estimate: it separates decay of the initial observer error from accumulation of the per-step model defect, and its usefulness rests on a contraction factor that is \emph{measured}, not inferred from passivity.
+
+\paragraph{Setup.}
+Fix a deployment $\mathcal S$. Let $F_k:\mathcal X_{\mathcal S}\to\mathcal X_{\mathcal S}$ be the true one-step flow over $[t_k,t_{k+1}]$ (step $\dt$) under a fixed input $(u_k)$ and mode schedule, $\widehat F_k:\mathcal Z_{\mathcal S}\to\mathcal Z_{\mathcal S}$ the deployed structure-preserving rollout, and $\Pi_{\mathcal S}:\mathcal X_{\mathcal S}\to\mathcal Z_{\mathcal S}$ an alignment map (physical and learned states may use different charts, coordinates, or dimensions). Let $\Omega_{\mathcal S}\subset\mathcal Z_{\mathcal S}$ be a forward-invariant operating region and $M$ a \emph{fixed} symmetric positive-definite metric on $\Omega_{\mathcal S}$ inducing the norm $\lVert v\rVert_M=(v^\top Mv)^{1/2}$---a Lyapunov metric for the deployed map, which for nonlinear systems is a region-local choice constructed as in the discrete-Lyapunov solve below. Write $e_k=\lVert\Pi_{\mathcal S}x_k-\hat z_k\rVert_M$ and $\Omega^{X}_{\mathcal S}=\Pi_{\mathcal S}^{-1}(\Omega_{\mathcal S})$.
+
+For the C-PHAST deployment under these hypotheses,
+$\widehat F_k(z)=F_{\theta,\Delta t}^{(\mathcal S)}(z,u_k)$: the hat distinguishes
+the modeled numerical step from the true physical step $F_k$. The generic
+numerical map $\Psi_{\dt}$ in the lemma below is this same deployed step when
+instantiated with C-PHAST, not a second learned transition.
+
+The commutation defect $\delta_k$ in hypothesis (A3) below is \emph{derived}, not assumed: the following lemma bounds it from a pointwise transported vector-field mismatch together with the state-map consistency (A2), by a Gr\"onwall estimate in a fixed RMS-normalized metric. This makes (A2) load-bearing, states the interconnection through a generic operator $K(\mathcal S)$ (the microgrid incidence norm being a corollary), and yields deployment-size-uniform constants. Theorem~\ref{thm:transfer-bound} instantiates it at a single deployment, writing $M=M_{\mathcal S}$ and dropping the $\mathcal S$ subscripts.
+
+\input{sec/lemma_c0}
+
+\begin{theorem}[Observer-aware deployment transfer]\label{thm:transfer-bound}
+Assume
+\emph{(A1)} incremental contraction, $\lVert\widehat F_k(z)-\widehat F_k(z')\rVert_M\le q_k\lVert z-z'\rVert_M$ on $\Omega_{\mathcal S}$ with $q_k\le q\in(0,1]$;
+\emph{(A2)} state-map consistency, $\lVert\Psi_{\dt}(z,u)-\varphi_{\dt}(z,u)\rVert_M\le K_\Psi\dt^3$;
+\emph{(A3)} commutation defect: $\delta_k=\sup_{x\in\Omega^{X}_{\mathcal S}}\lVert\Pi_{\mathcal S}F_k(x)-\widehat F_k(\Pi_{\mathcal S}x)\rVert_M$ obeys the bound of Lemma~\ref{lem:one-step-commutation-defect} --- $\delta_k\le\dt\,e^{L_f\dt}\bigl(\delta_{\mathrm{loc}}+\lVert K(\mathcal S)\rVert\,\delta_{\mathrm{edge}}+\delta_{\mathrm{port}}\bigr)+K_\Psi\dt^3$ --- \emph{derived} (not assumed) from a pointwise transported field mismatch (its hypotheses H2--H4) together with (A2); for the edge-explicit microgrid $\lVert K(\mathcal S)\rVert=\lVert B_{\mathrm{inc}}(\mathcal S)\rVert_2$ to the first power;
+\emph{(A4)} observer initialization $e_0\le\epsilon_{\mathrm{lift}}$ (see Remark~\ref{rem:lift-source});
+\emph{(A5)} a matched mode/contact schedule with both trajectories in $\Omega_{\mathcal S}$.
+Then for every horizon $h$,
+\begin{equation}
+e_h\;\le\;\Bigl(\textstyle\prod_{j=0}^{h-1}q_j\Bigr)e_0+\sum_{k=0}^{h-1}\Bigl(\textstyle\prod_{j=k+1}^{h-1}q_j\Bigr)\delta_k
+\;\le\;q^{h}\,\epsilon_{\mathrm{lift}}+S_h(q)\,\bar\delta,
+\end{equation}
+with $\bar\delta=\max_k\delta_k$ and $S_h(q)=\tfrac{1-q^{h}}{1-q}$ for $q<1$ (and $h$ for $q=1$). If $q<1$ the bound is uniform in $h$: $\limsup_h e_h\le\bar\delta/(1-q)$.
+\end{theorem}
+
+\begin{proof}
+By (A5), $\Pi_{\mathcal S}x_k\in\Omega_{\mathcal S}$, so the triangle inequality and (A1) give
+$e_{k+1}=\lVert\Pi_{\mathcal S}F_k x_k-\widehat F_k\hat z_k\rVert_M
+\le\lVert\Pi_{\mathcal S}F_k x_k-\widehat F_k(\Pi_{\mathcal S}x_k)\rVert_M
++\lVert\widehat F_k(\Pi_{\mathcal S}x_k)-\widehat F_k\hat z_k\rVert_M
+\le\delta_k+q_k e_k$.
+Unrolling the scalar recursion $e_{k+1}\le q_k e_k+\delta_k$ gives the product-and-sum form; $q_j\le q$, $\delta_k\le\bar\delta$, and $\sum_{k=0}^{h-1}q^{h-1-k}=S_h(q)$ give the closed form.
+\end{proof}
+
+\begin{remark}[Source of the lift error]\label{rem:lift-source}
+The initialization $\epsilon_{\mathrm{lift}}$ (A4) is a hypothesis of the deterministic bound, supplied by the deployed observer; we keep Theorem~\ref{thm:transfer-bound} deterministic and source $\epsilon_{\mathrm{lift}}$ at the observer layer rather than folding the observer's stochastics into the transfer bound. For a bounded-error (set-membership) observer, or under a declared bounded-noise assumption, $\epsilon_{\mathrm{lift}}$ is a genuine deterministic bound. For a linear-Gaussian observer it is not: Gaussian errors have unbounded support, so a covariance gives no almost-sure finite bound. Instead, if the zero-bias initialization error $\Pi_{\mathcal S}x_0-\hat z_0$ is Gaussian with stationary Kalman covariance $P^\ast$ (the solution of the observer's algebraic Riccati equation), then, for its vector dimension $d=\dim(\Pi_{\mathcal S}x_0-\hat z_0)$,
+\[
+  e_0\le r(\alpha):=\sqrt{\chi^2_{d,\,1-\alpha}\,\lambda_{\max}\!\bigl(M^{1/2}P^\ast M^{1/2}\bigr)}
+  \quad\text{with probability}\ \ge 1-\alpha .
+\]
+Note that $r(\alpha)$ scales as a standard deviation $\sqrt{\lambda_{\max}(P^\ast)}$, not as the covariance $P^\ast$ itself: in the scalar random-walk model with identity observation, $P^\ast=\sqrt{Q_\theta R}+\BigO(Q_\theta)$ (process noise $Q_\theta$, observation noise $R$), so the radius is $(Q_\theta R)^{1/4}$, whereas the general linear case solves a matrix Riccati equation with no universal square-root form. Under repeated q-only refresh the single-step bound does not simply carry over: the faithful object is a stochastic recursion $e_{k+1}\le q_k e_k+\delta_k+\nu_k$ with $\nu_k$ the stepwise reset error, and its bounded-in-probability analysis is Theorem~\ref{thm:prob-transfer} below. Theorem~\ref{thm:transfer-bound} is thus the deterministic transfer bound with an assumed initialization, and Theorem~\ref{thm:prob-transfer} its probabilistic instantiation for a refreshing Gaussian observer.
+\end{remark}
+
+\begin{theorem}[Probabilistic deployment transfer under refreshed observation]
+\label{thm:prob-transfer}
+Assume the hypotheses of Theorem~\ref{thm:transfer-bound} with $q_k\le q\in(0,1)$ and $\delta_k\le\bar\delta$, and replace the fixed initialization (A4) by a \emph{refreshed}-observation recursion
+\begin{equation}
+  e_{k+1}\le q_k e_k+\delta_k+\nu_k,\qquad e_0=\nu_{-1},
+  \label{eq:prob-recursion}
+\end{equation}
+in which each step injects a stochastic reset error $\nu_k=\lVert\xi_k\rVert_{M}$ (the observer correction, gain included, mapped into the state metric) obeying the individual tail bound
+\[
+  \Pr\bigl[\nu_k>r(\alpha')\bigr]\le\alpha',
+  \qquad
+  r(\alpha')=\sqrt{\chi^2_{d,\,1-\alpha'}\,\lambda_{\max}\!\bigl(M^{1/2}\Sigma M^{1/2}\bigr)},
+\]
+for $k=-1,0,\dots,h-1$, where $\xi_k\sim\mathcal N(0,\Sigma)$ with zero bias and $d=\dim\xi_k$. Here $\Sigma$ describes the injected error; it is not generally the observer's stationary posterior covariance. Then for every $\alpha\in(0,1)$ and horizon $h$, with $\alpha'=\alpha/(h+1)$,
+\begin{equation}
+  \Pr\!\left[\ \max_{0\le j\le h}e_j\ \le\ S_h(q)\,\bar\delta+r\!\bigl(\tfrac{\alpha}{h+1}\bigr)\,S_{h+1}(q)\ \right]\ \ge\ 1-\alpha.
+  \label{eq:prob-transfer}
+\end{equation}
+For an infinite trajectory, assume the same recursion and marginal tail bound
+hold for every $k\ge-1$. Choose $\alpha_j>0$ with
+$\sum_{j=0}^{\infty}\alpha_j\le\alpha$, assigning $\alpha_0$ to the initial
+error $\nu_{-1}$ and $\alpha_j$ to $\nu_{j-1}$ for $j\ge1$. With probability
+at least $1-\alpha$, simultaneously for every $k\ge0$,
+\begin{equation}
+ e_k\le S_k(q)\bar\delta+
+       \sum_{j=0}^{k}q^{k-j}r(\alpha_j)
+ \le S_k(q)\bar\delta+R_kS_{k+1}(q),
+ \qquad R_k:=\max_{0\le j\le k}r(\alpha_j).
+ \label{eq:prob-transfer-infinite}
+\end{equation}
+If $\alpha_j$ is nonincreasing, $R_k=r(\alpha_k)$. No temporal independence
+is required for these bounds. The envelope holds simultaneously over time,
+but need not have a finite, time-independent upper bound.
+\end{theorem}
+
+\begin{proof}
+By the union (Boole) bound over the $h+1$ events $\{\nu_k>r(\alpha')\}$, $k=-1,\dots,h-1$,
+\[
+  \Pr\!\bigl[\exists\,k:\ \nu_k>r(\alpha')\bigr]\le(h+1)\alpha'=\alpha.
+\]
+On the complementary event every $\nu_k\le r(\alpha')$. Unrolling~\eqref{eq:prob-recursion} with $q_j\le q$, $\delta_j\le\bar\delta$, and $e_0\le r(\alpha')$ gives, for each $j\le h$,
+\[
+  e_j\ \le\ q^{j}e_0+\sum_{i=0}^{j-1}q^{\,j-1-i}\bigl(\delta_i+\nu_i\bigr)
+  \ \le\ S_j(q)\,\bar\delta+r(\alpha')\Bigl(q^{j}+\textstyle\sum_{i=0}^{j-1}q^{\,j-1-i}\Bigr).
+\]
+Since $q^{j}+S_j(q)=q^{j}+\tfrac{1-q^{j}}{1-q}=\tfrac{1-q^{j+1}}{1-q}=S_{j+1}(q)$ and $S_j,S_{j+1}$ are nondecreasing in $j$, each $e_j\le S_h(q)\bar\delta+r(\alpha')S_{h+1}(q)$; the maximum over $j\le h$ obeys the same bound, which is~\eqref{eq:prob-transfer}.
+For the infinite-horizon statement, the countable union bound gives
+\[
+ \Pr\!\left[\exists j\ge0:\nu_{j-1}>r(\alpha_j)\right]
+ \le\sum_{j\ge0}\alpha_j\le\alpha.
+\]
+On its complement, unrolling the recursion includes the initial contribution
+$q^kr(\alpha_0)$ and the refresh contributions
+$\sum_{j=1}^{k}q^{k-j}r(\alpha_j)$. Adding the deterministic defect sum gives
+the first bound in~\eqref{eq:prob-transfer-infinite}; replacing each radius by
+$R_k$ gives the second. The marginal Gaussian assumption alone does not imply
+an almost-sure unbounded supremum: setting $\xi_k=\xi$ for a single Gaussian
+draw is a counterexample. Such a conclusion would require an additional
+dependence assumption and is not used here.
+\end{proof}
+
+\begin{remark}[Tighter constant under independent refreshes]
+\label{rem:prob-transfer-concentration}
+If the $\xi_k$ are independent, $\nu_k=\lVert\xi_k\rVert_M$ is sub-Gaussian about its mean $\mu=\mathbb E\lVert\xi_0\rVert_M$ with variance proxy $\sigma_M^2=\lambda_{\max}(M^{1/2}\Sigma M^{1/2})$, because $\lVert\cdot\rVert_M$ is $1$-Lipschitz in the $M$-metric and $M^{1/2}\xi_k$ is Gaussian (Gaussian concentration). The geometric sum $W_h=\sum_{i=0}^{h-1}q^{\,h-1-i}\nu_i$ then concentrates,
+\[
+  \Pr\!\bigl[W_h>\mu\,S_h(q)+\sigma_M\sqrt{2\,T_h\,\log(1/\alpha)}\bigr]\le\alpha,
+  \qquad T_h=\tfrac{1-q^{2h}}{1-q^{2}},
+\]
+for a fixed endpoint $h$; the deterministic $S_h(q)\bar\delta$ and $q^h e_0$ terms are unchanged. This endpoint statement does not itself bound the maximum over time.
+
+If initialization also has $e_0=\|\xi_{-1}\|_M$, with
+$\xi_{-1},\ldots,\xi_{h-1}$ independent and identically distributed, a simultaneous version is
+\[
+ \Pr\!\left[\max_{0\le j\le h}e_j\le
+ S_h(q)\bar\delta+\mu S_{h+1}(q)
+ +\sigma_M\sqrt{2T_{h+1}}
+ \left(\sqrt{\log(h+1)}+\sqrt{\log(1/\alpha)}\right)\right]\ge1-\alpha.
+\]
+Indeed, the centered weighted sums through each endpoint have variance proxy
+at most $\sigma_M^2T_{h+1}$, so their expected maximum is at most
+$\sigma_M\sqrt{2T_{h+1}\log(h+1)}$. Their maximum is itself
+$\sigma_M\sqrt{T_{h+1}}$-Lipschitz in the stacked standard Gaussian variables;
+Gaussian concentration supplies the second deviation term. Simultaneous
+coverage thus retains a horizon-dependent term even under independence.
+\end{remark}
+
+\input{sec/grounding_prob_transfer.tex}
+
+\paragraph{The contraction factor is verified, not structural.}
+(A1) does \emph{not} follow from passivity or symplecticity: preserving a
+two-form does not imply contraction in a positive-definite norm. For the
+specific conservative linear oscillator, the step has spectral radius one,
+precluding $q<1$ in any fixed metric. The damped linear deployments admit
+the certificates in Remark~\ref{rem:certified-linear-contraction}.
+For the nonlinear pendulum, the reported $0.987$--$0.999$ values are
+\emph{equilibrium-Jacobian} norms in metrics constructed from a discrete
+Lyapunov equation. They do not certify contraction throughout the operating
+region; that requires a common-metric supremum over the region.
+
+The size-uniform result in Lemma~\ref{lem:one-step-commutation-defect} uses
+the deployment-normalized RMS metric $M_{\mathcal S}$: uniform per-block
+error is $\BigO(1)$ there but $\BigO(\sqrt{b_{\mathcal S}})$ in the stacked
+Euclidean norm. For edge-explicit microgrids, incidence enters once in each
+node--edge coupling block, giving $\|B_{\mathrm{inc}}\|$ rather than the
+Laplacian obtained by eliminating line dynamics. Both this structural scaling
+and the numerical consistency constant remain subject to the lemma's
+uniformity assumptions; a strongly configuration-dependent, nonseparable
+mass lies outside the separable leapfrog constants below.
+
+\input{sec/lemma_certified_contraction.tex}
+
+\begin{remark}[Certified state-consistency constants]
+\label{rem:certified-KPsi}
+For identity mass on $\Omega=[-1,1]^2$ and $0<h\le h_0=0.16$, outward-rounded interval evaluation certifies the Euclidean state-map constants $K_\Psi=0.197$ for $\dot q=p,\ \dot p=-q$ and $0.240$ for $\dot q=p,\ \dot p=-\sin q$, both undamped.
+For the separate damped instance $\dot p=-0.7q-0.35p$, the Cayley--leapfrog map has $K_\Psi=0.187$. To obtain this constant, first replace each damping half-step by $t=1-dh/2+d^2h^2/8$: the interval Taylor-remainder enclosure is $0.184h^3$. The exact Cayley multiplier satisfies
+\[
+ r-t=-\frac{d^3h^3}{32(1+dh/4)}.
+\]
+On the stated box, changing both half-steps from $t$ to $r$ adds at most $c_qh^3$ and $c_ph^3$ in the two coordinates, with $c_q=d^3h_0/32=0.000214375$ and $c_p=d^3(kh_0+2)/32=0.00282975$. Thus $\sqrt{c_q^2+c_p^2}<0.002838$ and $0.184+0.002838<0.187$. These constants are specific to the three stated vector fields, not to the $k=2$ contraction examples or a gravity-scaled pendulum. Configuration-dependent mass and trained modules are not covered.
+
+\emph{Metric reconciliation.} These $K_\Psi$ are certified in the Euclidean metric of their analytic instances ($M=I_2$), whereas (A2) uses the deployment metric $M_{\mathcal S}$; the conversion is $K_{\Psi,M_{\mathcal S}}\le\sqrt{\lambda_{\max}(M_{\mathcal S})}\,K_{\Psi,2}$. Likewise, Theorem~\ref{thm:transfer-bound} bounds the state error in $M_{\mathcal S}$ while the readout constants of Lemma~\ref{lem:certified-readout-constants} use a reliability metric $M_{\mathrm{rel}}$; composing them carries the factor $c_{M_{\mathrm{rel}}\leftarrow M_{\mathcal S}}=\sqrt{\lambda_{\max}(M_{\mathcal S}^{-1/2}M_{\mathrm{rel}}M_{\mathcal S}^{-1/2})}$, so the per-channel bound of Proposition~\ref{prop:channel-reliability} reads $\lvert\hat r-r\rvert\le L_m^{x}\,c_{M_{\mathrm{rel}}\leftarrow M_{\mathcal S}}\,\beta_k+\epsilon_m^{\mathrm{map}}$. Choosing $M_{\mathrm{rel}}=M_{\mathcal S}$ removes only the readout conversion. The Euclidean consistency factor remains unless the constant is certified directly in the deployment metric or that factor also equals one.
+\end{remark}
+
+%==============================================================================
+% Typed-consequence decision reliability (C-2)
+%==============================================================================
+\section{Typed-Consequence Decision Reliability}
+\label{app:decision-reliability}
+
+This appendix develops the two decision tests in
+Eq.~\eqref{eq:decision-certificate-main}. The channel and score bounds below
+lead to feasibility and same-set regret; Appendix~\ref{app:end-to-end-certificate}
+collects the full-query conditions. Readers seeking worked electrical
+examples can go directly to Appendix~\ref{app:certificate-validation} for
+absolute limits and Appendix~\ref{app:paired-candidate-bounds} for comparisons
+that retain shared uncertainty across alternative connections.
+
+Given the state tube of Theorem~\ref{thm:transfer-bound}, each typed consequence---and the planner decisions built on it---inherits a computable margin whenever the state-tube, readout, map-error, and aggregation constants are valid upper bounds on the operating region. Certified constants yield analytic certificates, as instantiated in the known-law examples below. For trained or hybrid deployments, empirically estimated envelopes must establish the required joint coverage over candidates and times before these tests support a probabilistic guarantee. Prediction accuracy or a calibrated warning threshold alone does not meet that requirement.
+
+\paragraph{Setup.}
+For candidate $a$, channel $m$, step $k$: truth $r_{m,k}^a=o_{m,\mathcal S}(x_k^a,u_k^a)$ and prediction $\hat r_{m,k}^a=\hat o_{m,\mathcal S}(\hat z_k^a,u_k^a)$; Theorem~\ref{thm:transfer-bound} gives $\lVert\Pi_{\mathcal S}x_k^a-\hat z_k^a\rVert_M\le\beta_k^a$.
+
+\begin{proposition}[Channel and horizon reliability]\label{prop:channel-reliability}
+Assume
+\emph{(B1)} per-channel $\lvert\hat r_{m,k}^a-r_{m,k}^a\rvert\le L_{m}^{x}\beta_k^a+\epsilon_{m}^{\mathrm{map}}$ for the paired states $x_k^a\in\Pi_{\mathcal S}^{-1}(\Omega_{\mathcal S})$ and $\hat z_k^a\in\Omega_{\mathcal S}$ (with $\lVert\Pi_{\mathcal S}x_k^a-\hat z_k^a\rVert_M\le\beta_k^a$), where $L_m^x$ is a certified readout-Lipschitz constant (Lemma~\ref{lem:certified-readout-constants}) and $\epsilon_m^{\mathrm{map}}$ the learned-vs-physical readout error;
+\emph{(B2)} channels smooth or mode-conditioned (energy, dissipation, port power, voltage/current directly; interval work uses the two-endpoint extension below; contact/switching identities only within a fixed mode or via a smooth surrogate);
+\emph{(B3)} a $\kappa_{m,{N_{\mathrm{pred}}}}$-Lipschitz ($\ell_p$) horizon aggregator $\rho_m^a=A_{m,{N_{\mathrm{pred}}}}(r_{m,0:{N_{\mathrm{pred}}}}^a)$.
+Then
+\begin{equation}
+\bigl|\hat\rho_m^a-\rho_m^a\bigr|\;\le\;\kappa_{m,{N_{\mathrm{pred}}}}\bigl\lVert\bigl(L_m^x\beta_k^a+\epsilon_m^{\mathrm{map}}\bigr)_{k=0}^{{N_{\mathrm{pred}}}}\bigr\rVert_p\;=:\;\Delta_m(a).
+\end{equation}
+\end{proposition}
+\begin{proof}
+Apply (B1) pointwise in $k$, then the $\kappa_{m,{N_{\mathrm{pred}}}}$-Lipschitz aggregator (B3) to the horizon vector; $\beta_k^a$ is the state tube of Theorem~\ref{thm:transfer-bound}.
+\end{proof}
+
+\begin{theorem}[Decision margins]
+\label{thm:decision-margins}
+Let $\mathcal A$ be a nonempty candidate set on which the displayed extrema
+and minimizers exist.  Suppose Proposition~\ref{prop:channel-reliability}
+gives, for every $a\in\mathcal A$ and channel $m=1,\ldots,M$,
+\begin{equation}
+  |\hat\rho_m(a)-\rho_m(a)|\leq\Delta_m(a).
+  \label{eq:D2-channel-envelope}
+\end{equation}
+Write
+\[
+  \Delta_\rho(a):=(\Delta_m(a))_{m=1}^{M}\in\R_+^M.
+\]
+Set
+\[
+  J_w(a)=w^\top\rho(a),
+  \qquad
+  \hat J_w(a)=w^\top\hat\rho(a),
+  \qquad
+  \Delta_J(a)=\sum_{m=1}^{M}|w_m|\,\Delta_m(a).
+\]
+Assume in addition
+\emph{(B4)} for every hard-constraint index $j$ there is a candidate-level
+map $\mathsf g_j(a,\cdot)$ such that
+\[
+  g_j(a)=\mathsf g_j(a,\rho(a)),
+  \qquad
+  \hat g_j(a)=\mathsf g_j(a,\hat\rho(a)),
+\]
+and, uniformly over $a\in\mathcal A$, this map is $L_{g_j}$-Lipschitz in its
+consequence argument in $\ell_p$ on a set containing the relevant true and
+predicted consequence vectors:
+\begin{equation}
+  |\mathsf g_j(a,r)-\mathsf g_j(a,r')|
+  \leq L_{g_j}\|r-r'\|_p.
+  \label{eq:D2-B4-constraint-lipschitz}
+\end{equation}
+Define
+\begin{equation}
+  \Delta_{g_j}(a):=L_{g_j}\|\Delta_\rho(a)\|_p.
+  \label{eq:D2-constraint-envelope}
+\end{equation}
+Then $|\hat J_w(a)-J_w(a)|\leq\Delta_J(a)$, and
+\emph{(i)} the ranking of $a,b$ is preserved if
+$|\hat J_w(a)-\hat J_w(b)|>\Delta_J(a)+\Delta_J(b)$;
+\emph{(ii)} the predicted minimizer has true regret at most
+$2\max_a\Delta_J(a)$;
+\emph{(iii)} on a finite candidate set the predicted and true argmin coincide
+if the true best-vs-second gap exceeds $2\max_a\Delta_J(a)$;
+\emph{(iv)} a constraint $g_j(a)\leq0$ is certified by
+$\hat g_j(a)\leq-\Delta_{g_j}(a)$.
+\end{theorem}
+
+\begin{proof}
+The coordinatewise envelope~\eqref{eq:D2-channel-envelope} gives
+\begin{equation}
+  \|\hat\rho(a)-\rho(a)\|_p
+  \leq\|\Delta_\rho(a)\|_p.
+  \label{eq:D2-vector-envelope}
+\end{equation}
+Consequently,
+\[
+  |\hat J_w(a)-J_w(a)|
+  \leq\sum_{m=1}^{M}|w_m|\,
+       |\hat\rho_m(a)-\rho_m(a)|
+  \leq\Delta_J(a).
+\]
+
+For (i), set
+$\hat d=\hat J_w(a)-\hat J_w(b)$ and
+$d=J_w(a)-J_w(b)$.  The score envelope implies
+\[
+  |d-\hat d|\leq\Delta_J(a)+\Delta_J(b).
+\]
+Thus $|\hat d|>\Delta_J(a)+\Delta_J(b)$ forces $d$ and $\hat d$ to
+have the same sign.
+
+For (ii), let
+$\hat a\in\operatorname*{arg\,min}_{a\in\mathcal A}\hat J_w(a)$ and
+$a^\star\in\operatorname*{arg\,min}_{a\in\mathcal A}J_w(a)$.  Predicted
+optimality and the two endpoint envelopes give
+\begin{align*}
+  J_w(\hat a)-J_w(a^\star)
+  &\leq \hat J_w(\hat a)+\Delta_J(\hat a)
+       -\hat J_w(a^\star)+\Delta_J(a^\star)\\
+  &\leq \Delta_J(\hat a)+\Delta_J(a^\star)
+  \leq 2\max_{a\in\mathcal A}\Delta_J(a).
+\end{align*}
+For (iii), let $a^\star$ be the unique true minimizer and let the true
+best-vs-second gap exceed $2D$, where
+$D=\max_{a\in\mathcal A}\Delta_J(a)$.  For every $a\neq a^\star$,
+\[
+  \hat J_w(a)-\hat J_w(a^\star)
+  \geq J_w(a)-J_w(a^\star)-\Delta_J(a)-\Delta_J(a^\star)>0,
+\]
+so $a^\star$ is also the unique predicted minimizer.
+
+Finally, (B4) and~\eqref{eq:D2-vector-envelope} give the missing
+constraint-error bound
+\begin{equation}
+  |\hat g_j(a)-g_j(a)|
+  \leq L_{g_j}\|\hat\rho(a)-\rho(a)\|_p
+  \leq\Delta_{g_j}(a).
+  \label{eq:D2-constraint-error-bound}
+\end{equation}
+Hence
+$\hat g_j(a)\leq-\Delta_{g_j}(a)$ implies
+$g_j(a)\leq\hat g_j(a)+\Delta_{g_j}(a)\leq0$, proving (iv).
+\end{proof}
+
+\input{sec/empirical_grounding_t5}
+
+\input{sec/lemma_readout_constants}
+
+\begin{corollary}[Lipschitz full-objective margins]
+\label{cor:lipschitz-full-objective-margins}
+Let $\mathcal J:\mathcal R\subset\R^M\to\R$ be $L_J$-Lipschitz in
+$\ell_p$ on a set containing $\rho(a)$ and $\hat\rho(a)$ for every
+$a\in\mathcal A$, and define
+\[
+  J(a)=\mathcal J(\rho(a)),
+  \qquad
+  \hat J(a)=\mathcal J(\hat\rho(a)),
+  \qquad
+  \Delta_J(a):=L_J\|\Delta_\rho(a)\|_p.
+\]
+Under the channel envelope~\eqref{eq:D2-channel-envelope},
+\begin{equation}
+  |\hat J(a)-J(a)|\leq\Delta_J(a).
+  \label{eq:D2-lipschitz-objective-envelope}
+\end{equation}
+Therefore the ranking and argmin conclusions in
+Theorem~\ref{thm:decision-margins}(i)--(iii) hold verbatim for this full
+objective after using the displayed $\Delta_J$.
+
+In particular, the full objective in Eq.~\eqref{eq:decision-obj} is covered
+channel by channel as follows.  For the terminal channel, set
+\begin{equation}
+  \rho_G(a):=\Psi_G(x_{N_{\mathrm{pred}}}(a)),
+  \qquad
+  \hat\rho_G(a):=\Psi_G(\hat x_{N_{\mathrm{pred}}}(a)).
+\end{equation}
+If the terminal readout has a uniform constant $L_G^x$ satisfying
+Lemma~\ref{lem:certified-readout-constants} on the declared operating region
+and a uniform readout-map error $\epsilon_G^{\mathrm{map}}$, then the terminal
+aggregator has $\kappa_{G,{N_{\mathrm{pred}}}}=1$.  Because this selector uses only the final
+coordinate, the direct (B1) bound gives the valid, sharper envelope
+\begin{equation}
+  \Delta_G(a):=L_G^x\beta_{N_{\mathrm{pred}}}^a+\epsilon_G^{\mathrm{map}}.
+  \label{eq:D2-terminal-channel-envelope}
+\end{equation}
+The generic Proposition-\ref{prop:channel-reliability} $\ell_p$ envelope over a
+padded endpoint sequence is also valid but can be looser.
+For each normalized factor $q$, retain both endpoints of the interval
+readout in Eq.~\eqref{eq:typed-readouts}. Fix the candidate specification and
+step size, suppress these two arguments, and write
+\begin{equation}
+\begin{aligned}
+  o_q(x^-,x^+,u)
+  &:=\bar\ell_q\!\left(\mathcal O_{\mathrm{target}}^{\mathrm{phys}}
+       (x^-,x^+,u)\right),\\
+  \hat o_q(z^-,z^+,u)
+  &:=\bar\ell_q\!\left(\mathcal O_{\mathrm{target}}
+       (z^-,z^+,u)\right).
+\end{aligned}
+  \label{eq:D2-factor-readout}
+\end{equation}
+Here $\mathcal O_{\mathrm{target}}$ is the model readout defined in Methods;
+$\mathcal O_{\mathrm{target}}^{\mathrm{phys}}$ denotes its physical comparator.
+Let $z_\ell=\Pi_{\mathcal S_\kappa}x_\ell$ be the aligned true state, and
+let $\hat z_\ell$ denote the predicted state (written $\hat x_\ell$ in
+Methods). Assume that the predicted factor is smooth on a declared,
+mode-conditioned convex product region containing all aligned and predicted
+endpoint pairs. For each matched input, require uniformly on that region
+\begin{align}
+ |\hat o_q(z^-,z^+,u)-\hat o_q(\tilde z^-,\tilde z^+,u)|
+ &\le L_q^-\|z^--\tilde z^-\|_M
+       +L_q^+\|z^+-\tilde z^+\|_M,\label{eq:D2-factor-endpoint-lipschitz}\\
+ |o_q(x^-,x^+,u)-\hat o_q(\Pi_{\mathcal S_\kappa}x^-,
+                           \Pi_{\mathcal S_\kappa}x^+,u)|
+ &\le\epsilon_q^{\mathrm{map}}.\label{eq:D2-factor-map-error}
+\end{align}
+The constants $L_q^-,L_q^+$ can be bounded by the corresponding partial
+gradient suprema, using Lemma~\ref{lem:certified-readout-constants} in each
+endpoint variable and converting to the state-envelope metric $M$ when
+needed. These are uniform assumptions, not consequences of the architecture.
+Define the rectangle-integrated factor channels by
+\begin{align}
+  \rho_q^{\mathrm{obj}}(a)
+  &:=\Delta t\sum_{\ell=0}^{{N_{\mathrm{pred}}}-1}
+       o_q(x_\ell(a),x_{\ell+1}(a),u_\ell),
+  \\
+  \hat\rho_q^{\mathrm{obj}}(a)
+  &:=\Delta t\sum_{\ell=0}^{{N_{\mathrm{pred}}}-1}
+       \hat o_q(\hat z_\ell(a),\hat z_{\ell+1}(a),u_\ell).
+\end{align}
+For $1\le p\le\infty$ and dual exponent $p^\ast$, the per-factor envelope is
+\begin{equation}
+  \Delta_q(a):=
+  \Delta t\,N_{\mathrm{pred}}^{1/p^\ast}
+  \left\|
+    \bigl(L_q^-\beta_\ell^a+L_q^+\beta_{\ell+1}^a
+          +\epsilon_q^{\mathrm{map}}\bigr)
+    _{\ell=0}^{{N_{\mathrm{pred}}}-1}
+  \right\|_p.
+  \label{eq:D2-factor-channel-envelope}
+\end{equation}
+An endpoint-only factor has $L_q^-=0$; interval work, losses, and accounting
+residuals generally require both terms, including $\beta_0^a$ in the first
+interval.
+Thus, for the augmented consequence vector
+\[
+  \rho^{\mathrm{obj}}(a)
+  :=\bigl(\rho_G(a),(\rho_q^{\mathrm{obj}}(a))_q\bigr),
+  \qquad
+  \Delta_\rho^{\mathrm{obj}}(a)
+  :=\bigl(\Delta_G(a),(\Delta_q(a))_q\bigr),
+\]
+the true objective and its predicted counterpart are exactly
+\begin{equation}
+  J_w(a)=\rho_G(a)+\sum_q w_q\rho_q^{\mathrm{obj}}(a),
+  \qquad
+  \hat J_w(a)=\hat\rho_G(a)+\sum_q w_q\hat\rho_q^{\mathrm{obj}}(a).
+  \label{eq:D2-full-objective-channelized}
+\end{equation}
+Here $\hat J_w$ is the predicted score in Eq.~\eqref{eq:decision-obj}, and
+$J_w$ is its true-trajectory comparator.
+Thus Eq.~\eqref{eq:decision-obj} is covered explicitly, rather
+than being treated as a linear score in the original untransformed
+consequences.  Its
+linear consumer has $\ell_p$ Lipschitz modulus
+$L_J=\|(1,w)\|_{p^\ast}$, so~\eqref{eq:D2-lipschitz-objective-envelope}
+applies with $\Delta_\rho^{\mathrm{obj}}$.  The componentwise linear bound
+\begin{equation}
+  |\hat J_w(a)-J_w(a)|
+  \leq\Delta_G(a)+\sum_q|w_q|\Delta_q(a)
+  \label{eq:D2-full-objective-linear-envelope}
+\end{equation}
+is also available and can be sharper.  Hard constraints are not absorbed into
+this scalar objective; they are handled by (B4) and
+Proposition~\ref{prop:robust-constrained-regret} below.
+\end{corollary}
+
+\begin{proof}
+The Lipschitz hypothesis and~\eqref{eq:D2-vector-envelope} give
+\[
+  |\hat J(a)-J(a)|
+  \leq L_J\|\hat\rho(a)-\rho(a)\|_p
+  \leq L_J\|\Delta_\rho(a)\|_p.
+\]
+Theorem~\ref{thm:decision-margins}(i)--(iii) uses only such a pointwise
+objective-error envelope, so its arguments apply unchanged. The terminal
+channel follows from Proposition~\ref{prop:channel-reliability} with selector
+constant $\kappa_{G,{N_{\mathrm{pred}}}}=1$.
+For each interval factor, add and subtract
+$\hat o_q(z_\ell,z_{\ell+1},u_\ell)$, where
+$z_k=\Pi_{\mathcal S_\kappa}x_k$. The map-error bound, the two endpoint
+Lipschitz bounds, and $\|z_k-\hat z_k\|_M\le\beta_k^a$ give
+\[
+ |o_q(x_\ell,x_{\ell+1},u_\ell)
+    -\hat o_q(\hat z_\ell,\hat z_{\ell+1},u_\ell)|
+ \le L_q^-\beta_\ell^a+L_q^+\beta_{\ell+1}^a
+       +\epsilon_q^{\mathrm{map}}.
+\]
+Summing with rectangle weights and applying H\"older's inequality yields
+Eq.~\eqref{eq:D2-factor-channel-envelope}, since the dual norm of the
+weight vector is $\Delta t\,N_{\mathrm{pred}}^{1/p^\ast}$.
+Finally, the triangle inequality applied to
+Eq.~\eqref{eq:D2-full-objective-channelized} gives
+Eq.~\eqref{eq:D2-full-objective-linear-envelope}.
+\end{proof}
+
+\Needspace{12\baselineskip}
+\begin{proposition}[Robust feasibility and constrained regret]
+\label{prop:robust-constrained-regret}
+Let $\mathcal A$ be a nonempty finite candidate set.  Assume the pointwise
+objective envelope
+\begin{equation}
+  |\hat J(a)-J(a)|\leq\Delta_J(a)
+  \label{eq:D2-objective-envelope-for-constrained}
+\end{equation}
+and the constraint envelopes~\eqref{eq:D2-constraint-error-bound}.  The
+objective envelope may come from Theorem~\ref{thm:decision-margins} or from
+Corollary~\ref{cor:lipschitz-full-objective-margins}.  Define
+\begin{align}
+  \mathcal A_{\mathrm{feas}}
+  &:=\{a\in\mathcal A:g_j(a)\leq0\ \text{for every }j\},
+  \\
+  \widehat{\mathcal A}_{\mathrm{safe}}
+  &:=\{a\in\mathcal A:
+       \hat g_j(a)+\Delta_{g_j}(a)\leq0\ \text{for every }j\}.
+  \label{eq:D2-robust-safe-set}
+\end{align}
+Then every $a\in\widehat{\mathcal A}_{\mathrm{safe}}$ is truly feasible;
+equivalently,
+\begin{equation}
+  \widehat{\mathcal A}_{\mathrm{safe}}
+  \subseteq\mathcal A_{\mathrm{feas}}.
+  \label{eq:D2-robust-subset}
+\end{equation}
+If $\widehat{\mathcal A}_{\mathrm{safe}}\neq\varnothing$ and
+\begin{align*}
+  \hat a_{\mathrm{safe}}
+  &\in\operatorname*{arg\,min}_{a\in\widehat{\mathcal A}_{\mathrm{safe}}}
+       \hat J(a),
+  &
+  a_{\mathrm{safe}}^\star
+  &\in\operatorname*{arg\,min}_{a\in\widehat{\mathcal A}_{\mathrm{safe}}}
+       J(a),
+\end{align*}
+then the constrained regret relative to the best candidate in the same robust
+set satisfies
+\begin{equation}
+  J(\hat a_{\mathrm{safe}})-J(a_{\mathrm{safe}}^\star)
+  \leq 2\max_{a\in\widehat{\mathcal A}_{\mathrm{safe}}}\Delta_J(a)
+  \leq 2\max_{a\in\mathcal A}\Delta_J(a).
+  \label{eq:D2-safe-set-regret}
+\end{equation}
+
+For comparison with the optimum over the complete true feasible set, assume
+there exists
+\begin{equation}
+  a_{\mathrm{feas}}^\star
+  \in\operatorname*{arg\,min}_{a\in\mathcal A_{\mathrm{feas}}}J(a)
+  \label{eq:D2-true-feasible-optimum}
+\end{equation}
+satisfying the true optimum-retention margin
+\begin{equation}
+  g_j(a_{\mathrm{feas}}^\star)
+  \leq-2\Delta_{g_j}(a_{\mathrm{feas}}^\star)
+  \qquad\text{for every }j.
+  \label{eq:D2-optimum-margin-assumption}
+\end{equation}
+Then $a_{\mathrm{feas}}^\star\in
+\widehat{\mathcal A}_{\mathrm{safe}}$, and
+\begin{equation}
+  J(\hat a_{\mathrm{safe}})-J(a_{\mathrm{feas}}^\star)
+  \leq 2\max_{a\in\widehat{\mathcal A}_{\mathrm{safe}}}\Delta_J(a).
+  \label{eq:D2-true-optimum-regret}
+\end{equation}
+Without membership of at least one true optimum in
+$\widehat{\mathcal A}_{\mathrm{safe}}$---for example, without
+\eqref{eq:D2-optimum-margin-assumption}---no $2\Delta_J$ regret bound relative
+to the optimum over all of $\mathcal A_{\mathrm{feas}}$ follows: safety
+tightening may exclude every true optimum.  If
+$\widehat{\mathcal A}_{\mathrm{safe}}$ is empty, the proposition certifies no
+selectable candidate.
+\end{proposition}
+
+\begin{proof}
+If $a\in\widehat{\mathcal A}_{\mathrm{safe}}$, then for every $j$,
+\[
+  g_j(a)
+  \leq\hat g_j(a)+\Delta_{g_j}(a)
+  \leq0,
+\]
+which proves~\eqref{eq:D2-robust-subset}.  Predicted optimality within the
+fixed set $\widehat{\mathcal A}_{\mathrm{safe}}$ and the two endpoint
+objective envelopes give
+\begin{align*}
+  J(\hat a_{\mathrm{safe}})-J(a_{\mathrm{safe}}^\star)
+  &\leq
+  \hat J(\hat a_{\mathrm{safe}})+\Delta_J(\hat a_{\mathrm{safe}})
+  -\hat J(a_{\mathrm{safe}}^\star)+\Delta_J(a_{\mathrm{safe}}^\star)\\
+  &\leq
+  \Delta_J(\hat a_{\mathrm{safe}})+\Delta_J(a_{\mathrm{safe}}^\star),
+\end{align*}
+which proves~\eqref{eq:D2-safe-set-regret}.
+
+Under~\eqref{eq:D2-optimum-margin-assumption}, the symmetric constraint
+envelope yields
+\[
+  \hat g_j(a_{\mathrm{feas}}^\star)
+  +\Delta_{g_j}(a_{\mathrm{feas}}^\star)
+  \leq
+  g_j(a_{\mathrm{feas}}^\star)
+  +2\Delta_{g_j}(a_{\mathrm{feas}}^\star)
+  \leq0.
+\]
+Thus the true optimum belongs to the robust set.  Together with
+$\widehat{\mathcal A}_{\mathrm{safe}}\subseteq\mathcal A_{\mathrm{feas}}$,
+this means the best true objective value on the two sets is the same, so
+\eqref{eq:D2-safe-set-regret} gives~\eqref{eq:D2-true-optimum-regret}.
+\end{proof}
+
+\paragraph{Scope of the constants.}
+The quantities $L_{g_j}$ and $L_J$ above are stated hypotheses (or algebraic
+consequences of a fixed linear consumer), and the $\Delta_m$ are conditional
+consequences of Proposition~\ref{prop:channel-reliability} using the
+readout/aggregator hypotheses of
+Lemma~\ref{lem:certified-readout-constants}. The propositions do not themselves
+estimate these constants; Appendix~\ref{app:certificate-validation} instead
+constructs direct interval envelopes for an analytic electrical query. A
+normalized factor must have a denominator bounded away from zero and a
+uniform endpoint-gradient enclosures on its declared region before its
+$L_q^-$ and $L_q^+$ can be used. Contact, switching, discrete support-count, and unmatched-mode channels
+remain mode-conditional as in Proposition~\ref{prop:channel-reliability}; this
+block does not turn sampled slopes or average errors into deterministic bounds.
+
+\input{sec/decision_certificate}
+\input{sec/paired_candidate_bounds}
+
+%==============================================================================
+% APPENDIX: Planar Arm Benchmark and Diagnostics
+%==============================================================================

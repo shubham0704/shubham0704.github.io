@@ -1,0 +1,191 @@
+\subsection{Comparing candidates under shared uncertainty}
+\label{app:paired-candidate-bounds}
+
+Separate score intervals discard the dependence induced by a common actual
+state. For example, costs $10+3\upsilon$ and $12+3\upsilon$, with
+$\upsilon\in[-1,1]$, have overlapping intervals but differ by exactly $-2$.
+This section applies dependence-preserving range analysis
+\citep{stolfi2003affine} to the assignments and rewiring in a candidate query.
+Absolute feasibility remains governed by Corollary~\ref{cor:query-certificate}.
+
+\paragraph{Joint uncertainty after assignment.}
+Fix the finite candidate family of Algorithm~\ref{alg:cphast_query} and a
+joint physical uncertainty box, normalized as $\upsilon\in[-1,1]^m$.
+Each coordinate represents one uncertain physical quantity, reused across
+candidates only when it is the same quantity. Candidate-specific additions
+receive distinct coordinates. The box is a joint set, not an assumption of
+stochastic independence. For affine coordinate conversions and resets,
+gathering retained states and inserting supplied new states gives
+\[
+ x_0^a(\upsilon)=d_a+D_a\upsilon,
+ \qquad d_a\in\mathbb R^{n_a},\quad D_a\in\mathbb R^{n_a\times m}.
+\]
+The center and radii are included in $d_a,D_a$; $n_a$ may differ between
+candidates. Assume exact known affine sampled dynamics
+$x_{k+1}^a=F_{a,k}x_k^a+f_{a,k}$ over the fixed horizon, with prescribed inputs
+included in $f_{a,k}$ and all trajectories in the region of validity.
+Stacked affine readouts then have the form
+$r_a(\upsilon)=\bar r_a+T_a\upsilon\in\mathbb R^{p_a}$.
+For a fixed quadratic physical score, abbreviate
+\begin{equation}
+ J_a(\upsilon):=J_w(a;\upsilon)
+ =r_a^\top W_a r_a+v_a^\top r_a+c_{0,a},
+ \qquad W_a=W_a^\top\in\mathbb R^{p_a\times p_a},\quad
+ v_a\in\mathbb R^{p_a}.
+ \label{eq:paired-score-setup}
+\end{equation}
+All stage weights, normalizations, and terminal terms are fixed in this
+score. Peak-current constraints are screened separately, not treated as
+quadratic objectives.
+
+\begin{proposition}[Assignment-aware candidate-difference enclosure]
+\label{prop:paired-candidate-enclosure}
+Under the preceding assumptions, each score is exactly
+$J_a=c_a+\ell_a^\top\upsilon+\upsilon^\top Q_a\upsilon$, where
+\begin{equation}
+ \begin{aligned}
+ Q_a&=T_a^\top W_a T_a,\qquad
+ \ell_a=T_a^\top(2W_a\bar r_a+v_a),\\
+ c_a&=\bar r_a^\top W_a\bar r_a+v_a^\top\bar r_a+c_{0,a}.
+ \end{aligned}
+ \label{eq:paired-score-coefficients}
+\end{equation}
+For a quadratic $p(\upsilon)=c+\ell^\top\upsilon+\upsilon^\top Q\upsilon$
+with $Q=Q^\top$, define the monomial enclosure
+\begin{equation}
+ \begin{aligned}
+ t(p)&=\sum_i|\ell_i|+2\sum_{i<j}|Q_{ij}|,\\
+ \mathcal E(p)&=
+ \left[c+\sum_i\min(0,Q_{ii})-t(p),\;
+       c+\sum_i\max(0,Q_{ii})+t(p)\right].
+ \end{aligned}
+ \label{eq:paired-monomial-enclosure}
+\end{equation}
+Then the range of $J_a-J_b$ is contained in
+$\mathcal E(J_a-J_b)$, computed by subtracting the coefficients in
+Eq.~\eqref{eq:paired-score-coefficients}. With interval subtraction on the right,
+\begin{equation}
+ \mathcal E(J_a-J_b)\subseteq\mathcal E(J_a)-\mathcal E(J_b),
+ \label{eq:paired-enclosure-inclusion}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Affine propagation preserves the shared coordinates: if
+$x_k^a=t_k+T_k\upsilon$, then
+$t_{k+1}=F_{a,k}t_k+f_{a,k}$ and $T_{k+1}=F_{a,k}T_k$.
+Stacking affine readouts and expanding Eq.~\eqref{eq:paired-score-setup}
+gives Eq.~\eqref{eq:paired-score-coefficients}.
+Each linear and off-diagonal monomial ranges in $[-1,1]$, whereas
+$\upsilon_i^2\in[0,1]$; summing their signed ranges gives
+Eq.~\eqref{eq:paired-monomial-enclosure}.
+For any common monomial range $I$ and coefficients $\alpha,\beta$,
+$(\alpha-\beta)I\subseteq\alpha I-\beta I$, since the right side permits
+different values of that monomial. Summing these inclusions over the same
+constant, linear, diagonal, and off-diagonal basis proves
+Eq.~\eqref{eq:paired-enclosure-inclusion}.
+\end{proof}
+
+A strictly negative upper endpoint certifies $J_a<J_b$ throughout the joint
+box; a strictly positive lower endpoint certifies the reverse.
+The inclusion compares the \emph{same monomial representation}; a factored
+expression or tighter marginal optimizer can do better. For any valid
+individual score intervals $[L_a,U_a]$ and $[L_b,U_b]$, use
+\begin{equation}
+ \mathcal I_{ab}=
+ \mathcal E(J_a-J_b)\cap[L_a-U_b,U_a-L_b].
+ \label{eq:paired-hybrid}
+\end{equation}
+Both intervals contain the true difference, so their intersection is valid
+and never wider than either. Containing zero leaves the ordering unresolved;
+an empty intersection indicates inconsistent enclosures. For any retained
+choice $a$, valid paired upper endpoints $U_{ab}^{\mathrm{pair}}$, with
+$U_{aa}^{\mathrm{pair}}=0$, also give
+\begin{equation}
+ J_a(\upsilon)-\min_{b\in\widehat{\mathcal A}_{\mathrm{safe}}}J_b(\upsilon)
+ \le\max_{b\in\widehat{\mathcal A}_{\mathrm{safe}}}U_{ab}^{\mathrm{pair}},
+ \label{eq:paired-retained-regret}
+\end{equation}
+because the left side equals $\max_b(J_a-J_b)$ over that same set.
+
+\paragraph{Rewiring and residual errors.}
+The quadratic term cancels only when $Q_a=Q_b$. Even with shared initial
+states and local laws, rewiring changes the response matrices $T_a,T_b$;
+the term $\upsilon^\top(Q_a-Q_b)\upsilon$ must therefore be retained.
+Shared fitted weights alone do not imply shared physical model error.
+For surrogate quadratic scores with certified residuals
+$|J_a-p_a|\le\rho_a$, a valid difference enclosure is
+$\mathcal E(p_a-p_b)+[-\rho_a-\rho_b,\rho_a+\rho_b]$.
+Nonlinear assignment, uncertain-parameter flow, and learned-law errors
+require such validated remainders; they are absent from the exact known-law
+case below. Numerical coefficients must also be outward enclosed through
+flow construction, coefficient assembly, and interval evaluation.
+
+\paragraph{Known-law rewiring check.}
+We use the three-DGU physical laws, initial state, nine source-voltage choices,
+quadratic regulation/current-sharing score, and 100-step horizon of
+Appendix~\ref{app:certificate-validation}. All resistances are exactly
+$1\,\Omega$. Two prospective graphs use incidence matrices
+\[
+ B_{\mathrm{inc}}^{(1)}=
+ \begin{bmatrix}1&0\\-1&1\\0&-1\end{bmatrix},\qquad
+ B_{\mathrm{inc}}^{(2)}=
+ \begin{bmatrix}1&1\\-1&0\\0&-1\end{bmatrix}.
+\]
+The second graph moves one line's positive endpoint. Both graphs retain the
+same components and eight uncertain initial voltage/current coordinates,
+with identity assignment and reset. Each graph remains fixed during its
+counterfactual rollout; no switching transient is modeled. The 18 candidates
+yield 81 cross-graph comparisons before screening. We use 50-decimal
+outward-rounded interval arithmetic and the degree-40 exponential enclosure
+of Appendix~\ref{app:certificate-validation}, preserving the signed
+initial-state dependence through the quadratic coefficient construction.
+
+\begin{table}[H]
+\centering
+\small
+\caption{\textbf{Shared uncertainty resolves additional rewiring comparisons.}
+Number of strictly certified cross-graph orderings after the same synthetic
+2 A sampled-current screen. Radius $r$ is in V for voltage coordinates and
+A for current coordinates. Separate raw intervals evaluate the reference
+score from state boxes; separate polynomial intervals subtract
+$\mathcal E(J_a),\mathcal E(J_b)$; paired bounds use
+Eq.~\eqref{eq:paired-hybrid}. Bold green marks the largest count among
+nonempty comparisons, including ties. Zero eligible pairs means no admitted
+comparison, not successful certification.}
+\label{tab:paired-rewiring-bounds}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{crrrrr}
+\toprule
+Radius $r$ & Retained & Eligible pairs & Separate raw & Separate polynomial & Paired \\
+\midrule
+0     & 18 & 81 & \goodcell{\textbf{81}} & \goodcell{\textbf{81}} & \goodcell{\textbf{81}} \\
+0.001 & 18 & 81 & \goodcell{\textbf{81}} & \goodcell{\textbf{81}} & \goodcell{\textbf{81}} \\
+0.01  & 18 & 81 & 72 & 75 & \goodcell{\textbf{79}} \\
+0.05  & 18 & 81 & 56 & 62 & \goodcell{\textbf{74}} \\
+0.2   & 18 & 81 & 6  & 32 & \goodcell{\textbf{60}} \\
+1     & 0  & 0  & 0  & 0  & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At $r=0.05$, pairing resolves 12 more cross-graph comparisons than separate
+polynomial bounds, beyond the improvement from changing the marginal
+representation (Table~\ref{tab:paired-rewiring-bounds}). Direct and intersected
+counts coincide in this example.
+
+Absolute feasibility is unchanged: the
+stricter 1 A screen retains only six chain candidates through $r=0.05$, so
+admits no cross-graph comparison; at $r\ge0.2$ it retains none. The 0.25 and
+0.5 A screens retain none at any tested radius. At $r=1$, none of the four
+screens admits a candidate.
+
+The interval construction establishes the box-wide comparisons, conditional
+on the known laws and correct outward arithmetic. Twelve exact-rational
+regression tests and 756 finite reference paths check the implementation,
+but are not a substitute for those assumptions. This is an
+architecture-independent refinement of candidate comparison, not a
+trained-model superiority or learned-observer coverage result. Its baseline
+is the raw reference-score interval, not the predictor-centered envelope
+used in Appendix~\ref{app:certificate-validation}.
+\FloatBarrier

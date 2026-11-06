@@ -1,0 +1,22 @@
+\begin{abstract}
+Before connecting a new generation unit to an electrical network, an operator needs to know how currents will redistribute and whether any line will overload.
+Testing every proposed connection on the real network is impractical and could cause the failure we want to avoid.
+The proposed network has not yet produced measurements, and measurements from the existing network may leave some currents unobserved.
+Prediction therefore requires reusable component laws and an estimate of the hidden state.
+Likewise, a model trained on one four-legged robot typically mispredicts another with different mass, leg lengths and motors, so each new robot needs fresh data and retraining.
+
+We introduce C-PHAST, a compositional port-Hamiltonian world model for predicting the physical consequences of proposed configurations.
+Extending our single-system model PHAST, it learns how each component type stores and dissipates energy, connects components through power-preserving ports, and estimates unobserved states from measurement histories.
+Given proposed wiring and initial states for added components, it predicts the resulting dynamics without retraining.
+Connections can also create behavior no component shows alone.
+For known linear systems, we show when one component's damping drains energy from another and when an existing sensor can better estimate a hidden state elsewhere.
+We also derive error margins under which predictions certify which of two proposed configurations scores better.
+
+In simulated DC microgrids, given the same data and starting states as prior compositional port-Hamiltonian neural networks, C-PHAST predicts unseen five-unit networks with \textbf{over 40-fold} lower voltage error, in a comparison of complete training procedures that differ in model family, initialization, objective and integrator.
+From noisy voltage histories, it reduces hidden-current error by \textbf{67.6\%} relative to CT-SUBNET, a black-box state-space model.
+In simulated zero-shot cross-embodiment transfer, a leg model learned only on ANYmal-D is reused unchanged on Unitree Go2 and never told how Go2 differs; a short history of Go2 joint positions sets only its starting state, and its error grows \textbf{1.6-fold}, against 21-fold for a recurrent network that fits ANYmal-D better.
+Four-joint arm models also transfer zero-shot to two to eight joints.
+On real Spot-with-arm logs, a predictor built on its physical readouts retrospectively estimates joint work and battery draw (Pearson $r \geq 0.94$).
+Each capability is tested separately; ranking configurations with learned laws from partial measurements remains open.
+Learning laws for components, not whole systems, is a step toward world models that predict a configuration before it is built.
+\end{abstract}

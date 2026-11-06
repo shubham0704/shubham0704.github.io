@@ -1,0 +1,122 @@
+T2: TRIANGLE VERSUS ONE PARALLEL-LINE REWIRING
+2026-10-18 | Repaired attempt, with independent verification
+
+BOTTOM LINE
+Moving one line endpoint makes the original circulating-current direction
+affect the existing voltage measurements. Under the frozen known-law Gaussian
+setup, this reduces expected squared error for the SAME initial-current target
+by 20.8-31.1%. All four reference conditions and both native step sizes pass.
+This is partial information recovery, not full observability: both graphs have
+rank 8 of 9, and the rewired graph retains a different hidden current mode.
+
+WHAT CHANGED, AND WHAT DID NOT
+Triangle: (0,1), (0,2), (1,2).
+Parallel: (0,1), (0,2), (0,2).
+Only line 2's positive endpoint moves from node 1 to node 0. Three DGUs, three
+RL lines and three voltage sensors remain. Physical line identities, current
+orientations, initial states, held inputs and all component laws stay fixed.
+This compares separately observed fixed configurations, NOT a live switch.
+
+Target in both graphs: a = (Iline0 - Iline1 + Iline2)/sqrt(3) at initial time.
+Same prior, 384 saved independent episodes, standardized noise and bootstrap
+indices. No fitting, new random draws, or target selection after seeing results.
+
+RESULTS: REFERENCE GAUSSIAN INFERENCE
+Noise is voltage-measurement standard deviation. Risks and MSE are in A^2.
+The theoretical triangle risk is 0.02250000 in every condition. Its empirical
+MSE on the 384 reused episodes is 0.02506936 in every condition.
+
+History  Noise SD  Parallel risk  Expected reduction  Parallel MSE  Benefit LB
+1 s      0.002 V   0.01712661     23.8817%            0.01750426    0.00480403
+1 s      0.020 V   0.01782172     20.7923%            0.01843836    0.00397885
+2 s      0.002 V   0.01549403     31.1376%            0.01606692    0.00589941
+2 s      0.020 V   0.01739033     22.7097%            0.01810366    0.00423762
+
+Expected reduction compares model-implied risks, not observed sample MSE.
+The empirical triangle MSE is the saved sample mean of a^2, while 0.0225 is
+its population expectation under the prior. Their difference is finite-sample
+variation, not a corrected coefficient, arithmetic identity or new threshold.
+No data were redrawn to make the empirical baseline equal its expectation.
+
+Benefit LB is the frozen one-sided paired bootstrap lower bound for triangle
+MSE minus parallel MSE. All 12 bounds (four conditions times reference and two
+native grids) are positive; the smallest is 0.00397885 A^2. The family uses
+19,999 saved stratified paired resamples and lower quantile 0.05/12. This is
+approximate bootstrap evidence, not an exact or uniform certificate.
+All 16 native/reference equivalence intervals lie inside the frozen +/-5%
+band using the separate, pre-frozen equivalence family.
+
+WHY IMPROVEMENT DOES NOT MEAN FULL RECOVERY
+The triangle hides c=(1,-1,1): B_triangle*c=0. In the parallel graph,
+B_parallel*c=(1,-1,0), so perturbing that same original direction changes
+voltage history. However, (0,1,-1) is a new hidden parallel-line circulation.
+The original target overlaps this hidden direction. With the frozen isotropic
+0.15-A prior SD, its posterior variance cannot fall below 0.015 A^2, even with
+perfect measurements. This is an expected-risk floor, not a lower bound on a
+finite sample's empirical MSE. The best tested risk, 0.01549403, respects it.
+Thus the original direction is detectable, but the target is not exactly
+identifiable when the other initial currents are also unknown.
+
+NUMERICAL AND INDEPENDENT VERIFICATION
+Producer: full, untruncated SVD Gaussian conditioning.
+Independent checker: augmented QR conditioning, independent raw observation
+maps, actual-reference risk calculation, and frequency-weighted bootstrap
+means. It imports neither the producer nor its inference helpers.
+Checker status: PASS; 986 strict reconstruction checks and 390 label checks,
+zero failures. All 24 cells and all 28 interval contrasts were checked.
+Native dt=0.05 and 0.025 both pass the original numerical gates. Largest
+native map discrepancy E drops from 0.0194201 to 0.00487067 with refinement
+(threshold 0.05). Reference solver disagreement is at most 2.753e-12
+(threshold 1e-6). Laws, parameters and buffers match apart from incidence B;
+models remain unchanged during rollouts. Each graph's own hidden-mode
+negative control remains invisible at the existing voltage sensors: the old
+mode in the triangle, and the new mode in the parallel graph. The old triangle
+mode becomes detectable in the parallel graph.
+This is independent numerical checking, not an independent physical plant.
+
+EXECUTION AND REPAIR PROVENANCE
+Old attempt: ../t2_parallel_rewiring_20261018, preserved as FAILED.
+It stopped while saving triangle results, before any parallel trajectory.
+User explicitly approved 'Repair and continue'. Only produce.py:137 changed:
+wrap the existing triangle_invariance comparison in builtin bool(...).
+This preserves its numerical calculation, Boolean value and threshold, and
+converts the NumPy Boolean to a JSON-supported type. Protocol, proof scope,
+launcher and independent checker are byte-identical to the old attempt.
+The independent prelaunch reviewer approved this exact one-line repair.
+
+New protocol SHA256:
+16bfd7f6d27d7a44662c00f030fb3cea4e70c4c83e7a5287ac065bf9b2774612
+New freeze SHA256:
+04944c5b29d9fb4c4371bfa8ad06d9272a061c8d48246ca91cd548c9b3924d73
+Frozen 2026-10-18T22:27:59.913778Z, before candidate evaluation.
+Original absolute deadline retained: 2026-10-18T23:08:06Z.
+Producer completed in 7.66 s; supervised checker completed in 6.29 s.
+All work used math Python, CPU only, two threads. No extra verifier rollouts.
+Four new calls completed: 396 parallel paths each using refined RK45, default
+DOP853 and each native grid, totaling 1,584 paths. Triangle paths were reused.
+All 9,216 planned estimation outcomes completed, with zero failed, timed-out
+or unattempted outcomes. These are repeated analyses of 384 independent
+episodes, NOT 9,216 independent samples.
+
+SCOPE FOR T2 / C-PHAST
+Established: in this known-law, sampled-noise fixture, admissible rewiring
+changes which hidden-current information reaches existing sensors and improves
+estimation of a predeclared target. The native incidence-based model reproduces
+that result under step-size refinement and independent numerical checking.
+Not established: full-state recovery, improved learned initialization, unknown
+or nonlinear law identification, live-switch feasibility/safety, equal switching
+hardware cost, physical validation, continuous-Brownian T2 validation, or
+T5/T6 superadditivity. There is no control-cost comparison in this experiment.
+No paper, slides, existing library files or historical results were edited.
+
+EVIDENCE IN THIS DIRECTORY
+PROTOCOL.json                      Frozen scientific and resource contract
+FROZEN.json                        846 hashed inputs; protected-file inventory
+results/summary.json               Every cell, gate and analytic comparison
+results/bootstrap_summary.json     All 16 equivalence + 12 benefit contrasts
+results/trajectory_ledger.json     Four candidate rollout calls
+results/outcomes.json              All planned estimation outcomes
+verifier/PRELAUNCH.txt              Independent serialization-repair review
+verifier/verified_run_01/verification.json  Independent checker result
+verifier/FINAL_AUDIT.txt            Independent final interpretation audit
+POSTFLIGHT.json                    Final integrity record, written after audits

@@ -1,265 +1,113 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>C-PHAST: Compositional Physics for Candidate Futures</title>
-  <meta name="description" content="C-PHAST composes port-Hamiltonian world-model blocks, rolls out candidate futures, and exposes named physical consequences for planners and action cards.">
-  <meta property="og:title" content="C-PHAST: Compositional Physics for Candidate Futures">
-  <meta property="og:description" content="From observables to typed consequences, planner-facing factors, and objective-conditioned action cards.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="images/spot_real_query_context.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="script.js"></script>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    if (location.protocol === 'file:') {
+      location.replace('http://127.0.0.1:4330/' + location.search + location.hash);
+    }
+  </script>
+  <title>C-PHAST: Compositional Port-Hamiltonian World Models for Structured Dynamics Transfer</title>
+  <meta name="description" content="Reusable physical models for proposed connections and changed robots. Research, recorded experiments, interactive tutorials, and the evidence behind C-PHAST.">
+  <link rel="stylesheet" href="style.css"><script src="assets/lucide.min.js" defer></script><script src="app.js" defer></script>
 </head>
 <body>
-  <header class="hero" id="top">
-    <nav class="nav" aria-label="Project navigation">
-      <a class="nav-brand" href="#top">C-PHAST</a>
-      <a href="#interface">Interface</a>
-      <a href="#spot">Real Spot</a>
-      <a href="#evidence">Rollouts</a>
-      <a href="#domains">Domains</a>
-      <a href="#citation">BibTeX</a>
-    </nav>
-
-    <div class="hero-shell">
-      <div class="hero-copy">
-        <p class="eyebrow">Compositional port-Hamiltonian world models</p>
-        <h1>Compare physical futures before choosing an action.</h1>
-        <p class="hero-subtitle">
-          C-PHAST learns reusable physics blocks, recomposes them for a target deployment, and turns candidate rollouts into named physical consequences.
-        </p>
-        <p class="lede">
-          The model does not emit one opaque score. It predicts quantities a planner can reason about: energy use, support/contact margin, sensing value, voltage or current margin, and residual mismatch.
-        </p>
-        <div class="button-row" aria-label="Project resources">
-          <a class="button primary" href="#spot">Real robot result</a>
-          <a class="button" href="explorer/#microgrid">Interactive explorer</a>
-          <a class="button" href="#interface">Action-card interface</a>
-          <a class="button" href="main_cphast.pdf" target="_blank" rel="noopener">Paper</a>
-          <a class="button" href="#citation">Citation</a>
-        </div>
-      </div>
-
-      <figure class="hero-media">
-        <video class="hero-video"
-               src="videos/cphast_candidate_futures_interpreted_h264.mp4"
-               poster="videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png"
-               muted loop playsinline preload="metadata"
-               aria-label="C-PHAST candidate future rollout comparison"></video>
-        <figcaption>
-          Same observed Go2 state, different candidate futures. The interface makes the physical tradeoff visible before a downstream planner chooses.
-        </figcaption>
-      </figure>
+<a class="skip" href="#main">Skip to research</a>
+<header class="site-header"><div class="wrap nav-inner"><a class="brand" href="#top"><i data-lucide="network"></i>C-PHAST</a><nav aria-label="Research navigation"><a href="#idea">Idea</a><a href="#electrical">Results</a><a href="#hardware">Hardware</a><a href="#theory">Theory &amp; evidence</a><a href="paper.pdf" target="_blank" rel="noopener">Paper<i data-lucide="arrow-up-right"></i></a></nav></div></header>
+<main id="main">
+  <section class="paper-heading wrap" id="top">
+    <p class="eyebrow">A physical world model for systems that change</p>
+    <h1><span>C-PHAST</span>Compositional Port-Hamiltonian World Models<br class="wide-only"> for Structured Dynamics Transfer</h1>
+    <p class="authors">Shubham Bhardwaj<sup>1,2</sup> <span>Chandrajit Bajaj<sup>1</sup></span></p>
+    <p class="affiliations"><sup>1</sup> The University of Texas at Austin &nbsp; <sup>2</sup> Mihawk.ai</p>
+    <div class="actions centered"><a class="button primary" href="paper.pdf" target="_blank" rel="noopener"><i data-lucide="file-text"></i>Read the paper</a><a class="button" href="#idea"><i data-lucide="play"></i>Explore the idea</a><a class="text-link" href="#abstract">Abstract<i data-lucide="arrow-down"></i></a></div>
+    <p class="lead">Learn the parts. Connect their physics. Predict what happens together.</p>
+    <div class="research-strip">
+      <a href="#electrical"><img src="assets/connections-detail.png" alt="A fifth power unit attaches to a retained four-unit network."><span><b>A new connection</b><small>Electrical simulation</small><i data-lucide="arrow-down-right"></i></span></a>
+      <a href="#robotics"><img src="assets/transfer.png" alt="ANYmal-D source robot, Go2 target, and model comparison in Isaac Lab."><span><b>A different body</b><small>Robot simulation</small><i data-lucide="arrow-down-right"></i></span></a>
+      <a href="#hardware"><img src="assets/spot.png" alt="A real Spot robot with an arm recorded in the laboratory."><span><b>Physical consequences</b><small>Recorded Spot hardware</small><i data-lucide="arrow-down-right"></i></span></a>
     </div>
+    <p class="opening-question">The parts may be familiar. Their joint future is not.</p>
+  </section>
 
-    <div class="result-strip hero-results" aria-label="Key project results">
-      <div>
-        <span class="metric">0.880 / 0.860</span>
-        <span class="label">Pearson / Spearman agreement on held-out real Spot windows</span>
-      </div>
-      <div>
-        <span class="metric">ANYmal-D to Go2</span>
-        <span class="label">cross-robot structured dynamics transfer in Isaac Lab</span>
-      </div>
-      <div>
-        <span class="metric">FHN + microgrid</span>
-        <span class="label">repeated-cell and typed node-edge recomposition beyond legged robots</span>
-      </div>
+  <section class="wrap abstract-section" id="abstract">
+    <details class="abstract-detail"><summary><span>Abstract</span><span class="summary-extra">From the current paper<i data-lucide="plus"></i></span></summary><div id="abstract-text"><p><a href="paper.pdf#page=1" target="_blank" rel="noopener">Read the abstract in the paper.</a></p></div></details>
+  </section>
+
+  <section class="wrap contributions" aria-labelledby="contributions-title">
+    <p class="eyebrow" id="contributions-title">Four contributions, one question of reuse</p>
+    <div class="contribution-grid">
+      <a href="#idea"><span class="number">01</span><h2>Predict proposed systems</h2><p>Reusable laws, a starting state, and physical consequences.</p><span class="go">The method<i data-lucide="arrow-right"></i></span></a>
+      <a href="#emergence"><span class="number">02</span><h2>Uncover emergent properties</h2><p>When connections expose damping or reveal a hidden state.</p><span class="go">The conditions<i data-lucide="arrow-right"></i></span></a>
+      <a href="#decisions"><span class="number">03</span><h2>Compare uncertain futures</h2><p>When prediction error still permits a reliable choice.</p><span class="go">The bounds<i data-lucide="arrow-right"></i></span></a>
+      <a href="#electrical"><span class="number">04</span><h2>Test reuse across systems</h2><p>New electrical connections, robot bodies, and component counts.</p><span class="go">The evidence<i data-lucide="arrow-right"></i></span></a>
     </div>
-  </header>
+  </section>
 
-  <main>
-    <section class="section interface" id="interface">
-      <div class="section-head center">
-        <p class="eyebrow">What the model exposes</p>
-        <h2>From observables to action cards.</h2>
-        <p>
-          A typed consequence is a named physical quantity with a role: reward, cost, safety envelope, or residual check. Objective cards reuse the same predicted consequences, then change weights or veto rules.
-        </p>
-      </div>
-      <figure class="media-card paper-figure pipeline-figure">
-        <img src="images/signals_to_action_cards_web.png"
-             alt="Pipeline from raw observables to typed consequences, planner factors, and action cards.">
-        <figcaption>
-          The same candidate forecast can support efficient, safe, mapping, balanced, or inspection objectives without retraining the dynamics model.
-        </figcaption>
-      </figure>
-      <div class="interface-grid">
-        <article>
-          <span class="step">1</span>
-          <h3>Observe</h3>
-          <p>Recent robot, circuit, or grid measurements refresh the deployed state.</p>
-        </article>
-        <article>
-          <span class="step">2</span>
-          <h3>Roll out</h3>
-          <p>Candidate futures are simulated with the target blocks, graph, ports, and sensing interface.</p>
-        </article>
-        <article>
-          <span class="step">3</span>
-          <h3>Name the consequences</h3>
-          <p>Rollouts become physical readouts such as work, support margin, map value, voltage margin, or residual mismatch.</p>
-        </article>
-        <article>
-          <span class="step">4</span>
-          <h3>Choose by objective</h3>
-          <p>Downstream objectives turn the same consequence vector into action cards, rankings, or vetoes.</p>
-        </article>
-      </div>
-    </section>
+  <section class="band" id="idea"><div class="wrap">
+    <div class="section-heading"><p class="eyebrow">01 / The shared mechanism</p><h2>Different physics. The same question.</h2><p>A power unit connects to a grid. A learned leg model meets a different robot. What can stay fixed, and what must change?</p></div>
+    <div class="lesson" aria-label="Composition tutorial">
+      <div class="lesson-top"><div class="segmented" role="group" aria-label="Tutorial domain"><button type="button" data-domain="electrical" aria-pressed="true"><i data-lucide="zap"></i>Electrical</button><button type="button" data-domain="robotics" aria-pressed="false"><i data-lucide="bot"></i>Robotics</button></div><a class="source" href="paper.pdf#page=7" target="_blank" rel="noopener">Method &amp; assumptions<i data-lucide="arrow-up-right"></i></a></div>
+      <div class="lesson-steps" role="tablist" aria-label="Composition stages"><button id="step-0" type="button" role="tab" aria-selected="true" aria-controls="lesson-panel" data-step="0"><span>1</span>Learn the parts</button><button id="step-1" type="button" role="tab" aria-selected="false" aria-controls="lesson-panel" tabindex="-1" data-step="1"><span>2</span>Connect their physics</button><button id="step-2" type="button" role="tab" aria-selected="false" aria-controls="lesson-panel" tabindex="-1" data-step="2"><span>3</span>Predict together</button></div>
+      <div id="lesson-panel" role="tabpanel" aria-labelledby="step-0"><div id="lesson-media" class="lesson-media"></div><div class="lesson-copy"><div><h3 id="lesson-title"></h3><p id="lesson-copy"></p></div><p class="scope" id="lesson-scope"></p></div></div>
+    </div>
+    <div class="power-pair"><p><strong>Voltage &times; current</strong><span>Electrical power</span></p><i data-lucide="equal"></i><p class="power-center"><strong>Energy transferred per second</strong><span>The meaning shared by both domains</span></p><i data-lucide="equal"></i><p><strong>Torque &times; angular velocity</strong><span>Mechanical power</span></p></div>
+    <details class="math-detail"><summary>What makes the composition physical?<i data-lucide="plus"></i></summary><div class="math-content"><p>Each component stores energy <i>H</i>, exchanges it through ports, and dissipates some through <i>R</i>. The port output is paired with the input so their product is power.</p><div class="equations"><p>x&#775;<sub>i</sub> = (J<sub>i</sub> &minus; R<sub>i</sub>) &nabla;H<sub>i</sub> + B<sub>i</sub>u<sub>i</sub></p><p>y<sub>i</sub> = B<sub>i</sub><sup>T</sup>&nabla;H<sub>i</sub> &nbsp;&nbsp; &ucirc; = &minus;C&#770; y&#770;, &nbsp; C&#770;<sup>T</sup> = &minus;C&#770;</p></div><p>The internal connection redistributes power without creating it: y&#770;<sup>T</sup>&ucirc; = 0. A line or contact that stores or dissipates energy needs its own physical account. This classical cancellation property constrains the model; it does not establish prediction accuracy or an exact finite-step balance.</p><a class="source" href="paper.pdf#page=8" target="_blank" rel="noopener">Theorem 3.1 and port construction<i data-lucide="arrow-up-right"></i></a></div></details>
+  </div></section>
 
-    <section class="section split spot-section" id="spot">
-      <div class="section-copy">
-        <p class="eyebrow">Real robot evidence</p>
-        <h2>Spot-with-arm logs test the telemetry-to-card path.</h2>
-        <p>
-          Six teleoperated Spot-with-arm episodes are replayed offline. C-PHAST reads recent telemetry and synchronized perception summaries, predicts named future consequences for a possible next behavior, and writes objective-conditioned action cards beside the logged run.
-        </p>
-        <p>
-          This is shadow mode: no autonomous commands are sent to Spot. The result validates the real sensing and decision interface, while the Isaac experiments below validate branchable same-state alternatives in simulation.
-        </p>
-        <div class="result-strip compact">
-          <div>
-            <span class="metric">1,070</span>
-            <span class="label">five-second behavior windows</span>
-          </div>
-          <div>
-            <span class="metric">173</span>
-            <span class="label">held-out windows</span>
-          </div>
-          <div>
-            <span class="metric">5 cards</span>
-            <span class="label">efficient, safe, mapping, balanced, inspection</span>
-          </div>
-        </div>
-      </div>
-      <figure class="media-card paper-figure spot-figure">
-        <img src="images/spot_real_query_context.png"
-             alt="Real Spot-with-arm shadow-mode query from logged context to candidate behavior and action-card selection.">
-        <figcaption>
-          Real Spot query: logged context, candidate behavior descriptors, and objective-specific selected futures.
-        </figcaption>
-      </figure>
-    </section>
+  <section class="wrap prior-work">
+    <details class="evidence-detail"><summary>What does the closest prior work already provide?<i data-lucide="plus"></i></summary><div class="detail-inner"><p>Reusable components and structured energy models are established ideas. C-PHAST brings component reuse together with history-based state initialization, candidate consequence queries, and analysis of when prediction errors permit a reliable comparison.</p><div class="table-wrap"><table><caption>Roles of the closest comparisons &middot; experimental settings remain separate</caption><thead><tr><th>Approach</th><th>Established contribution</th><th>Question tested here</th></tr></thead><tbody><tr><td>Compositional pHNN</td><td>Learn and connect subsystem dynamics</td><td>Prediction after new attachment</td></tr><tr><td>N-PHDAE</td><td>Learn component laws in circuit constraints</td><td>Accuracy and numerical completion</td></tr><tr><td>CT-SUBNET</td><td>Infer state from input/output histories</td><td>Hidden-current prediction from voltage</td></tr><tr><td>PHAST</td><td>Structured single-system dynamics and state inference</td><td>Reuse beyond one assembled system</td></tr></tbody></table></div><p class="scope">These comparisons evaluate complete procedures, not a single isolated architectural change. The paper gives the original references, training assumptions, and model definitions.</p><a class="source" href="paper.pdf#page=5" target="_blank" rel="noopener">Related work and citations<i data-lucide="arrow-up-right"></i></a></div></details>
+  </section>
 
-    <section class="section demo-band" id="evidence">
-      <div class="section-head center">
-        <p class="eyebrow">Branchable rollout evidence</p>
-        <h2>Simulation asks the counterfactual question.</h2>
-        <p>
-          Real logs show whether the interface works on hardware data. Simulator rollouts let us hold the state fixed and ask what would happen under alternative candidate futures.
-        </p>
-      </div>
+  <section class="wrap study" id="electrical">
+    <div class="section-heading"><p class="eyebrow">Electrical / The anchor study</p><h2>Where should the new unit attach?</h2><p>The four-unit backbone stays fixed. The fifth unit can attach at two different buses. Forecast both enlarged networks before making either connection.</p></div>
+    <figure class="wide-media"><img src="assets/connections-detail.png" loading="lazy" alt="Connection schematic: a new green DGU attaches to the fixed four-unit backbone."><figcaption><span>Same local laws and starting states. Different attachment.</span><button class="button primary" data-explorer="attachment"><i data-lucide="play"></i>Try the attachment decision</button></figcaption></figure>
+    <div class="result-grid attachment-results"><div><p class="eyebrow">New / Frozen 12-scenario stress study</p><h3>404.54 mA.<br>A 400 mA limit.</h3><p>At the preselected highest-stress scenario, cPHNN predicts below the limit and selects connection B in all five fits. C-PHAST correctly rejects both attachments. N-PHDAE cannot complete both forecasts in any of those five fits.</p><p class="scope">Independent simulated reference, not hardware. No tuning or corrected variants. All scenarios and fits remain available in the demo.</p><div class="actions"><a class="source" href="attachment-data/all-outcomes.csv" download>All 360 attempts<i data-lucide="download"></i></a><a class="source" href="attachment-data/verification.json" target="_blank" rel="noopener">Independent check<i data-lucide="arrow-up-right"></i></a></div></div><div><div class="table-wrap"><table><caption>All 12 scenarios &times; five fits &times; two attachments</caption><thead><tr><th>Method</th><th>Qualified forecasts</th><th>Correct choices</th><th>Abstained pairs</th></tr></thead><tbody><tr><td>C-PHAST</td><td class="best">120/120</td><td class="best">60/60</td><td>0/60</td></tr><tr><td>cPHNN</td><td>120/120</td><td>55/60</td><td>0/60</td></tr><tr><td>N-PHDAE</td><td>38/120</td><td>18/60</td><td>42/60</td></tr></tbody></table></div><p class="scope">Abstentions are incomplete comparisons, not wrong completed decisions. N-PHDAE has 80 state-conversion failures and two propagation-time consistency failures. Its completed B forecast at the stress corner predicts 633.67 mA: correct rejection, inaccurate peak.</p><p class="scope">Supplied states; 20-second forecasts; synthetic limits. Existing training data and budgets differ. This extrapolation study is separate from the component-only paper result below.</p><a class="source" href="attachment-data/protocol.json" target="_blank" rel="noopener">Frozen conditions and decision rule<i data-lucide="arrow-up-right"></i></a></div></div>
+    <details class="evidence-detail"><summary>Earlier composition walkthrough<i data-lucide="plus"></i></summary><div class="detail-inner"><p>The earlier source-network-calibrated study includes corrected N-PHDAE. Both qualified methods rank 80/80 pairs correctly there. It remains separate from the new original-model stress study and the component-only paper result.</p><button class="button" data-explorer="microgrid"><i data-lucide="play"></i>Open the legacy walkthrough</button></div></details>
+    <div class="result-grid"><div><p class="eyebrow">Component-only training</p><h3>Freeze the laws.<br>Change the connection.</h3><p class="result-number">&gt;40&times;<span>lower voltage error in every complete paired fit</span></p><p>C-PHAST completes 160/160 forecasts; compositional pHNN completes 150/160. Supplied wiring, line laws, and starting states isolate the composition question.</p><a class="source" href="paper.pdf#page=23" target="_blank" rel="noopener">Table 4A: all outcomes and current errors<i data-lucide="arrow-up-right"></i></a></div><div><div class="table-wrap"><table><caption>Voltage RMSE (mV) &middot; lower is better</caption><thead><tr><th>Fit</th><th>Comp. pHNN</th><th>C-PHAST</th><th>Error ratio</th></tr></thead><tbody><tr><td>1</td><td>13.02</td><td class="best">0.1237</td><td>105.3&times;</td></tr><tr><td>2</td><td>12.48</td><td class="best">0.2512</td><td>49.7&times;</td></tr><tr><td>4</td><td>10.43</td><td class="best">0.1388</td><td>75.1&times;</td></tr><tr><td>5</td><td>11.19</td><td class="best">0.2122</td><td>52.7&times;</td></tr></tbody></table></div><p class="scope">Five fits &times; 16 starts &times; two candidates. Fit 3 has ten pHNN initialization failures: retained in completion counts, excluded from paired errors. Ratios use the displayed RMSEs. Training procedures differ.</p></div></div>
+    <details class="evidence-detail"><summary>How do the unaugmented baselines compare with supplied states?<i data-lucide="plus"></i></summary><div class="detail-inner"><p>A separate fixed three-unit benchmark supplies the starting states to all methods. Five fits, eight two-second forecasts each. Baseline model definitions are unchanged; N-PHDAE uses its upstream consistency option.</p><div class="table-wrap"><table><caption>Supplied-state study &middot; not the corrected-model tutorial</caption><thead><tr><th>Method</th><th>Voltage RMSE (mV)</th><th>Completed</th></tr></thead><tbody><tr><td>Compositional pHNN</td><td>192.97 &plusmn; 42.01</td><td>40/40</td></tr><tr><td>N-PHDAE</td><td>No five-fit aggregate</td><td>33/40</td></tr><tr><td>C-PHAST</td><td class="best">1.09 &plusmn; 0.25</td><td>40/40</td></tr></tbody></table></div><p class="scope">N-PHDAE fit 2 completes one of eight forecasts. A successful-only error is not a complete-cohort comparison. Other values are mean &plusmn; SD across fit means.</p><a class="source" href="paper.pdf#page=24" target="_blank" rel="noopener">Per-fit errors, failures, and solver conditions<i data-lucide="arrow-up-right"></i></a></div></details>
+    <details class="evidence-detail"><summary>What if the sensors measure voltage, but not current?<i data-lucide="plus"></i></summary><div class="detail-inner result-grid"><div><h3>Infer the starting state from history.</h3><p>One second of voltage history and known inputs supports a two-second forecast. This sensing study keeps the network fixed.</p><p class="scope">Noise SD 0.02 V; five fits and 40 forecasts per method. Both methods use richer calibration labels. C-PHAST has supplied line physics; the estimators differ.</p><a class="source" href="paper.pdf#page=25" target="_blank" rel="noopener">Table 7: sensing comparison<i data-lucide="arrow-up-right"></i></a></div><div><p class="chart-caption">Hidden-current RMSE (mA), lower is better</p><div class="bar-row"><span>CT-SUBNET</span><div class="track"><span style="width:100%"></span></div><b>86.25 &plusmn; 4.55</b></div><div class="bar-row"><span>C-PHAST</span><div class="track"><span class="native" style="width:32.44%"></span></div><b>27.98 &plusmn; 1.98</b></div><p class="scope">67.6% lower mean error. Across-fit standard deviations are shown.</p></div></div></details>
+    <p class="bridge">Rewiring changes the assembly. What if the assembly looks similar, but the body itself is different?</p>
+  </section>
 
-      <div class="media-grid four">
-        <figure class="media-card dark">
-          <video class="preview-video" muted loop playsinline preload="metadata"
-                 poster="videos/cphast_exact_branch_futures_px2p25_start70_go2_interpreted_preview.png"
-                 src="videos/cphast_candidate_futures_interpreted_h264.mp4"></video>
-          <figcaption>
-            <strong>Candidate futures.</strong>
-            Same state, different commanded futures, different physical consequences.
-          </figcaption>
-        </figure>
-        <figure class="media-card dark">
-          <video class="preview-video" muted loop playsinline preload="metadata" src="videos/go2_lateral_push_envelope_3tile.mp4"></video>
-          <figcaption>
-            <strong>Push boundary.</strong>
-            The same policy recovers, struggles, or fails as perturbation grows.
-          </figcaption>
-        </figure>
-        <figure class="media-card dark">
-          <video class="preview-video" muted loop playsinline preload="metadata" src="videos/anymal_to_go2_source_target_comparison_slow8.mp4"></video>
-          <figcaption>
-            <strong>Embodiment transfer.</strong>
-            Train on ANYmal-D, deploy on Unitree Go2 without retraining.
-          </figcaption>
-        </figure>
-        <figure class="media-card dark">
-          <video class="preview-video" muted loop playsinline preload="metadata" src="videos/go2_zero_shot_model_failure_comparison_slow8.mp4"></video>
-          <figcaption>
-            <strong>Baseline contrast.</strong>
-            Unstructured target rollouts drift where the typed pH composition stays physically anchored.
-          </figcaption>
-        </figure>
-      </div>
-    </section>
+  <section class="band" id="robotics"><div class="wrap study">
+    <div class="section-heading"><p class="eyebrow">Robotics / Supporting tests of reuse</p><h2>A different robot.<br>The same learned leg model.</h2><p>Train on ANYmal-D, initialize from a short history of Go2 joint positions, and predict without target retraining or target morphology information.</p></div>
+    <figure class="video-figure"><video id="transfer-video" src="assets/transfer.mp4" poster="assets/transfer.png" controls muted playsinline preload="metadata" aria-label="Earlier Isaac Lab source-to-target dynamics prediction comparison"></video><figcaption><span class="tag">Earlier transfer visualization</span>Model-predicted joint motion, not controller transfer. The clip compares C-PHAST, Shared-GRU and MPNN; the compact table below uses the separate fixed-dimension GRU baseline. The clip is qualitative context, not a replay of every run in the five-seed table.</figcaption></figure>
+    <div class="result-grid compact"><div><h3>Source fit is not the whole story.</h3><p>The fixed-dimension GRU fits ANYmal-D better. C-PHAST has lower error after transfer to Go2.</p><p class="scope">Five seeds; five context frames; 50-step open-loop joint-position prediction. Mean &plusmn; SD, in rad<sup>2</sup>.</p><a class="source" href="paper.pdf#page=27" target="_blank" rel="noopener">Table 9: full baseline comparison and exclusions<i data-lucide="arrow-up-right"></i></a></div><div class="table-wrap"><table><caption>Source and target errors, not a pooled benchmark score</caption><thead><tr><th>Model</th><th>Parameters</th><th>ANYmal-D</th><th>Go2</th></tr></thead><tbody><tr><td>Fixed-dim GRU</td><td>43,020</td><td class="best">0.005 &plusmn; 0.000</td><td>0.112 &plusmn; 0.005</td></tr><tr><td>C-PHAST</td><td>40,034</td><td>0.045 &plusmn; 0.000</td><td class="best">0.073 &plusmn; 0.001</td></tr></tbody></table></div></div>
+    <details class="evidence-detail"><summary>Change the component count: four joints to two through eight<i data-lucide="plus"></i></summary><div class="detail-inner"><img class="arm-media" src="assets/arms.gif" loading="lazy" alt="Recorded planar-arm predictions for two and eight joints after training with four joints."><p>Controlled arm tests reuse local dynamics across sizes. Coupling entries beyond the four-joint training block were not learned from source trajectories; this is not a learned rule for arbitrary new interactions, contact, or joint limits.</p><a class="source" href="paper.pdf#page=28" target="_blank" rel="noopener">Component-count results and coupling scope<i data-lucide="arrow-up-right"></i></a></div></details>
+    <div class="result-grid"><div><p class="eyebrow">Next question / Keep the body, change the response</p><h3>After a push, which response would you try?</h3><p>A separate body-plus-legs C-PHAST model predicts the consequences of supplied commands. A frozen selector chooses once, and the simulator independently executes that choice.</p><div class="actions"><button class="button primary" data-explorer="go2"><i data-lucide="play"></i>Try the guided recovery study</button><a class="source" href="paper.pdf#page=29" target="_blank" rel="noopener">Recovery-decision study<i data-lucide="arrow-up-right"></i></a></div></div><div><h3>Predict. Choose. Check.</h3><p>Look 0.16 seconds ahead, execute the command for 0.48 seconds, then observe the outcome. The walkthrough reveals the saved evidence in that order.</p><p class="scope">20 held-out cases. Higher mean survival score than the best fixed command; both recover in 10/20 cases. One decision in simulation, not a hardware recovery controller.</p></div></div>
+    <details class="evidence-detail"><summary>Earlier three-branch illustration: a different experiment<i data-lucide="plus"></i></summary><div class="detail-inner"><video src="assets/branches.mp4" poster="assets/branches.png" controls muted playsinline preload="none" aria-label="Earlier three-branch Go2 experiment, distinct from the guided recovery study"></video><p>This older recording branches at step 70, before a forward push at step 75, and compares previous action, front catch and lateral support. It is not footage of the guided study, which selects among nine command labels after a lateral push.</p><p class="scope">The newer 20-case study has archived telemetry and forecast summaries, but no matched camera recording. Its guide uses explicitly labeled telemetry schematics.</p></div></details>
+    <p class="bridge">Simulation lets us execute alternatives from the same state. Hardware recordings answer a different question: do predicted physical consequences agree with measurements?</p>
+  </div></section>
 
-    <section class="section domains" id="domains">
-      <div class="section-head center">
-        <p class="eyebrow">Same contract, different physics</p>
-        <h2>Transfer is expressed in each domain's own language.</h2>
-        <p>
-          C-PHAST is not a single robot trick. The same contract appears as repeated joint or leg blocks, repeated excitable cells, and typed converter-line blocks in a power network.
-        </p>
-      </div>
+  <section class="wrap study" id="hardware">
+    <div class="section-heading"><p class="eyebrow">Real hardware / Spot with an arm</p><h2>Motion is visible.<br>Work and battery draw are measurable.</h2><p>Six teleoperated recordings connect recent telemetry and behavior descriptors to physical consequences. The robot below is real; this study evaluates the recorded behavior retrospectively.</p></div>
+    <div class="spot-layout"><figure class="video-figure"><video id="spot-video" src="assets/spot.mp4" poster="assets/spot.png" controls muted playsinline preload="metadata" aria-label="Real third-person Spot-with-arm laboratory recording"></video><figcaption><span class="tag real">Real hardware</span>Teleoperated footage. C-PHAST did not command Spot.</figcaption></figure><div class="hardware-results"><h3>Agreement on held-out logs</h3><p>173 test windows from two held-out bags; 897 training windows from four bags. Two-second histories, five-second outcomes.</p><table><caption>Direct energetic targets &middot; Pearson r</caption><tbody><tr><th>Positive joint work</th><td>0.973</td></tr><tr><th>Absolute joint work</th><td>0.975</td></tr><tr><th>Locomotion work</th><td>0.971</td></tr><tr><th>Battery draw</th><td>0.943</td></tr></tbody></table><p class="scope">Work integrates torque &times; joint velocity. Battery draw here is mean discharge current, not battery energy.</p><a class="source" href="paper.pdf#page=31" target="_blank" rel="noopener">Table 13: targets and evaluation<i data-lucide="arrow-up-right"></i></a></div></div>
+    <p class="scope hardware-contract">Inputs include descriptors measured from the executed future. These results test direct consequence predictors, not a PHASTCore dynamics rollout or prospective hardware decision.</p>
+    <details class="evidence-detail"><summary>Onboard recordings, input audit, and the harder generalization test<i data-lucide="plus"></i></summary><div class="detail-inner"><video src="assets/spot-cameras.mp4" controls muted playsinline preload="none" aria-label="Spot onboard camera episode gallery"></video><p>A separate regression study predicts objective scores from physical channels: mean Pearson/Spearman agreement is 0.880/0.860 on the fixed bag split, and 0.652/0.545 in six-fold leave-one-episode-out evaluation. The two protocols should not be combined.</p><p>Before live use, future-derived descriptors must be supplied by a planner or forecasted. Exact retraining of the energetic ensemble is unverified because checkpoints, resolved settings, and stopping epochs were not retained with the exported predictions.</p><a class="source" href="sources/spot-study.tex" target="_blank" rel="noopener">Full retained input and provenance audit<i data-lucide="arrow-up-right"></i></a></div></details>
+  </section>
 
-      <div class="domain-grid">
-        <article class="domain-card">
-          <figure>
-            <img src="images/isaaclab_source_target_transfer_hero.png" alt="ANYmal-D to Go2 transfer snapshot.">
-          </figure>
-          <h3>Legged robots</h3>
-          <p>Reusable mechanical blocks are recomposed for a target embodiment and support/contact pattern.</p>
-        </article>
-        <article class="domain-card">
-          <figure>
-            <img src="images/cphast_rollout_contract.png" alt="C-PHAST deployment contract figure.">
-          </figure>
-          <h3>Repeated excitable cells</h3>
-          <p>FitzHugh-Nagumo chains test whether repeated cell blocks transfer under changes in cell count and diffusive graph.</p>
-        </article>
-        <article class="domain-card">
-          <figure>
-            <img src="images/microgrid_redeployment_current.png" alt="Microgrid redeployment visual with candidate network futures.">
-          </figure>
-          <h3>DC microgrids</h3>
-          <p>DGU node blocks and line edge blocks are recomposed under topology and sensing changes.</p>
-        </article>
-      </div>
-    </section>
+  <section class="band" id="emergence"><div class="wrap study">
+    <div class="section-heading"><p class="eyebrow">02 / Emergent properties</p><h2>What can a connection create<br>without changing the parts?</h2><p>It can carry a disturbance to damping elsewhere, or make a hidden state affect an existing sensor. Neither benefit follows from connection alone.</p></div>
+    <div class="emergence-grid"><article><i data-lucide="waves"></i><h3>A new route to existing damping</h3><p>Energy that persists in one component can reach loss in another. The finite-time result compares expected energy under specified linear&ndash;quadratic conditions.</p><a class="source" href="paper.pdf#page=17" target="_blank" rel="noopener">Theorem 3.2<i data-lucide="arrow-up-right"></i></a><div class="finding"><b>What the saved audit found</b><p>A local decay certificate exists for one learned DGU checkpoint. None of the three tested alternative attachments improved the frozen expected-energy comparison.</p><a href="sources/dissipation-audit.txt" target="_blank" rel="noopener">Read the negative rewiring result<i data-lucide="arrow-up-right"></i></a></div></article><article><i data-lucide="scan-eye"></i><h3>A new route to an existing sensor</h3><p>A current hidden in one wiring can influence measured voltages after rewiring. The inference result concerns an initial-state target under known laws.</p><a class="source" href="paper.pdf#page=18" target="_blank" rel="noopener">Theorem 3.4<i data-lucide="arrow-up-right"></i></a><div class="finding"><b>20.8&ndash;31.1% lower expected risk</b><p>Saved known-law triangle/parallel-line tests use the same sensors and initial-current target. Both graphs still have a hidden mode; this is partial recovery.</p><a href="sources/inference-audit.txt" target="_blank" rel="noopener">Protocol, empirical MSE, and independent check<i data-lucide="arrow-up-right"></i></a></div></article></div>
+    <p class="scope">These audit reports are supporting workspace evidence, not new experiments or additions to the paper. The sampled-noise inference check does not validate the continuous-Brownian formulation or a learned-law observer.</p>
+  </div></section>
 
-    <section class="section split method-figure" id="method">
-      <figure class="media-card paper-figure">
-        <img src="images/cphast_rollout_contract.png"
-             alt="C-PHAST rollout contract from deployment specification to typed readouts and planner logic.">
-        <figcaption>
-          The learned block library stays fixed; the deployment specification declares the target blocks, interconnection, observation interface, and readout roles.
-        </figcaption>
-      </figure>
-      <div class="section-copy">
-        <p class="eyebrow">Model contract</p>
-        <h2>Reusable blocks, deployment-specific wiring.</h2>
-        <p>
-          The method separates local physics from the way a target system is assembled. This is why the paper can compare subsystem-count changes, cross-robot transfer, repeated excitable circuits, and microgrid topology or sensing changes under one interface.
-        </p>
-        <ul class="fact-list">
-          <li><strong>Local blocks</strong> store and dissipate energy.</li>
-          <li><strong>Ports</strong> describe how power enters, leaves, or moves between blocks.</li>
-          <li><strong>Interconnections</strong> wire the deployed system without changing the learned local library.</li>
-          <li><strong>Typed readouts</strong> expose what a planner or operator needs to compare futures.</li>
-        </ul>
-      </div>
-    </section>
+  <section class="wrap study" id="decisions">
+    <div class="section-heading"><p class="eyebrow">03 / Reliable comparisons</p><h2>Which futures can we actually distinguish?</h2><p>A low predicted cost is not enough. Its error margin must be small enough to separate alternatives and test operating limits.</p></div>
+    <div class="decision-layout"><div><h3>Shared uncertainty need not hide the difference.</h3><p>Two candidates begin from the same uncertain state. Bounding their difference together preserves information that separate bounds can discard.</p><div class="paired-result"><span><strong>62/81</strong>Separate polynomial bounds</span><i data-lucide="arrow-right"></i><span><strong>74/81</strong>Shared-uncertainty bounds</span></div><p class="scope">Certified cross-graph orderings in a known-affine, quadratic-score example at radius 0.05, after the same synthetic 2 A sampled-current screen. No learned-model or hardware guarantee.</p><a class="source" href="paper.pdf#page=79" target="_blank" rel="noopener">Paired candidate bounds and full radius sweep<i data-lucide="arrow-up-right"></i></a></div><div class="decision-tool"><i data-lucide="shield-check"></i><h3>A bound can also say<br>&ldquo;not enough information.&rdquo;</h3><p>Inspect the existing nine-command certificate study. Larger starting-state uncertainty turns resolved decisions into unresolved ones.</p><button class="button primary" data-explorer="bounds"><i data-lucide="sliders-horizontal"></i>Explore saved decision bounds</button><p class="scope">Separate fixed-topology, known-law study. The explorer displays recorded certificates; it does not fit a model.</p></div></div>
+  </section>
 
-    <section class="section citation" id="citation">
-      <p class="eyebrow">Citation</p>
-      <h2>BibTeX</h2>
-      <pre><code>@article{bhardwaj2026cphast,
-  title   = {C-PHAST: Compositional Port-Hamiltonian World Models for Structured Dynamics Transfer},
-  author  = {Bhardwaj, Shubham and Bajaj, Chandrajit},
-  journal = {arXiv preprint},
-  year    = {2026}
-}</code></pre>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <a href="#top">Back to top</a>
-    <span>C-PHAST project page.</span>
-  </footer>
+  <section class="band" id="theory"><div class="wrap study">
+    <div class="section-heading"><p class="eyebrow">Claim to evidence</p><h2>What has been checked?<br>What still needs evidence?</h2><p>Proofs establish conditional statements. Numerical examples check implementations and illustrate their scope. Application accuracy alone does not validate every theorem assumption.</p></div>
+    <div id="theorem-list" class="theorem-list"></div>
+    <div class="open-question"><i data-lucide="milestone"></i><div><h3>The missing end-to-end test</h3><p>Ranking new connections with <b>learned nonlinear laws and voltage-only initialization together</b> remains open. Physical switching and repeated closed-loop hardware operation are also not established by these studies.</p></div></div>
+    <div class="actions"><a class="button" href="EVIDENCE_AUDIT.md" target="_blank" rel="noopener"><i data-lucide="clipboard-list"></i>Read the evidence audit</a><a class="text-link" href="provenance.json" target="_blank" rel="noopener">Artifact provenance<i data-lucide="arrow-up-right"></i></a></div>
+  </div></section>
+  <section class="wrap resources"><h2>Follow a claim all the way through.</h2><p>The paper supplies the formulation and assumptions. The examples expose the predictions, comparisons, and remaining limits.</p><div class="actions"><a class="button primary" href="paper.pdf" target="_blank" rel="noopener"><i data-lucide="file-text"></i>Paper PDF</a><a class="button" href="EVIDENCE_AUDIT.md" target="_blank" rel="noopener"><i data-lucide="list-checks"></i>Evidence &amp; open questions</a><a class="text-link" href="https://shubham-bhardwaj.com/cphast/" target="_blank" rel="noopener">Published project page<i data-lucide="arrow-up-right"></i></a></div></section>
+</main>
+<footer class="wrap"><span>C-PHAST &middot; Shubham Bhardwaj and Chandrajit Bajaj</span><span>Separate research-page preview &middot; 6 November 2026</span></footer>
+<dialog id="experience" aria-labelledby="experience-title"><header><div><p class="eyebrow">Recorded research explorer</p><h2 id="experience-title"></h2></div><div class="dialog-actions"><a id="standalone-explorer" href="explorer/index.html#attachment" target="_blank" rel="noopener" title="Open in a new tab" aria-label="Open in a new tab"><i data-lucide="external-link"></i></a><button id="close-experience" type="button" title="Close explorer" aria-label="Close explorer"><i data-lucide="x"></i></button></div></header><p id="experience-status" role="status"></p><div id="experience-frame"></div></dialog>
+<noscript><p class="wrap">Interactive examples require JavaScript. <a href="paper.pdf">The complete paper is available here.</a></p></noscript>
 </body>
 </html>

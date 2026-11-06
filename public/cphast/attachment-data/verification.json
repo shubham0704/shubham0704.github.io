@@ -1,0 +1,65 @@
+{
+  "approved": true,
+  "date": "2026-11-06",
+  "reviewer_agent": "01a1af5f-6b05-7322-9107-0712a06d4d35",
+  "scope": "Reporting this frozen supplied-state extrapolation campaign; not an architecture-only comparison or hardware safety validation.",
+  "method": "Independent read-only reconstruction from saved arrays and source. No forecasts, model calls, writes or use of the parent analysis functions as a calculator.",
+  "reviewer_python": "/Users/shubham/miniconda3/envs/math/bin/python",
+  "freeze_sha256": "371e7f5a30d9867d1ea88a554249140f639184619c281b6bea71a4615386520c",
+  "matched_artifacts": {"analysis_rows": 360, "pairs": 180, "summaries": 18, "csv_entries": 360},
+  "integrity": {
+    "workers_exited_zero": 15,
+    "timeouts": 0,
+    "frozen_source_hashes_verified": 2319,
+    "checkpoint_import_raw_hashes_verified": true,
+    "supplied_inputs_and_retained_states_verified": true,
+    "protected_files_verified": 30895,
+    "protected_file_drift": [],
+    "rendered_plot_matches_reconstructed_decisions": true,
+    "post_rollout_parameter_checks": "Worker fingerprint assertions passed. Final live parameter tensors were not separately saved for independent post-hoc tensor hashing."
+  },
+  "outcomes": {
+    "cphast": {"qualified": 120, "planned": 120, "correct_screens": 120, "exact_feasible_sets": 60, "exact_choices": 60, "planned_pairs": 60, "abstained_pairs": 0},
+    "cphnn": {"qualified": 120, "planned": 120, "correct_screens": 115, "exact_feasible_sets": 55, "exact_choices": 55, "planned_pairs": 60, "abstained_pairs": 0, "false_accepts": 5},
+    "nphdae": {"qualified": 38, "planned": 120, "correct_screens": 36, "exact_feasible_sets": 16, "exact_choices": 18, "planned_pairs": 60, "abstained_pairs": 42, "false_rejections": 2, "adapter_entry_failures": 80, "upstream_consistency_failures": 2}
+  },
+  "common_qualified_cohort": {
+    "size": 38,
+    "fit_counts": {"1": 8, "2": 0, "3": 22, "4": 0, "5": 8},
+    "metric": "Mean per-path RMSE; values rounded to five decimal places.",
+    "cphast": {"voltage_mV": 0.06342, "line_current_mA": 0.09923},
+    "cphnn": {"voltage_mV": 40.06864, "line_current_mA": 4.23710},
+    "nphdae": {"voltage_mV": 14.47926, "line_current_mA": 15.89772},
+    "limitation": "Selected by numerical completion; not representative full-suite evidence."
+  },
+  "adapter_failure_attribution": {
+    "count": 80,
+    "stage": "Existing-network current-to-flux inversion, before candidate initialization or upstream solving.",
+    "evidence": "All terminal searches have finite negative residuals throughout four sampled windows and no root candidate.",
+    "interpretation": "Bounded-search exhaustion, not global nonexistence of a root."
+  },
+  "upstream_consistency_failures": [
+    {"fit": 3, "initial_utilization": 0.8, "demand_multiplier": 1.3, "arm": "A", "failure_time_s": 17.24, "last_accepted_time_s": 17.23, "returned_samples": 1724, "pre_solve_g_inf": 0.00248846, "terminal_fsolve_g_inf": 0.000921668, "ier": 4, "function_evaluations": 309},
+    {"fit": 3, "initial_utilization": 0.8, "demand_multiplier": 1.45, "arm": "A", "failure_time_s": 11.45, "last_accepted_time_s": 11.44, "returned_samples": 1145, "pre_solve_g_inf": 0.00509126, "terminal_fsolve_g_inf": 0.00166970, "ier": 4, "function_evaluations": 270}
+  ],
+  "consistency_failure_interpretation": "Both paths initialized correctly and stayed finite until upstream fsolve reported insufficient progress over its last five Jacobian evaluations. These are propagation-time failures despite the generic initial-algebraic-states exception. Records do not establish Jacobian singularity, absence of a solution, or a uniquely identified learned-law cause.",
+  "diagnostic_logging_caveat": {
+    "stale_candidate_fields": 32,
+    "affected_fits": [1, 5],
+    "affected_initial_utilizations": [0.65, 0.8],
+    "affected_demands": "All four",
+    "affected_arms": ["A", "B"],
+    "stale_origin": "Previous successful 50-percent case for the same attachment; candidate initialization was not attempted.",
+    "empty_candidate_fields": 48,
+    "empty_candidate_fits": [2, 4],
+    "instruction": "For all 80 adapter-entry failures, use fresh adapter_records.actual and traceback only. Do not interpret adapter_records.candidate as a new attempt.",
+    "scientific_effect": "No effect on forecasts, outcomes or decision counts. Frozen code and raw records are preserved unchanged."
+  },
+  "limitations": [
+    "Existing training data and budgets differ across methods.",
+    "All five saved fits and all failures are retained; no target tuning or corrected model variants.",
+    "Failed or incomplete pairs abstain and receive no decision credit.",
+    "Thresholds are synthetic task screens, not hardware ratings or safety guarantees.",
+    "The campaign forecasts from assigned connected states, not a physical switch-closing transient."
+  ]
+}

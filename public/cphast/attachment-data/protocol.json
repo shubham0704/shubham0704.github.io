@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "prelaunch_revision": "No target forecasts preceded this revision. Independent review required per-scenario native stepping, complete runtime-input hashes, typed expected failures, explicit timeout dispositions, and resolved-only accuracy. The rejected prelaunch hash snapshot is retained.",
+  "purpose": "Evaluate frozen original learning procedures on every frozen bottleneck scenario, without tuning or altering prior evidence.",
+  "reference": "experiment_sandboxes/attachment_bottleneck_20261106",
+  "fits": [1, 2, 3, 4, 5],
+  "methods": ["cphast", "cphnn", "nphdae"],
+  "initial_utilizations": [0.5, 0.65, 0.8],
+  "demand_multipliers": [1.0, 1.15, 1.3, 1.45],
+  "arms": ["A", "B"],
+  "dt": 0.01,
+  "steps": 2000,
+  "planned_per_method": 120,
+  "total_planned": 360,
+  "information_contract": "Exact supplied physical initial states and held inputs from the frozen reference bank; same retained states and new-unit state in A/B. Only topology and line R/L are supplied to learned compositions. No history estimation, target calibration, checkpoint selection, training or tuning.",
+  "training_contracts": {
+    "cphast": "Fixed final staged local 100000-update isolated-DGU fits with fitted linear warm start; original existing learning procedure.",
+    "cphnn": "Original PHNODE/CompositionalPHNODE; fixed final isolated-component 100000-update checkpoints from local_comparison_1791674863001450000; no augmented objectives.",
+    "nphdae": "Original DGU_PHNDAE/CompositePHDAE; fixed final 10000-update original_baselines_sensing_20261024 checkpoints. Local samples from 16 three-unit network trajectories, measured line currents converted to local inputs, original l2_and_g_loss. No added constraint-first curriculum. Not the older author_local bank."
+  },
+  "comparison_scope": "Descriptive comparison of frozen procedures on identical new supplied-state scenarios, not matched training data/budget or architecture-only evidence. Loads extrapolate beyond the prior isolated-component sampling range. This is not the headline voltage benchmark.",
+  "solvers": {
+    "cphast": "Maintained native_step and existing network.compose at nominal dt=0.01, two layers, unchanged factory defaults; each scenario is stepped individually to isolate batch-wide convergence. Existing stored clock is approximately 0.009999999036 seconds, disclosed without correction. Record actual stage/coupling settings; observe midpoint residuals without altering operations.",
+    "cphnn": "Pinned original CompositionalPHNODE.forward, RK4 dt=0.01; scan is scheduling only.",
+    "nphdae": "Pinned CompositePHDAE.solve_one_timestep with T=arange(2001)*0.01, tol=1e-9, consistent_ic=True. Strict upstream fsolve acceptance; no replacement Newton/projection, clipping, fallback or altered Jacobian. Extra unused final RK4 step recorded separately."
+  },
+  "pins": {"cphnn": "ac0f29bd7552641c5c5b4021ec969061b110c1ed", "nphdae": "1835aa01228173ea2ddd03b4942c1b230c46f549"},
+  "initialization": "Use each model's own constitutive map. Native/cPHNN reuse saved adapters; N-PHDAE uses the prior frozen bracket policy and training-only domains generalized to n=5,m=4. Retain existing differential storage exactly. Algebraic voltages/currents may be reconciled by the original solver. Save guesses, inversion records, raw steps and fsolve diagnostics.",
+  "gates": {"physical_roundtrip": 1e-7, "retained_storage": 1e-8, "entry_constraint": 1e-7, "path_constraint": 1e-6, "native_midpoint": 1e-6},
+  "evaluation": "Include t=0. Reference metrics use saved refined 0.001 s paths; errors use refined[::10] at the common 0.01 s grid. Report voltage/DGU-current/line-current RMSE, central-line peak error, current/voltage screening, false accepts/rejects, all pair decisions and failures. Preserve unqualified finite outputs as diagnostics only. No failed prediction is classified as a successful or wrong physical decision.",
+  "decision_rule": "Among predicted screen-passing attachments choose the one with lower maximum line-current utilization. If neither passes, reject both. If either candidate is numerically unqualified or boundary-unresolved, abstain. Utilization differences <=0.00005 are ties. Report exact feasible-set agreement separately from selected-action acceptability.",
+  "limits": {"line_current_A": [0.8, 0.4, 0.8, 0.8], "voltage_V": [0.5, 1.3], "current_boundary_A": 0.00002, "voltage_boundary_V": 0.000002},
+  "budget": {"worker_seconds": 3600, "nphdae_case_seconds": 120, "workers": 1},
+  "failure_policy": "All rows predeclared. Retain initialization, strict consistency, constraint drift, nonfinite and budget failures with raw evidence. No accuracy-driven retries or automatic extensions. Unexpected harness failures stop the campaign and are not attributed to a model.",
+  "protection": "No modifications to website, paper, slides, original models/adapters/checkpoints, reference bank or existing results. New sandbox only. Hash protected files before and after. Independent read-only prelaunch and result verification required."
+}
